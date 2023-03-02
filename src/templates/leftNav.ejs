@@ -1,0 +1,32 @@
+<script>
+    function leftNavOn(){
+        $('#leftNav').css('left','0px');
+    }
+    function leftNavHide(){
+        $('#leftNav').css('left','-300px');
+    }
+</script>
+
+<div>
+    <button style="border: 0; background: none; line-height: 80px;" onclick="leftNavOn()"><i class="fa-solid fa-bars"></i> 메뉴</button>
+    <div id="leftNav" style="position:fixed; border:1px solid black;  top:0; left:-300px; width:300px; height:100%; background: #fff; padding-left: 20px;">
+        <button style="border: 0;font-size: 2rem;margin-top: 10px; position: relative; right:10px; background: none;" onclick="leftNavHide()"><i class="fa-sharp fa-solid fa-circle-xmark"></i></button>
+        <hr/>
+        <%if(1){%>
+            <form>
+                <input type="text" name="email" placeholder="email">
+                <input type="password" name="password" placeholder="password" style="margin-top:10px;">
+            </form>
+            <button style="margin-top:10px; border: 0; background: none; ">회원가입</button>
+        <%}else {%>
+            <p>닉네임? 아이디</p>
+            <button style="border: 0; background: none">내 정보</button>
+        <%}%>
+        <hr/>
+        <button class="leftMenu">TODO-List 날짜별 보기</button>
+        <button class="leftMenu">TODO-List 상세보기</button>
+        <button class="leftMenu">Bucket-List 상세보기</button>
+
+    </div>
+
+</div>
