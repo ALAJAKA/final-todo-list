@@ -4,8 +4,8 @@ const cookieParser = require('cookie-parser');
 const app = express();
 app.use(cookieParser());
 
-const router = require('./routes');
-const {sequelize} = require("./models");
+const router = require('./src/routes');
+const {sequelize} = require("./src/models");
 
 
 app.set('views', './templates');

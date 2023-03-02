@@ -7,6 +7,14 @@ class TodoListController {
     await this.todoListService.semplefunc(1,2);
     return res.send(0);
   }
+  todocreate
+
+  tododelete
+
+  todoupdate
+
+  todoget
+
 
 }// class 끝
 
