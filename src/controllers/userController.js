@@ -5,7 +5,7 @@ class UserController {
   //회원가입
   login = async (req,res)=>{
 
-    return res.send(0);
+    return res.render('main.ejs');
   }
 
 }// class 끝

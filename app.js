@@ -8,7 +8,7 @@ const router = require('./src/routes');
 const {sequelize} = require("./src/models");
 
 
-app.set('views', './templates');
+app.set('views', './src/templates');
 app.set('view engine', 'ejs');
 
 app.use(express.json());
