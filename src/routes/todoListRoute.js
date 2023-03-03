@@ -3,6 +3,6 @@ const router = express.Router();
 const TodoListController = require('../controllers/todoListController');
 const todoListController = new TodoListController();
 
-router.get("/user/login",todoListController.semplefunc);
+router.get("/month",todoListController.semplefunc);
 
 module.exports = router;
