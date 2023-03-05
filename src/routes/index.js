@@ -11,6 +11,13 @@ router.use('/main', async (req, res) => {
 
   res.render('main');
 });
+
+// 버킷리스트 페이지
+router.use('/bucketList', async (req, res) => {
+
+  res.render('bucketList');
+});
+
 //회원 관련 컨트롤러로
 router.use('/user', userRouter);
 //투두리스트 관련 컨트롤러로

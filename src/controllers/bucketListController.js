@@ -3,11 +3,6 @@ const BucketListService = require('../services/bucketListService');
 class BucketListController {
   bucketListService = new BucketListService();
 
-  semplefunc = async (req,res)=>{
-    await this.bucketListService.semplefunc(1,2);
-    return res.send(0);
-  }
-
   // C -------------------------------------------------------------------------------------------------------------------
   createBucketList = async (req, res) =>{
     try {
@@ -27,9 +22,9 @@ class BucketListController {
   // R -------------------------------------------------------------------------------------------------------------------
   getBucketList = async (req, res) => {
     try {
-      // const userId = req.user.userId;
-      const userId = 1
-      const userBucketList = await this.bucketListService.getBucketList(userId);
+      // const userId = req.user.id;
+      const id = 1
+      const userBucketList = await this.bucketListService.getBucketList(id);
       res.status(200).json({ msg : userBucketList });
     }
     catch (err) {
