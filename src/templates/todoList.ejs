@@ -33,7 +33,10 @@
         // google 캘린더
         // naver 캘린더
         // 카카오 캘린더
-        $('#headerImg').removeClass('winter','spring','summer','fall');
+        $('#headerImg').removeClass('winter');
+        $('#headerImg').removeClass('spring');
+        $('#headerImg').removeClass('summer');
+        $('#headerImg').removeClass('fall');
         if (month == 3 ||month == 4 ||month == 5 ) $('#headerImg').addClass('spring');
         if (month == 6 ||month == 7 ||month == 8 ) $('#headerImg').addClass('summer');
         if (month == 9 ||month == 10 ||month == 11 ) $('#headerImg').addClass('fall');
@@ -110,8 +113,8 @@
     .btntt:hover{background-color: rgba(255,255,255,0.7);}
     .spring{background-image:url('https://blog.kakaocdn.net/dn/8ees0/btq33bjZoFY/6SSEPleWKXNwMHlW3p5mvk/img.jpg') ; background-size: cover; background-repeat: no-repeat;}
     .summer{background-image:url('https://www.icelandtours.is/wp-content/uploads/2019/10/Colorful-summer-sunset-with-kirkjufell-mountain-in-grundarfjordur.jpg.webp') ; background-size: 100% 700px; background-repeat: no-repeat;}
-    .fall{}
-    .winter{}
+    .fall{background-image: url('/img/fall.jpg'); background-size: cover; background-position: bottom;}
+    .winter{background-image: url('/img/winter.jpg'); background-size: cover;}
 </style>
 <body>
 <!--네비게이션-->
