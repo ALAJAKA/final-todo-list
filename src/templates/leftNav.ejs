@@ -13,11 +13,13 @@
         <button style="border: 0;font-size: 2rem;margin-top: 10px; position: relative; right:10px; background: none;" onclick="leftNavHide()"><i class="fa-sharp fa-solid fa-circle-xmark"></i></button>
         <hr/>
         <%if(1){%>
-            <form>
+            <form action="user/login" method="POST">
                 <input type="text" name="email" placeholder="email">
+                <input type="submit" class="btn btn-success" style="height:70px; width: 70px; position: absolute; right:10px;">
                 <input type="password" name="password" placeholder="password" style="margin-top:10px;">
             </form>
-            <button style="margin-top:10px; border: 0; background: none; ">회원가입</button>
+            <button style="margin-top:10px; border: 1px solid black; border-radius: 2px; width: 95%; text-align: center; background: none;" onclick="location.href='signUp.html'">소셜 로그인? 할지 모름</button>
+            <button style="margin-top:10px; border: 1px solid black; border-radius: 2px; width: 95%; text-align: center; background: none;" onclick="location.href='signUp.html'">회원가입</button>
         <%}else {%>
             <p>닉네임? 아이디</p>
             <button style="border: 0; background: none">내 정보</button>

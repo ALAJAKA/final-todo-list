@@ -5,16 +5,8 @@ class TodoListController {
   //회원가입
   semplefunc = async (req,res)=>{
     await this.todoListService.semplefunc(1,2);
-    return res.render('todoListSemple');
+    return res.render('todoList');
   }
-  todocreate
-
-  tododelete
-
-  todoupdate
-
-  todoget
-
 
 }// class 끝
 

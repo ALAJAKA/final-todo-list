@@ -25,6 +25,7 @@
         const thisMonth = new Date().getMonth()+1; // 오늘 날짜의 월
         const thisDate = new Date().getDate();//      오늘 날짜의 일
         const week = ['일', '월', '화', '수', '목', '금', '토'];
+        const monthImg = ['https://blog.kakaocdn.net/dn/8ees0/btq33bjZoFY/6SSEPleWKXNwMHlW3p5mvk/img.jpg','']
         if(year%4==0){//윤년처리
             days[2]++;
         }
@@ -32,6 +33,14 @@
         // google 캘린더
         // naver 캘린더
         // 카카오 캘린더
+        $('#headerImg').removeClass('winter');
+        $('#headerImg').removeClass('spring');
+        $('#headerImg').removeClass('summer');
+        $('#headerImg').removeClass('fall');
+        if (month == 3 ||month == 4 ||month == 5 ) $('#headerImg').addClass('spring');
+        if (month == 6 ||month == 7 ||month == 8 ) $('#headerImg').addClass('summer');
+        if (month == 9 ||month == 10 ||month == 11 ) $('#headerImg').addClass('fall');
+        if (month == 12 ||month == 1 ||month == 2 ) $('#headerImg').addClass('winter');
         $('#year').append(`<p>${year} 년</p>`);
         $('#cal').append(`<p>${month} 월</p>`);
         for(let i=1; i<=days[month]; i++){
@@ -72,6 +81,7 @@
             year +=1;
             month = 1;
         }
+
         $('#cal *').remove();
         $('#year *').remove();
         $('#accordionFlushExample *').remove();
@@ -84,7 +94,6 @@
             year -=1;
             month = 12;
         }
-        console.log(month);
         $('#cal *').remove();
         $('#year *').remove();
         $('#accordionFlushExample *').remove();
@@ -102,6 +111,10 @@
     .leftMenu:hover {background: #777}
     .btntt{width:50px; height:50px; line-height: 50px; border:0; border-radius: 5px; background: rgba(255,255,255,0.3);; font-size: 20px; transition: 1s; }
     .btntt:hover{background-color: rgba(255,255,255,0.7);}
+    .spring{background-image:url('https://blog.kakaocdn.net/dn/8ees0/btq33bjZoFY/6SSEPleWKXNwMHlW3p5mvk/img.jpg') ; background-size: cover; background-repeat: no-repeat;}
+    .summer{background-image:url('https://www.icelandtours.is/wp-content/uploads/2019/10/Colorful-summer-sunset-with-kirkjufell-mountain-in-grundarfjordur.jpg.webp') ; background-size: 100% 700px; background-repeat: no-repeat;}
+    .fall{background-image: url('/img/fall.jpg'); background-size: cover; background-position: bottom;}
+    .winter{background-image: url('/img/winter.jpg'); background-size: cover;}
 </style>
 <body>
 <!--네비게이션-->
@@ -109,28 +122,29 @@
 <!--바디-->
 
 <!--   달력 들어가야 하는부분-->
-<section style="background-image: url('/img/1296285.jpg'); background-repeat: no-repeat; ">
+<section id="headerImg">
     <div class="container-fluid" style="height:400px; text-align: center;" >
-        <h1 style="padding-top: 100px; color:#fff;">TODO 리스트 상세보기 입니다.</h1>
+        <h1 style="padding-top: 100px; color:#000; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;">TODO 리스트 상세보기 입니다.</h1>
         <div>
             <p>
-                <span id="year" style="text-align: center;color:#fff; font-size: 30px;"></span>
+                <span id="year" style="text-align: center;color:#000; font-size: 30px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></span>
             </p>
             <div>
                 <button type="button" class="btntt"  onclick="lastMonth()"><i class="fa-solid fa-chevron-left"></i></button>
-                <div id="cal" style="color:#fff;font-size: 36px; width:100px; display:inline-block"></div>
+                <div id="cal" style="color:#000;font-size: 36px; width:100px; display:inline-block;text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></div>
                 <button type="button" class="btntt"  onclick="nextMonth()"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
 
     </div>
 </section>
+<!--여기 까지 todoList , bucketList 페이지 공통 부분-->
 <div class = "container">
     <!--    TODO 리스트 및 버킷 리스트 보여주기-->
     <section style="height:1000px;">
         <div class="container-fluid" style="padding-top:30px; text-align: center">
             <h3>TODO 리스트</h3>
-            <p style="text-align: right"><a href="#">상세보기</a></p>
+            <p style="text-align: right"><a href="#">TODO리스트 작성하기</a></p>
             <hr/>
             <div>
                 <div class="accordion accordion-flush" id="accordionFlushExample" style="height:800px; overflow-y: scroll; ">
