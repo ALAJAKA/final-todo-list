@@ -8,6 +8,7 @@ class CalendarRepository {
 
   findTodoList = async () => {
     const todolist = await this.TodoListModel.findAll({order: [['id']]});
+    console.log(todolist)
     return todolist;
   };
 
