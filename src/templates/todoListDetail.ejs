@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>todo 상세보기</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/2fb62d0520.js" crossorigin="anonymous"></script>
+</head>
+<script>
+    // 달력 기능
+        //현재 날짜
+        var year = new Date().getFullYear();// 현재 날짜의 년
+        var month =new Date().getMonth()+1;// 현재 날짜의 월
+        var day =new Date().getDate();// 현재 날짜
+        $(document).ready(function() {
+            calender();
+        });
+        // 달력만들기
+        function calender(){
+            // 월별 일수 처리
+            const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+            const thisYear = new Date().getFullYear(); // 오늘 날짜의 년
+            const thisMonth = new Date().getMonth()+1; // 오늘 날짜의 월
+            const thisDate = new Date().getDate();//      오늘 날짜의 일
+            if(year%4==0){//윤년처리
+                days[2]++;
+            }
+
+            $('#headerImg').removeClass('winter');
+            $('#headerImg').removeClass('spring');
+            $('#headerImg').removeClass('summer');
+            $('#headerImg').removeClass('fall');
+            if (month == 3 ||month == 4 ||month == 5 ) $('#headerImg').addClass('spring');
+            if (month == 6 ||month == 7 ||month == 8 ) $('#headerImg').addClass('summer');
+            if (month == 9 ||month == 10 ||month == 11 ) $('#headerImg').addClass('fall');
+            if (month == 12 ||month == 1 ||month == 2 ) $('#headerImg').addClass('winter');
+            $('#month').append(`<p>${month} 월</p>`);
+            $('#day').append(`<p>${day} 일</p>`);
+        }
+    
+        // 다음일로 이동
+        function nextDay(){
+            const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+            
+            if(day == days[month]){
+                document.getElementsById("btnRight").style.display = "none";
+            }else{
+                day +=1;
+            }
+            $('#month *').remove();
+            $('#day *').remove();
+            calender()
+        }
+        // 이전일로 이동
+        function lastDay(){
+            if(day == 1){
+                document.getElementsById("btnLeft").style.display = "none";
+            }else{
+                day -=1;
+            }
+            $('#month *').remove();
+            $('#day *').remove();
+            calender()
+        }
+    </script>
+<style>
+    <!--헤드-->
+    *{margin:0;padding:0;}
+    ::-webkit-scrollbar {
+        width: 0px;
+    }
+    .fo{background: red; border-radius: 5px;}
+    #leftNav {transition: 0.5s}
+    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 80%; padding: 10px; transition: 0.5s; border-radius: 5px;}
+    .leftMenu:hover {background: #777}
+    .btntt{width:50px; height:50px; line-height: 50px; border:0; border-radius: 5px; background: rgba(255,255,255,0.3);; font-size: 20px; transition: 1s; }
+    .btntt:hover{background-color: rgba(255,255,255,0.7);}
+
+    <!--카드섹션-->
+    .slide { height: 500px;}
+    .cardBox {display: flex;  text-align: center;  justify-content: center; align-content: center;}
+    .card { width: 19rem; height: 400px; margin: 80px 25px 20px 25px; position: relative}
+    .card-img-top {height: 170px;}
+    .todoDelete {background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; font-size: 17pt; border-radius: 10px; transition: 1s;}
+    .todoDelete:hover{background-color: rgba(255,255,255,0.7);}
+    .todoCheck {background: none; border: 0px;}
+    .fa-solid{color: rgb(61, 59, 59);}
+    .abs {position: absolute; padding: 0px; line-height: 25px; width:25px; height:25px; top:5px; right:5px;}
+    .abs2 {position: absolute; height: 70px; box-sizing: border-box; padding: 10px; border-radius: 35px; bottom:15px; transform: translate(-50%); transition: 0.2s;}
+    .abs2:hover{background-color: rgba(0,0,0); box-sizing: border-box; }
+    .modal-body {text-align: left;}
+    .form-label{font-size: 17pt;}
+
+    <!--리스트섹션-->
+    .listBox {height: 700px; width:500px; display: flex;  text-align: center; justify-content: center; align-content: center;}
+    .form-check {height: 150px; width:500px; display: flex;  text-align: center; justify-content: center; align-content: center;}
+</style>
+<body>
+<!--네비게이션-->
+<%-include('./topNav')%>
+<!--바디-->
+
+<!--헤더-->
+<section style="background-image: url('/img/winter.jpg'); background-size: cover; ">
+    <div class="container-fluid" style="height:400px; text-align: center;" >
+        <h1 style="padding-top: 100px; color:#000; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;">TODO 리스트 상세보기 입니다.</h1>
+        <div>
+            <p>
+                <span id="month" style="text-align: center;color:#000; font-size: 30px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></span>
+            </p>
+            <div>
+                <button type="button" class="btntt" id="btnLeft" onclick="lastDay()"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div id="day" style="color:#000;font-size: 36px; width:100px; display:inline-block;text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></div>
+                <button type="button" class="btntt" id="btnRight" onclick="nextDay()"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</section>
+<!--카드섹션-->
+<section style="background-color: #333; height: 550px;">
+    <div id="carouselExampleControlsNoTouching" class="carousel slide" data-bs-touch="false">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="cardBox">
+                    <div class="card">
+                        <div>
+                            <img src="/img/winter.jpg" class="card-img-top" alt="...">
+                            <button class="todoDelete abs"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">매일 운동하기</h5>
+                            <p class="card-text">아침 7시에 일어나서 바깥 산책하기</p>
+                            <button class="todoCheck abs2"><img src="/img/check2.png" height="50px;"></button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div>
+                            <img src="/img/black.jpg" class="card-img-top" alt="...">
+                            <button class="todoDelete abs"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div>
+                            <img src="/img/1296285.jpg" class="card-img-top" alt="...">
+                            <button class="todoDelete abs"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <!-- 모달 버튼-->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                            추가
+                        </button>
+                        
+                        <!-- 모달창 -->
+                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">TODO 리스트 추가</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlInput1" class="form-label">Title</label>
+                                            <input type="title" class="form-control" id="exampleFormControlInput1">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="formFileSm" class="form-label">Image</label>
+                                            <input class="form-control form-control-sm" id="formFileSm" type="file">
+                                        </div>    
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                                        <button type="button" class="btn btn-primary">등록</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+            <div class="carousel-item">
+                <div class="cardBox">
+                    <div class="card" style="width: 18rem;">
+                        <img src="..." class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                    <div class="card" style="width: 18rem;">
+                        <img src="..." class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+            <div class="carousel-item">
+                <div class="cardBox">
+                    <div class="card" style="width: 18rem;">
+                        <img src="..." class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                    <div class="card" style="width: 18rem;">
+                        <img src="..." class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+        <button style="width: 100px;" class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button style="width: 100px;" class="carousel-control-next" type="button" data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</section>
+<!--투두리스트 섹션-->
+<section>
+    <div class="listBox">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                산책가기
+            </label>
+            <button class="todoDelete"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+    <div>
+        <button type="button" class="btn btn-outline-success">완료</button>
+        <button type="button" class="btn btn-outline-danger">취소</button>
+    </div>
+</section>
+<!--저작권-->
+<footer>
+    <div class="container-fluid" style="background: #333; text-align: center; height:200px; ">
+        <h6 style="line-height: 200px; color:#ccc;">Copyright <i class="fa-regular fa-copyright"></i>  2023. 투두리 All rights reserved.</h6>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+</html>
