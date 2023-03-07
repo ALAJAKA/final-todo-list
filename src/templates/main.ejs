@@ -14,7 +14,6 @@
             crossorigin="anonymous"></script>
     <!--    JQuery-->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-
     <!--    JQuery Cookie-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <!--    fontawesome-->
@@ -22,16 +21,18 @@
   </head>
   <style>
     #leftNav {transition: 0.5s}
-    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 80%; padding: 10px; transition: 0.5s; border-radius: 5px;}
+    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 95%; padding: 10px; transition: 0.5s; border-radius: 5px;}
     .leftMenu:hover {background: #777}
+    .week {display: inline-block; width: 200px; height:50px; border:1px solid black; margin: 0; text-align: center; line-height: 50px;}
+    .week0 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
+    .week1 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
+    .week2 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
+    .week3 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
+    .week4 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
   </style>
   <script>
-    const co = document.cookies;
-    console.log(co);
     // 페이지네이션
-    $(document).ready(function(){
 
-    });
     // var page = 2;
     // var k = '';
     // $(window).scroll(function() {
@@ -49,5 +50,7 @@
   <body>
   <%-include('./topNav')%>
     메인페이지 입니다.
+
+
   </body>
 </html>
