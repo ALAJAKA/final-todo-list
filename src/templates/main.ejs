@@ -1,53 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>TODO리스트</title>
-
-    <!--    BootStrap Library-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Serif+KR:wght@200&display=Gowun+Dodum&display=swap"
-          rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-            crossorigin="anonymous"></script>
-    <!--    JQuery-->
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-
-    <!--    JQuery Cookie-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-    <!--    fontawesome-->
-    <script src="https://kit.fontawesome.com/2fb62d0520.js" crossorigin="anonymous"></script>
-  </head>
-  <style>
-    #leftNav {transition: 0.5s}
-    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 80%; padding: 10px; transition: 0.5s; border-radius: 5px;}
+<head>
+  <meta charset="UTF-8" />
+  <title>메인페이지</title>
+  <!--    BootStrap Library-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Serif+KR:wght@200&display=Gowun+Dodum&display=swap"
+        rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+          crossorigin="anonymous"></script>
+  <!--    JQuery-->
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <!--    JQuery Cookie-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+  <!--    fontawesome-->
+  <script src="https://kit.fontawesome.com/2fb62d0520.js" crossorigin="anonymous"></script>
+  <!--    calendar-->
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.min.css">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<style>
+  #leftNav {transition: 0.5s}
+    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 95%; padding: 10px; transition: 0.5s; border-radius: 5px;}
     .leftMenu:hover {background: #777}
-  </style>
-  <script>
-    const co = document.cookies;
-    console.log(co);
-    // 페이지네이션
-    $(document).ready(function(){
+    .week {display: inline-block; width: 200px; height:50px; border:1px solid black; margin: 0; text-align: center; line-height: 50px;}
+    .week0 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
+    .week1 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
+    .week2 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
+    .week3 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
+    .week4 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
 
+  #calendarBox{
+    width: 100%;
+  }
+
+  #calendarBox > div {
+    float: left;
+  }
+
+  .fc-daygrid-day {
+    height: 120px;
+  }
+
+  .fc-toolbar-title {
+    margin-left: 550px !important;
+    font-weight: bold;
+  }
+
+  .fc-day a {
+    color: black;
+    text-decoration: none;
+  }
+
+  .fc-day-sun a {
+    color: red;
+    text-decoration: none;
+  }
+
+  .fc-day-sat a {
+    color: blue;
+    text-decoration: none;
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      timeZone: 'UTC',
+      initialView: 'dayGridMonth',
+      // locale: 'ko',
+      titleFormat: function (date) {
+      year = date.date.year;
+      month = date.date.month + 1;
+      return year + "년 " + month + "월";
+      },
     });
-    // var page = 2;
-    // var k = '';
-    // $(window).scroll(function() {
-    //   if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-    //     show_table(page);
-    //     if(k!=undefined){
-    //       alert('page가 변경됩니다.')
-    //       page++;
-    //     }
-    //   }
-    // });
-    // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
+    calendar.render();
+  });
 
-  </script>
-  <body>
+  //// 달력 2안
+  // document.addEventListener('DOMContentLoaded', function () {
+  //   var calendarEl = document.getElementById('calendar1');
+  //   var calendar = new FullCalendar.Calendar(calendarEl, {
+  //     timeZone: 'UTC',
+  //     initialView: 'dayGridMonth',
+  //     // locale: 'ko',
+  //     titleFormat: function (date) {
+  //     year = date.date.year;
+  //     month = date.date.month + 1;
+
+  //     return year + "년 " + month + "월";
+  //     },
+  //   });
+  //   calendar.render();
+  // });
+
+  // 페이지네이션
+  // var page = 2;
+  // var k = '';
+  // $(window).scroll(function() {
+  //   if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+  //     show_table(page);
+  //     if(k!=undefined){
+  //       alert('page가 변경됩니다.')
+  //       page++;
+  //     }
+  //   }
+  // });
+  // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
+</script>
+<body style="background-color: #eee;">
+  <!--네비게이션-->
   <%-include('./topNav')%>
-    메인페이지 입니다.
-  </body>
+  <!--바디-->
+  <div class = "container">
+  <!--   달력 들어가야 하는부분-->
+  <section style="height: 1050px; background-color: #fff; border-radius: 10px;">
+    <div class="container-fluid" style="height:1000px; text-align: center; padding-top: 20px;" id="calendarBox">
+      <div id="calendar" style="width: 100%;"></div>
+      <!-- <div id="calendar1" style="width: 48%; margin-left: 4%;"></div> -->
+    </div>
+  </section>
+  <!--    TODO 리스트 및 버킷 리스트 보여주기-->
+  <section style="height:280px; ">
+    <div class="container-fluid">
+      <div class = "row" style="margin-top:50px;">
+        <div class = "col-md-6" style="background-color: #fff; border-radius: 10px; width: 48%;">
+          <h3 style="text-align: center;">TODO 리스트</h3>
+          <p style="text-align: right"><a href="/">상세보기</a></p>
+          <hr/>
+          <div style="text-align: center;" id="todoPreview">
+              <p>TODO리스트 1번</p>
+              <p>TODO리스트 2번</p>
+              <p>TODO리스트 3번</p>
+          </div>
+        </div>
+        <div class = "col-md-6" style="background-color: #fff; margin-left: 50px; border-radius: 10px; width: 48%;">
+          <h3 style="text-align: center;">버킷 리스트</h3>
+          <p style="text-align: right"><a href="/">상세보기</a></p>
+          <hr/>
+          <div style="text-align: center;" id="bucketPreview">
+              <p>버킷리스트 1번</p>
+              <p>버킷리스트 2번</p>
+              <p>버킷리스트 3번</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--    추후 업데이트 예정-->
+  </div>
+  <section>
+    <div class="container-fluid" style="background: aqua; text-align: center; height:400px;">
+      <h1 style="line-height: 400px;">추후 업데이트 예정입니다.</h1>
+    </div>
+  </section>
+  <footer>
+    <div class="container-fluid" style="background: #333; text-align: center; height:100px; ">
+        <h6 style="line-height: 100px; color:#ccc;">Copyright <i class="fa-regular fa-copyright"></i>  2023. 투두리 All rights reserved.</h6>
+    </div>
+  </footer>
+</body>
 </html>
