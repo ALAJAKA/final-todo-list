@@ -25,14 +25,8 @@
 </head>
 <style>
   #leftNav {transition: 0.5s}
-    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 95%; padding: 10px; transition: 0.5s; border-radius: 5px;}
-    .leftMenu:hover {background: #777}
-    .week {display: inline-block; width: 200px; height:50px; border:1px solid black; margin: 0; text-align: center; line-height: 50px;}
-    .week0 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
-    .week1 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
-    .week2 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
-    .week3 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
-    .week4 {display: inline-block; width: 200px; height:100px; border:1px solid black; margin: 0;}
+  .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 90%; padding: 10px; transition: 0.5s; border-radius: 5px;}
+  .leftMenu:hover {background: #777}
 
   #calendarBox{
     width: 100%;
@@ -41,11 +35,6 @@
   #calendarBox > div {
     float: left;
   }
-
-  .fc-daygrid-day {
-    height: 120px;
-  }
-
   .fc-toolbar-title {
     margin-left: 550px !important;
     font-weight: bold;
@@ -65,11 +54,19 @@
     color: blue;
     text-decoration: none;
   }
+  .fc-header-toolbar{
+    background:plum;
+    margin-bottom: 0 !important;
+    height: 120px;
+  }
+
 </style>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
+      height:750,
+      contentHeight:180,
       timeZone: 'UTC',
       initialView: 'dayGridMonth',
       // locale: 'ko',
@@ -78,27 +75,36 @@
       month = date.date.month + 1;
       return year + "년 " + month + "월";
       },
+      events: [
+        {
+          title  : 'event1',
+          start  : '2023-03-10'
+        },
+        {
+          title  : 'event2',
+          start  : '2023-03-12',
+          end    : '2023-03-15'
+        },
+        {
+          title  : 'event3',
+          start  : '2023-03-09T12:30:00',
+          allDay : false,
+        }
+      ]
     });
     calendar.render();
+  //이벤트 추가
   });
-
-  //// 달력 2안
-  // document.addEventListener('DOMContentLoaded', function () {
-  //   var calendarEl = document.getElementById('calendar1');
-  //   var calendar = new FullCalendar.Calendar(calendarEl, {
-  //     timeZone: 'UTC',
-  //     initialView: 'dayGridMonth',
-  //     // locale: 'ko',
-  //     titleFormat: function (date) {
-  //     year = date.date.year;
-  //     month = date.date.month + 1;
-
-  //     return year + "년 " + month + "월";
-  //     },
-  //   });
-  //   calendar.render();
-  // });
-
+  $(document).ready(function(){
+    console.log(new Date().getUTCDate());
+    console.log($('.fc-daygrid-day').eq(0).data("date"));
+    // $('.fc-daygrid-day-top').eq(1).append('123');
+    // $('.fc-daygrid-day-top').eq(2).append('123');
+    // $('.fc-daygrid-day-top').eq(3).append('123');
+    // $('.fc-daygrid-day-top').eq(4).append('123');
+    //
+    // $('.fc-daygrid-day-events').eq(11).append('할일');
+  });
   // 페이지네이션
   // var page = 2;
   // var k = '';
@@ -113,47 +119,62 @@
   // });
   // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
 </script>
-<body style="background-color: #eee;">
+<body>
   <!--네비게이션-->
   <%-include('./topNav')%>
   <!--바디-->
-  <div class = "container">
-  <!--   달력 들어가야 하는부분-->
-  <section style="height: 1050px; background-color: #fff; border-radius: 10px;">
-    <div class="container-fluid" style="height:1000px; text-align: center; padding-top: 20px;" id="calendarBox">
-      <div id="calendar" style="width: 100%;"></div>
-      <!-- <div id="calendar1" style="width: 48%; margin-left: 4%;"></div> -->
-    </div>
-  </section>
-  <!--    TODO 리스트 및 버킷 리스트 보여주기-->
-  <section style="height:280px; ">
-    <div class="container-fluid">
-      <div class = "row" style="margin-top:50px;">
-        <div class = "col-md-6" style="background-color: #fff; border-radius: 10px; width: 48%;">
-          <h3 style="text-align: center;">TODO 리스트</h3>
-          <p style="text-align: right"><a href="/page/todoListMonth">상세보기</a></p>
-          <hr/>
-          <div style="text-align: center;" id="todoPreview">
-              <p>TODO리스트 1번</p>
-              <p>TODO리스트 2번</p>
-              <p>TODO리스트 3번</p>
-          </div>
+  <div clsss="container-fluid" style="margin-top: 80px;">
+<!--  <div clsss="container-fluid" style="background-image: url('img/102682.jpg'); background-size: 100% 100%; margin-top: 80px;">-->
+  <div clsss="container-fluid" style="background-image: url('img/102682.jpg'); background-size: 100% 100%; margin-top: 80px;">
+    <div class = "container" style="padding-top: 50px; padding-bottom: 50px;">
+      <!--   달력 들어가야 하는부분-->
+      <section style="height: 800px; background-color:rgba(253,255,237,1); border-radius: 5px;">
+        <div class="container-fluid" style="height:800px; text-align: center; padding-top: 20px; margin:0;" id="calendarBox" >
+          <div id="calendar" style="width: 100%; "></div>
+          <!-- <div id="calendar1" style="width: 48%; margin-left: 4%;"></div> -->
         </div>
-        <div class = "col-md-6" style="background-color: #fff; margin-left: 50px; border-radius: 10px; width: 48%;">
-          <h3 style="text-align: center;">버킷 리스트</h3>
-          <p style="text-align: right"><a href="/page/bucketList">상세보기</a></p>
-          <hr/>
-          <div style="text-align: center;" id="bucketPreview">
-              <p>버킷리스트 1번</p>
-              <p>버킷리스트 2번</p>
-              <p>버킷리스트 3번</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!--    추후 업데이트 예정-->
+
+      </section>
   </div>
+  </div>
+  <div clsss="container-fluid">
+    <div class = "container">
+      <!--    TODO 리스트 및 버킷 리스트 보여주기-->
+      <section style="height:400px; ">
+        <div class="container-fluid">
+          <div class = "row" style="margin-top:50px;">
+            <div class = "col-md-6" style="background-color: #fff; border-radius: 10px; width: 48%;">
+              <h3 style="text-align: center;">TODO 리스트</h3>
+              <p style="text-align: right"><a href="/page/todoListMonth">상세보기</a></p>
+              <hr/>
+              <div style="text-align: center;" id="todoPreview">
+                <p>TODO리스트 1번</p>
+                <p>TODO리스트 2번</p>
+                <p>TODO리스트 3번</p>
+                <p>TODO리스트 3번</p>
+                <p>TODO리스트 3번</p>
+                <p>TODO리스트 3번</p>
+              </div>
+            </div>
+            <div class = "col-md-6" style="background-color: #fff; margin-left: 50px; border-radius: 10px; width: 48%;">
+              <h3 style="text-align: center;">버킷 리스트</h3>
+              <p style="text-align: right"><a href="/page/bucketList">상세보기</a></p>
+              <hr/>
+              <div style="text-align: center;" id="bucketPreview">
+                <p>버킷리스트 1번</p>
+                <p>버킷리스트 2번</p>
+                <p>버킷리스트 3번</p>
+                <p>버킷리스트 3번</p>
+                <p>버킷리스트 3번</p>
+                <p>버킷리스트 3번</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <!--    추후 업데이트 예정-->
   <section>
     <div class="container-fluid" style="background: aqua; text-align: center; height:400px;">
       <h1 style="line-height: 400px;">추후 업데이트 예정입니다.</h1>
