@@ -25,9 +25,8 @@
 </head>
 <style>
   #leftNav {transition: 0.5s}
-  .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 95%; padding: 10px; transition: 0.5s; border-radius: 5px;}
+  .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 90%; padding: 10px; transition: 0.5s; border-radius: 5px;}
   .leftMenu:hover {background: #777}
-
 
   #calendarBox{
     width: 100%;
@@ -76,27 +75,36 @@
       month = date.date.month + 1;
       return year + "년 " + month + "월";
       },
+      events: [
+        {
+          title  : 'event1',
+          start  : '2023-03-10'
+        },
+        {
+          title  : 'event2',
+          start  : '2023-03-12',
+          end    : '2023-03-15'
+        },
+        {
+          title  : 'event3',
+          start  : '2023-03-09T12:30:00',
+          allDay : false,
+        }
+      ]
     });
     calendar.render();
+  //이벤트 추가
   });
-
-  //// 달력 2안
-  // document.addEventListener('DOMContentLoaded', function () {
-  //   var calendarEl = document.getElementById('calendar1');
-  //   var calendar = new FullCalendar.Calendar(calendarEl, {
-  //     timeZone: 'UTC',
-  //     initialView: 'dayGridMonth',
-  //     // locale: 'ko',
-  //     titleFormat: function (date) {
-  //     year = date.date.year;
-  //     month = date.date.month + 1;
-
-  //     return year + "년 " + month + "월";
-  //     },
-  //   });
-  //   calendar.render();
-  // });
-
+  $(document).ready(function(){
+    console.log(new Date().getUTCDate());
+    console.log($('.fc-daygrid-day').eq(0).data("date"));
+    // $('.fc-daygrid-day-top').eq(1).append('123');
+    // $('.fc-daygrid-day-top').eq(2).append('123');
+    // $('.fc-daygrid-day-top').eq(3).append('123');
+    // $('.fc-daygrid-day-top').eq(4).append('123');
+    //
+    // $('.fc-daygrid-day-events').eq(11).append('할일');
+  });
   // 페이지네이션
   // var page = 2;
   // var k = '';
@@ -115,10 +123,12 @@
   <!--네비게이션-->
   <%-include('./topNav')%>
   <!--바디-->
+  <div clsss="container-fluid" style="margin-top: 80px;">
+<!--  <div clsss="container-fluid" style="background-image: url('img/102682.jpg'); background-size: 100% 100%; margin-top: 80px;">-->
   <div clsss="container-fluid" style="background-image: url('img/102682.jpg'); background-size: 100% 100%; margin-top: 80px;">
     <div class = "container" style="padding-top: 50px; padding-bottom: 50px;">
       <!--   달력 들어가야 하는부분-->
-      <section style="height: 800px; background-color:rgba(255,255,255,1); border-radius: 5px;">
+      <section style="height: 800px; background-color:rgba(253,255,237,1); border-radius: 5px;">
         <div class="container-fluid" style="height:800px; text-align: center; padding-top: 20px; margin:0;" id="calendarBox" >
           <div id="calendar" style="width: 100%; "></div>
           <!-- <div id="calendar1" style="width: 48%; margin-left: 4%;"></div> -->
@@ -130,7 +140,7 @@
   <div clsss="container-fluid">
     <div class = "container">
       <!--    TODO 리스트 및 버킷 리스트 보여주기-->
-      <section style="height:280px; ">
+      <section style="height:400px; ">
         <div class="container-fluid">
           <div class = "row" style="margin-top:50px;">
             <div class = "col-md-6" style="background-color: #fff; border-radius: 10px; width: 48%;">
@@ -141,6 +151,9 @@
                 <p>TODO리스트 1번</p>
                 <p>TODO리스트 2번</p>
                 <p>TODO리스트 3번</p>
+                <p>TODO리스트 3번</p>
+                <p>TODO리스트 3번</p>
+                <p>TODO리스트 3번</p>
               </div>
             </div>
             <div class = "col-md-6" style="background-color: #fff; margin-left: 50px; border-radius: 10px; width: 48%;">
@@ -150,6 +163,9 @@
               <div style="text-align: center;" id="bucketPreview">
                 <p>버킷리스트 1번</p>
                 <p>버킷리스트 2번</p>
+                <p>버킷리스트 3번</p>
+                <p>버킷리스트 3번</p>
+                <p>버킷리스트 3번</p>
                 <p>버킷리스트 3번</p>
               </div>
             </div>
