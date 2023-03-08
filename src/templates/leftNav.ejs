@@ -18,16 +18,16 @@
                 <input type="submit" class="btn btn-success" style="height:70px; width: 70px; position: absolute; right:10px;">
                 <input type="password" name="password" placeholder="password" style="margin-top:10px;">
             </form>
-            <button style="margin-top:10px; border: 1px solid black; border-radius: 2px; width: 95%; text-align: center; background: none;" onclick="location.href='signUp.html'">소셜 로그인? 할지 모름</button>
-            <button style="margin-top:10px; border: 1px solid black; border-radius: 2px; width: 95%; text-align: center; background: none;" onclick="location.href='signUp.html'">회원가입</button>
+            <button style="margin-top:10px; border: 1px solid black; border-radius: 2px; width: 95%; text-align: center; background: none;" onclick="location.href='#'">소셜 로그인? 할지 모름</button>
+            <button style="margin-top:10px; border: 1px solid black; border-radius: 2px; width: 95%; text-align: center; background: none;" onclick="location.href='/signUp.html'">회원가입</button>
         <%}else {%>
             <p>닉네임? 아이디</p>
             <button style="border: 0; background: none">내 정보</button>
         <%}%>
         <hr/>
-        <button class="leftMenu">TODO-List 날짜별 보기</button>
-        <button class="leftMenu">TODO-List 상세보기</button>
-        <button class="leftMenu"><a href="/bucketList">Bucket-List 상세보기</a></button>
+        <button class="leftMenu" onclick="location.href='/page/todoListMonth'">TODO-List 날짜별 보기</button>
+        <button class="leftMenu" onclick="location.href='/page/todoListDetail'">TODO-List 상세보기</button>
+        <button class="leftMenu" onclick="location.href='/page/bucketList'">Bucket-List 상세보기</button>
 
     </div>
 

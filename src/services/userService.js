@@ -3,8 +3,8 @@ const config = require('../config/config');
 
 class UserService {
 
-    login = (req,res)=>{
-        return 0;
+    login = (email)=>{
+      return 123;
     }
 }
 
