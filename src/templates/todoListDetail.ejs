@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/2fb62d0520.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <script>
     // 달력 기능
@@ -17,6 +18,7 @@
         var day =new Date().getDate();// 현재 날짜
         $(document).ready(function() {
             calender();
+            getTodoList();
         });
         // 달력만들기
         function calender(){
@@ -65,19 +67,76 @@
             $('#day *').remove();
             calender()
         }
+        // 데이터 가져오기
+        function getTodoList(){
+            axios({
+                method: 'get',
+                url: 'api/to_do',
+                data: {},
+            })
+                .then((response) => {
+                    const data = response.data;
+                    alert(data.message);
+                })
+                .catch((response) => {
+                    const data = response.response.data;
+                    console.log(data.errorMessage);
+                });
+        }
 </script>
 <script>
+    //투두추가버튼
     function todoPlus() {
-        const todoPlusBtn = document.getElementById("todoPlusBtn"); 
+        $('#todoPlusBox *').remove();
         const listBox = document.getElementById('listBox');
         let todoInput=`
-            <div class="todoInputBox">
+            <div class="todoInputBox" id="todoInputBox">
                 <input class="form-control todoInput" type="text" placeholder="To Do" aria-label="default input example" maxlength="24">
-                <button type="button" class="btn btn-outline-success">저장</button>
-                <button type="button" class="btn btn-outline-danger">취소</button>
+                <button type="button" class="btn btn-outline-success" onclick="todoPlusSave()">저장</button>
+                <button type="button" class="btn btn-outline-danger" onclick="todoPlusCancel()">취소</button>
             </div>`
+
         listBox.insertAdjacentHTML('beforeend', todoInput);
     }
+    //투두추가저장
+    function todoPlusSave(){
+        axios({
+            method: 'post',
+            url: 'api/to_do',
+            data: {},
+        })
+            .then((response) => {
+                const data = response.data;
+                alert(data.message);
+            })
+            .catch((response) => {
+                const data = response.response.data;
+                console.log(data.errorMessage);
+            });
+        $('#todoInputBox *').remove();
+        const listBox = document.getElementById('listBox');
+        let todoPlusBoxInput=`
+            <div id="todoPlusBox">
+                <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>`  
+        listBox.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+    }
+    //투두추가취소
+    function todoPlusCancel(){
+        $('#todoInputBox *').remove();
+        const listBox = document.getElementById('listBox');
+        let todoPlusBoxInput=`
+            <div id="todoPlusBox">
+                <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>`  
+        listBox.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+    }
+    
+
 </script>
 <style>
     /* 헤드 */
@@ -111,7 +170,7 @@
     .form-label{font-size: 17pt;}
 
     /* 리스트섹션 */
-    .listBox {height: 700px;  text-align: center; justify-content: center; align-content: center;}
+    .listBox {text-align: center; justify-content: center; align-content: center;}
     .form-check {height: 50px;  display: flex;  text-align: center; justify-content: center; align-content: center;}
     .form-check-input{height:30px; width:30px;  font-size: 22pt; }
     .form-check-label{width:800px; font-size: 22pt; margin-left: 35px;}
@@ -297,7 +356,7 @@
             </label>
             <button class="todoDelete2"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div>
+        <div id="todoPlusBox">
             <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
                 <i class="fa-solid fa-plus"></i>
             </button>
