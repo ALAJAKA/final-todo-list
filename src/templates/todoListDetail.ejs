@@ -10,6 +10,7 @@
     <script src="https://kit.fontawesome.com/2fb62d0520.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
+<div></div>
 <script>
     // 달력 기능
         //현재 날짜
@@ -87,60 +88,113 @@
 <script>
     //카드저장
     //카드삭제
+    //투두 완료
+    function todoSuccess(){
+        const num = $("ul").children().length
+        console.log(num);
+    }
+    //투두 수정버튼
+    function todoEdit(happy){
+        $(`#todoBoxLi${happy}`).replaceWith(`
+            <li class="todoBoxLi" id="todoEditBox">                       
+                <div class="todoBox">
+                    <input class="todoInput" id="todoEdit" type="text" placeholder="To Do를 수정해주세요" maxlength="24">
+                    <button class="todoCheck2" onclick="todoEditSave(${happy})"><i class="fa-solid fa-check"></i></button>
+                    <button class="todoCancel2" onclick="todoEditCancel(${happy})"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </li>
+            `);
+        console.log(happy)
+    }
+    //투두 수정저장
+    function todoEditSave(happy){
+        const title = document.getElementById('todoEdit').value;
+        console.log(title);
+        console.log(happy);
+        if (title.trim() == ""){
+            alert("내용이 없습니다.")
+        }else{
+            $(`#todoEditBox`).replaceWith(`
+                    <li class="todoBoxLi" id="todoBoxLi${happy}">
+                        <button type="submit" class="todoBox" id="happy${happy}" onclick="todoSuccess(${happy})" >
+                            ${title}
+                            <button class="todoEdit2" onclick="todoEdit(${happy})"><i class="fa-solid fa-pen"></i></button>
+                            <button class="todoDelete2" onclick="todoDelete(${happy})"><i class="fa-solid fa-xmark"></i></button>
+                        </button>
+                    </li>
+                    `);
+        }
+    }
+    //투두 수정취소
+    function todoEditCancel(happy){
+        
+    }
+    //투두 삭제
+    function todoDelete(happy){
+        
+        $(`#todoBoxLi${happy}`).remove();
+    }
     //투두추가버튼
-    function todoPlus() {
-        $('#todoPlusBox *').remove();
+    function todoPlus(n) {
+        console.log(n);
+        $('#todoPlusBox').hide();
         const listBox = document.getElementById('listBox');
         let todoInput=`
-            <div class="todoInputBox" id="todoInputBox">
-                <input class="form-control todoInput" type="text" placeholder="To Do" aria-label="default input example" maxlength="24">
-                <button type="button" class="btn btn-outline-success" onclick="todoPlusSave()">저장</button>
-                <button type="button" class="btn btn-outline-danger" onclick="todoPlusCancel()">취소</button>
-            </div>`
-
+            <li class="todoBoxLi" id="todoInputBox">                       
+                <div class="todoBox">
+                    <input class="todoInput" id="todayTodo" type="text" placeholder="To Do를 입력해주세요" maxlength="24">
+                    <button class="todoCheck2" onclick="todoPlusSave(${n})"><i class="fa-solid fa-check"></i></button>
+                    <button class="todoCancel2" onclick="todoPlusCancel()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </li>
+            `
         listBox.insertAdjacentHTML('beforeend', todoInput);
     }
+    
     //투두추가저장
-    function todoPlusSave(){
-        axios({
-            method: 'post',
-            url: 'api/to_do',
-            data: {},
-        })
-            .then((response) => {
-                const data = response.data;
-                alert(data.message);
-            })
-            .catch((response) => {
-                const data = response.response.data;
-                console.log(data.errorMessage);
-            });
-        $('#todoInputBox *').remove();
-        const listBox = document.getElementById('listBox');
-        let todoPlusBoxInput=`
-            <div id="todoPlusBox">
-                <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
-            </div>`  
-        listBox.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+    function todoPlusSave(n){
+        console.log(n)
+        let num = 0
+        if (n==0){
+            num = $("ul").children().length;
+        }else{
+            num = n
+        }
+        const title = document.getElementById('todayTodo').value;
+        // console.log(num);
+        if (title.trim() == ""){
+            alert("내용이 없습니다.")
+        }else{
+            console.log(title)
+            const todoBoxes = document.getElementById('todoBoxes');
+            let todoPlusBoxInput=`
+                <li class="todoBoxLi" id="todoBoxLi${num+1}">
+                    <button type="submit" class="todoBox" id="happy${num+1}" onclick="todoSuccess(${num+1})" >
+                        ${title}
+                        <button class="todoEdit2" onclick="todoEdit(${num+1})"><i class="fa-solid fa-pen"></i></button>
+                        <button class="todoDelete2" onclick="todoDelete(${num+1})"><i class="fa-solid fa-xmark"></i></button>
+                    </button>
+                </li>`
+            $(`#todoPlusBtn`).replaceWith(`
+                    <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus(${num+1})">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>`);
+
+            todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+            $('#todoInputBox').remove();
+            $('#todoPlusBox').show();
+        }
     }
     //투두추가취소
     function todoPlusCancel(){
-        $('#todoInputBox *').remove();
-        const listBox = document.getElementById('listBox');
-        let todoPlusBoxInput=`
-            <div id="todoPlusBox">
-                <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
-            </div>`  
-        listBox.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+        $('#todoInputBox').remove();
+        $('#todoPlusBox').show();
     }
     
 
 </script>
 <style>
+    input:focus {outline: none;}
     /* 헤드 */
     *{margin:0;padding:0;}
     ::-webkit-scrollbar {
@@ -185,14 +239,25 @@
     .form-check {height: 70px; padding:10px; margin-top: 15px; border: 0.1px solid rgb(163, 156, 156); border-radius: 35px; background-color:hsl(0, 0%, 80%, 0.3);  display: flex;  text-align: center; justify-content: center; align-content: center;}
     .form-check-input{height:30px; width:30px;  font-size: 22pt; }
     .form-check-label{width:750px; font-size: 22pt;}
-    .todoDelete2 {width:50px; top:10%; height: 50px; line-height: 50px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; font-size: 17pt; border-radius: 10px; transition: 1s;}
+    .todoBoxes{position: relative;}
+    .todoBoxLi{position: relative;}
+    .todoBox{ background: none;  width:100%; height: 70px; line-height: 45px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
+    .todoEdit2 {width:40px; top:35%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
+                position: absolute; right:7%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
+    .todoEdit2:hover{background-color: rgba(0,0,0,0.7);}
+    .todoDelete2 {width:40px; top:35%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
+                position: absolute; right:2%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
     .todoDelete2:hover{background-color: rgba(0,0,0,0.7);}
-    .todoPlus {background: none; width:50px; height:50px;  text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; padding:0; font-size: 25pt;  transition: 1s; }
-    .todoPlus:hover{background-color: rgba(255,255,255,0.7);}
-    .todoInputBox { display: flex; text-align: center; justify-content: center; align-content: center;}
-    .todoInput {width:800px; margin: 0px 20px 0px 185px; height: 50px;  display: flex; text-align: center; justify-content: center; align-content: center;}
-    .btn-outline-danger{margin: 5px 0px 5px 15px; height: 40px;}
-    .btn-outline-success{margin: 5px 0px 5px 0px; height: 40px;}
+    .todoCheck2 {width:40px; top:20%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
+                position: absolute; right:7%; border: 0; font-size: 19pt; border-radius: 25px; transition: 1s;}
+    .todoCheck2:hover{background-color: rgba(0,0,0,0.7);}
+    .todoCancel2 {width:40px; top:20%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
+                position: absolute; right:2%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
+    .todoCancel2:hover{background-color: rgba(0,0,0,0.7);}
+    .todoPlus {background: none; width:50px; height:50px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; border-radius: 25px; padding:0; font-size: 25pt;  transition: 1s; 
+                position: absolute; margin-top: 10px;}
+    .todoPlus:hover{background-color: rgba(0,0,0,0.7);}
+    .todoInput {width:600px;  border: 0; margin: 0 auto; height: 65px;  text-align: center; justify-content: center; align-content: center;}
 </style>
 <body>
 <!--네비게이션-->
@@ -205,7 +270,7 @@
         <h1 style="padding-top: 100px; color:#000; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;">TODO 리스트 상세보기 입니다.</h1>
         <div>
             <p>
-                <span id="month" style="text-align: center;color:#000; font-size: 30px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></span>
+                <span id="month" style="text-align: center;color:#000; font-size: 40px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></span>
             </p>
             <div>
                 <button type="button" class="btntt" id="btnLeft" onclick="lastDay()"><i class="fa-solid fa-chevron-left"></i></button>
@@ -306,29 +371,32 @@
 <!--        투두리스트  인풋 및 상자-->
         <div class="col-md-8" style="padding: 0; margin: 0;">
             <section id="listBox" style="text-align: center;">
-                <ul style="position: relative">
-                    <li style="position: relative; width:100%; height: 70px; line-height: 70px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px; ">
-                        산책가기 산책가기ㅇㅁ너ㅏ온
-                        <button class="todoDelete2" style="position: absolute; right:7%;"><i class="fa-solid fa-pen"></i></button>
-                        <button class="todoDelete2" style="position: absolute; right:2%; "><i class="fa-solid fa-xmark"></i></button>
-                    </li>
-                    <li style="position: relative; width:100%; height: 70px; line-height: 70px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px; ">
-                        산책가기 산책가기
-                        <button class="todoDelete2" style="position: absolute; right:7%;"><i class="fa-solid fa-pen"></i></button>
-                        <button class="todoDelete2" style="position: absolute; right:2%; "><i class="fa-solid fa-xmark"></i></button>
-                    </li>
-                    <li style="position: relative; width:100%; height: 70px; line-height: 70px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px; ">
-                        <div id="todoPlusBox">
-                            <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>
-                        </div>
-                    </li>
+                <ul class="todoBoxes" id="todoBoxes">
+                    <li class="todoBoxLi" id="todoBoxLi1">
+                        <button type="submit" class="todoBox" id="happy1" onclick="todoSuccess(1)" >
+                            잠자기
+                            <button class="todoEdit2" onclick="todoEdit(1)"><i class="fa-solid fa-pen"></i></button>
+                            <button class="todoDelete2" onclick="todoDelete(1)"><i class="fa-solid fa-xmark"></i></button>
+                        </button>
+                    </li>  
+                    <li class="todoBoxLi" id="todoBoxLi2">
+                        <button type="submit" class="todoBox" id="happy2" onclick="todoSuccess(2)" >
+                            공부하기
+                            <button class="todoEdit2" onclick="todoEdit(2)"><i class="fa-solid fa-pen"></i></button>
+                            <button class="todoDelete2" onclick="todoDelete(2)"><i class="fa-solid fa-xmark"></i></button>
+                        </button>
+                    </li>  
                 </ul>
+                <li class="todoBox" id="todoPlusBox">                       
+                    <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus(0)">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </li>
+
             </section>
         </div>
     </div>
-        <div class="col-md-2"></div>
+        <div class="col-md-2"style="margin: 0;"></div>
     </div>
 </div>
 <!--모달-->
