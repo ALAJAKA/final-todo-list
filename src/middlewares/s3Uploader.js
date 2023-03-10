@@ -3,7 +3,7 @@ const multer =require('multer');
 const multerS3 =require('multer-s3');
 require('dotenv').config();
 const s3 = new AWS.S3Client({
-    region:"ap-northeast-2",
+    region:process.env.AWS_REGION,
     credentials:{
         accessKeyId:process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey:process.env.AWS_SECRET_ACCESS_KEY,
@@ -11,7 +11,6 @@ const s3 = new AWS.S3Client({
 });
 
 const todolist = 'todolist';
-const bucketList = "bucketlist";
 let S3upload = multer({
     storage : multerS3({
         s3:s3,
