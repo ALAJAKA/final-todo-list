@@ -10,7 +10,7 @@ class CalendarController {
     } catch (err) {
       console.log(err);
     }
-  };
+  }
 
   findBucketList = async (req, res, next) => {
     try {
@@ -19,7 +19,7 @@ class CalendarController {
     } catch (err) {
       console.log(err);
     }
-  };
+  }
 };
 
 module.exports = CalendarController;

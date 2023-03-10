@@ -36,6 +36,7 @@
   #calendarBox > div {
     float: left;
   }
+
   .fc-toolbar-title {
     margin-left: 550px !important;
     font-weight: bold;
@@ -76,26 +77,49 @@
       month = date.date.month + 1;
       return year + "년 " + month + "월";
       },
+      events: [
+        {
+          title: 'all',
+          color: 'blue',
+          start: '2023-03-10',
+        },
+      ]
     });
     calendar.render();
   });
 
-  //// 달력 2안
-  // document.addEventListener('DOMContentLoaded', function () {
-  //   var calendarEl = document.getElementById('calendar1');
-  //   var calendar = new FullCalendar.Calendar(calendarEl, {
-  //     timeZone: 'UTC',
-  //     initialView: 'dayGridMonth',
-  //     // locale: 'ko',
-  //     titleFormat: function (date) {
-  //     year = date.date.year;
-  //     month = date.date.month + 1;
+  fetch(`http://localhost:3000/calendar/preview/todo`)
+    .then((response) => response.json())
+    .then((data) => {
+      const todo = data.data;
+      for (let i = 0; i < todo.length; i++){
+        const todoo = todo[i].title;
+        const p = document.createElement('p');
+        p.innerHTML = todoo;
+        document.getElementById('todoPreview').appendChild(p);
+      }
+    });
 
-  //     return year + "년 " + month + "월";
-  //     },
+  fetch(`http://localhost:3000/calendar/preview/bucket`)
+    .then((response) => response.json())
+    .then((data) => {
+      const bucket = data.data;
+      for (let i = 0; i < bucket.length; i++){
+        const buckett = bucket[i].title;
+        const p = document.createElement('p');
+        p.innerHTML = buckett;
+        document.getElementById('bucketPreview').appendChild(p);
+      }
+    });
+
+  // fetch(`http://localhost:3000/calendar/preview/bucket`)
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     const row = data.data.map((bucket) => `<p>${bucket.title}</p>`);
+  //     const p = document.createElement('p');
+  //     p.innerHTML = row;
+  //     document.getElementById('bucketPreview').appendChild(p);
   //   });
-  //   calendar.render();
-  // });
 
   // 페이지네이션
   // var page = 2;
@@ -123,7 +147,6 @@
           <div id="calendar" style="width: 100%; "></div>
           <!-- <div id="calendar1" style="width: 48%; margin-left: 4%;"></div> -->
         </div>
-
       </section>
   </div>
   </div>
@@ -132,25 +155,19 @@
       <!--    TODO 리스트 및 버킷 리스트 보여주기-->
       <section style="height:280px; ">
         <div class="container-fluid">
-          <div class = "row" style="margin-top:50px;">
-            <div class = "col-md-6" style="background-color: #fff; border-radius: 10px; width: 48%;">
-              <h3 style="text-align: center;">TODO 리스트</h3>
-              <p style="text-align: right"><a href="/page/todoListMonth">상세보기</a></p>
+          <div class = "row" style="margin-top:20px;">
+            <div class = "col-md-6" style="background-color: bisque; border-radius: 10px; width: 48%; padding-top: 15px;">
+              <h3 style="text-align: center; border-radius: 10px;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
+              <p style="text-align: right"><a href="/page/todoListMonth" style="color: #888; text-decoration-line: none;" >+More</a></p>
               <hr/>
-              <div style="text-align: center;" id="todoPreview">
-                <p>TODO리스트 1번</p>
-                <p>TODO리스트 2번</p>
-                <p>TODO리스트 3번</p>
+              <div style="text-align: center; background-color: #fff; border-radius: 10px;" id="todoPreview">
               </div>
             </div>
-            <div class = "col-md-6" style="background-color: #fff; margin-left: 50px; border-radius: 10px; width: 48%;">
-              <h3 style="text-align: center;">버킷 리스트</h3>
-              <p style="text-align: right"><a href="/page/bucketList">상세보기</a></p>
+            <div class = "col-md-6" style="background-color: bisque; margin-left: 50px; border-radius: 10px; width: 48%; padding-top: 15px;">
+              <h3 style="text-align: center; border-radius: 10px;"><img src="/img/bucket-list.png" style="width:50px; height:50px;">버킷 리스트</h3>
+              <p style="text-align: right"><a href="/page/bucketList" style="color: #888; text-decoration-line: none;">+More</a></p>
               <hr/>
-              <div style="text-align: center;" id="bucketPreview">
-                <p>버킷리스트 1번</p>
-                <p>버킷리스트 2번</p>
-                <p>버킷리스트 3번</p>
+              <div style="text-align: center; background-color: #fff; border-radius: 10px;" id="bucketPreview">
               </div>
             </div>
           </div>
@@ -160,7 +177,7 @@
   </div>
   <!--    추후 업데이트 예정-->
   <section>
-    <div class="container-fluid" style="background: aqua; text-align: center; height:400px;">
+    <div class="container-fluid" style="background: aqua; text-align: center; height:400px; margin-top: 50px;">
       <h1 style="line-height: 400px;">추후 업데이트 예정입니다.</h1>
     </div>
   </section>

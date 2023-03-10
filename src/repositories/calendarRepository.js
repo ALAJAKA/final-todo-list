@@ -1,19 +1,25 @@
-const { BucketList, TodoList } = require('../models')
+const { TodoList } = require('../models');
+const { BucketList } = require('../models');
 
 class CalendarRepository {
   constructor(TodoListModel, BucketListModel) {
-    this.TodoListModel = TodoListModel;
-    this.BucketListModel = BucketListModel;
+    this.todoListModel = TodoListModel;
+    this.bucketListModel = BucketListModel;
   }
 
   findTodoList = async () => {
-    const todolist = await this.TodoListModel.findAll({order: [['id']]});
-    console.log(todolist)
+    const todolist = await this.todoListModel.findAll({
+      order: [['id', 'desc']],
+      limit: 5
+    });
     return todolist;
   };
 
   findBucketList = async () => {
-    const bucketlist = await this.BucketListModel.findAll({order: [['id']]});
+    const bucketlist = await this.bucketListModel.findAll({
+      order: [['id', 'desc']],
+      limit: 5
+    });
     return bucketlist;
   };
 }

@@ -1,17 +1,17 @@
 const CalendarRepository = require('../repositories/calendarRepository');
-const { BucketList, TodoList } = require('../models');
+const { TodoList, BucketList } = require('../models');
 
 class CalendarService {
-  calendarRepository = new CalendarRepository(BucketList, TodoList);
+  calendarRepository = new CalendarRepository(TodoList, BucketList);
 
   findTodoList = async () => {
-  const todolist = await this.calendarRepository.findTodoList();
-  return todolist;
+    const todolist = await this.calendarRepository.findTodoList();
+    return todolist;
   };
 
   findBucketList = async () => {
-  const bucketlist = await this.calendarRepository.findBucketList();
-  return bucketlist;
+    const bucketlist = await this.calendarRepository.findBucketList();
+    return bucketlist;
   };
 }
 

@@ -14,7 +14,7 @@ router.use('/bucketList', async (req, res) => {
 });
 
 //메인페이지 관련 컨트롤로
-router.use('/main', calendarRouter)
+router.use('/calendar', calendarRouter)
 //회원 관련 컨트롤러로
 router.use('/user', userRouter);
 //투두리스트 관련 컨트롤러로
@@ -24,6 +24,5 @@ router.use('/bucketList', bucketListRouter);
 //패아자 이동에 관한 라우터로
 router.use('/', pageRouter);
 // 메인페이지
-
 
 module.exports = router;
