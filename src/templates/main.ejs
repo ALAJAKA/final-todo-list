@@ -25,9 +25,8 @@
 </head>
 <style>
   #leftNav {transition: 0.5s}
-  .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 95%; padding: 10px; transition: 0.5s; border-radius: 5px;}
+  .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 90%; padding: 10px; transition: 0.5s; border-radius: 5px;}
   .leftMenu:hover {background: #777}
-
 
   #calendarBox{
     width: 100%;
@@ -86,6 +85,17 @@
       ]
     });
     calendar.render();
+  //이벤트 추가
+  });
+  $(document).ready(function(){
+    console.log(new Date().getUTCDate());
+    console.log($('.fc-daygrid-day').eq(0).data("date"));
+    // $('.fc-daygrid-day-top').eq(1).append('123');
+    // $('.fc-daygrid-day-top').eq(2).append('123');
+    // $('.fc-daygrid-day-top').eq(3).append('123');
+    // $('.fc-daygrid-day-top').eq(4).append('123');
+    //
+    // $('.fc-daygrid-day-events').eq(11).append('할일');
   });
 
   fetch(`http://localhost:3000/calendar/preview/todo`)
@@ -139,10 +149,12 @@
   <!--네비게이션-->
   <%-include('./topNav')%>
   <!--바디-->
-  <div clsss="container-fluid" style="background-image: url('img/102682.jpg'); background-size: 100% 100%; margin-top: 80px;">
+  <div clsss="container-fluid" style="margin-top: 80px;">
+<!--  <div clsss="container-fluid" style="background-image: url('img/102682.jpg'); background-size: 100% 100%; margin-top: 80px;">-->
+  <div clsss="container-fluid" style="background-image: url('img/123456.png'); background-size: 100% 100%; margin-top: 80px;">
     <div class = "container" style="padding-top: 50px; padding-bottom: 50px;">
       <!--   달력 들어가야 하는부분-->
-      <section style="height: 800px; background-color:rgba(255,255,255,1); border-radius: 5px;">
+      <section style="height: 800px; background-color:rgba(253,255,237,1); border-radius: 5px;">
         <div class="container-fluid" style="height:800px; text-align: center; padding-top: 20px; margin:0;" id="calendarBox" >
           <div id="calendar" style="width: 100%; "></div>
           <!-- <div id="calendar1" style="width: 48%; margin-left: 4%;"></div> -->
@@ -153,7 +165,7 @@
   <div clsss="container-fluid">
     <div class = "container">
       <!--    TODO 리스트 및 버킷 리스트 보여주기-->
-      <section style="height:280px; ">
+      <section style="height:400px; ">
         <div class="container-fluid">
           <div class = "row" style="margin-top:20px;">
             <div class = "col-md-6" style="background-color: bisque; border-radius: 10px; width: 48%; padding-top: 15px;">
