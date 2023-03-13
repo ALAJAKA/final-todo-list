@@ -13,7 +13,7 @@
 // 달력 기능
     //현재 날짜
     var year = new Date().getFullYear();// 현재 날짜의 년
-    var month =new Date().getMonth()+1;// 현재 날짜의 월
+    var month = new Date().getMonth()+1;// 현재 날짜의 월
     $(document).ready(function() {
         calender();
     });
@@ -121,14 +121,14 @@
 <!--   달력 들어가야 하는부분-->
 <section id="headerImg" style="margin-top: 80px;">
     <div class="container-fluid" style="height:400px; text-align: center;" >
-        <h1 style="padding-top: 100px; color:#000; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;">TODO 리스트 상세보기 입니다.</h1>
+        <h1 style="padding-top: 100px; color:#000; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;">월간 TODO 리스트</h1>
         <div>
             <p>
                 <span id="year" style="text-align: center;color:#000; font-size: 30px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></span>
             </p>
             <div>
                 <button type="button" class="btntt"  onclick="lastMonth()"><i class="fa-solid fa-chevron-left"></i></button>
-                <div id="cal" style="color:#000;font-size: 36px; width:100px; display:inline-block;text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></div>
+                <div id="cal" style="color:#000; font-size: 36px; width:100px; display:inline-block;text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></div>
                 <button type="button" class="btntt"  onclick="nextMonth()"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
@@ -140,7 +140,7 @@
     <!--    TODO 리스트 및 버킷 리스트 보여주기-->
     <section style="height:1000px;">
         <div class="container-fluid" style="padding-top:30px; text-align: center">
-            <h3>TODO 리스트</h3>
+            <h3>일간 TODO 리스트</h3>
             <p style="text-align: right"><a href="/page/todoListDetail">TODO리스트 작성하기</a></p>
             <hr/>
             <div>

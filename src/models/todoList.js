@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'READY'
       },
         d_day: {
-          type:DataTypes.DATE
+          type:DataTypes.DATEONLY
         },
         role: {
             type:DataTypes.ENUM('ALWAYS','ONEDAY'),
