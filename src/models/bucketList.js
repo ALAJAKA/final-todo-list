@@ -31,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'READY'
         },
         d_day: {
-            type:DataTypes.DATE,
+            type:DataTypes.DATEONLY,
+            defaultValue: null,
             allowNull:true
         },
     },

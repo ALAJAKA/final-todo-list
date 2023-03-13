@@ -7,11 +7,6 @@ const bucketListRouter = require('./bucketListRoute');
 const todoListRouter = require('./todoListRoute');
 const pageRouter = require('./pageRoute');
 
-// 버킷리스트 페이지
-router.use('/bucketList', async (req, res) => {
-
-  res.render('bucketList');
-});
 
 //메인페이지 관련 컨트롤로
 router.use('/calendar', calendarRouter)
