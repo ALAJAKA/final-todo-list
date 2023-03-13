@@ -41,6 +41,18 @@
     font-weight: bold;
   }
 
+  .fc-col-header-cell {
+	background-color: #ffe0ef;
+  }
+
+  /* .fc-daygrid-day-frame {
+    background: #fff;
+  } */
+
+  /* .fc-day-today {
+    background-color: #ffe0ef !important;
+  } */
+
   .fc-day a {
     color: black;
     text-decoration: none;
@@ -56,7 +68,7 @@
     text-decoration: none;
   }
   .fc-header-toolbar{
-    background:plum;
+
     margin-bottom: 0 !important;
     height: 120px;
   }
@@ -85,17 +97,6 @@
       ]
     });
     calendar.render();
-  //이벤트 추가
-  });
-  $(document).ready(function(){
-    console.log(new Date().getUTCDate());
-    console.log($('.fc-daygrid-day').eq(0).data("date"));
-    // $('.fc-daygrid-day-top').eq(1).append('123');
-    // $('.fc-daygrid-day-top').eq(2).append('123');
-    // $('.fc-daygrid-day-top').eq(3).append('123');
-    // $('.fc-daygrid-day-top').eq(4).append('123');
-    //
-    // $('.fc-daygrid-day-events').eq(11).append('할일');
   });
 
   fetch(`http://localhost:3000/calendar/preview/todo`)
@@ -103,7 +104,7 @@
     .then((data) => {
       const todo = data.data;
       for (let i = 0; i < todo.length; i++){
-        const todoo = todo[i].title;
+        const todoo = `<p style="line-height:5px">${todo[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
         const p = document.createElement('p');
         p.innerHTML = todoo;
         document.getElementById('todoPreview').appendChild(p);
@@ -115,21 +116,12 @@
     .then((data) => {
       const bucket = data.data;
       for (let i = 0; i < bucket.length; i++){
-        const buckett = bucket[i].title;
+        const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
         const p = document.createElement('p');
         p.innerHTML = buckett;
         document.getElementById('bucketPreview').appendChild(p);
       }
     });
-
-  // fetch(`http://localhost:3000/calendar/preview/bucket`)
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     const row = data.data.map((bucket) => `<p>${bucket.title}</p>`);
-  //     const p = document.createElement('p');
-  //     p.innerHTML = row;
-  //     document.getElementById('bucketPreview').appendChild(p);
-  //   });
 
   // 페이지네이션
   // var page = 2;
@@ -150,36 +142,31 @@
   <%-include('./topNav')%>
   <!--바디-->
   <div clsss="container-fluid" style="margin-top: 80px;">
-<!--  <div clsss="container-fluid" style="background-image: url('img/102682.jpg'); background-size: 100% 100%; margin-top: 80px;">-->
-  <div clsss="container-fluid" style="background-image: url('img/123456.png'); background-size: 100% 100%; margin-top: 80px;">
-    <div class = "container" style="padding-top: 50px; padding-bottom: 50px;">
+  <div clsss="container-fluid" style="background-size: 100% 100%; margin-top: 80px;">
+    <div class = "container" style="background-image: url('img/main1.png'); background-size: 100% 100%; padding-top: 50px; padding-right: 20px; padding-bottom: 10px;">
       <!--   달력 들어가야 하는부분-->
-      <section style="height: 800px; background-color:rgba(253,255,237,1); border-radius: 5px;">
+      <section style="height: 800px; border-radius: 5px;">
         <div class="container-fluid" style="height:800px; text-align: center; padding-top: 20px; margin:0;" id="calendarBox" >
-          <div id="calendar" style="width: 100%; "></div>
-          <!-- <div id="calendar1" style="width: 48%; margin-left: 4%;"></div> -->
+          <div id="calendar" style="width: 100%;"></div>
         </div>
       </section>
   </div>
   </div>
   <div clsss="container-fluid">
     <div class = "container">
-      <!--    TODO 리스트 및 버킷 리스트 보여주기-->
-      <section style="height:400px; ">
+      <section style="height:400px;">
         <div class="container-fluid">
           <div class = "row" style="margin-top:20px;">
-            <div class = "col-md-6" style="background-color: bisque; border-radius: 10px; width: 48%; padding-top: 15px;">
+            <div class = "col-md-6" style="min-height: 650px; background-image: url('img/abc.png'); background-size: 100% 100%; border-radius: 10px; width: 48%; padding-top: 60px;">
+              <p style="text-align: right; padding-top: 45px; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; text-decoration-line: none;">+More</a></p>
               <h3 style="text-align: center; border-radius: 10px;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
-              <p style="text-align: right"><a href="/page/todoListMonth" style="color: #888; text-decoration-line: none;" >+More</a></p>
-              <hr/>
-              <div style="text-align: center; background-color: #fff; border-radius: 10px;" id="todoPreview">
+              <div style="text-align: center; border-radius: 10px;" id="todoPreview">
               </div>
             </div>
-            <div class = "col-md-6" style="background-color: bisque; margin-left: 50px; border-radius: 10px; width: 48%; padding-top: 15px;">
+            <div class = "col-md-6" style=" min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 50px; border-radius: 10px; width: 48%; padding-top: 60px;">
+              <p style="text-align: right; padding-top: 45px; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; text-decoration-line: none;">+More</a></p>
               <h3 style="text-align: center; border-radius: 10px;"><img src="/img/bucket-list.png" style="width:50px; height:50px;">버킷 리스트</h3>
-              <p style="text-align: right"><a href="/page/bucketList" style="color: #888; text-decoration-line: none;">+More</a></p>
-              <hr/>
-              <div style="text-align: center; background-color: #fff; border-radius: 10px;" id="bucketPreview">
+              <div style="text-align: center; border-radius: 10px;" id="bucketPreview">
               </div>
             </div>
           </div>
@@ -188,15 +175,15 @@
     </div>
   </div>
   <!--    추후 업데이트 예정-->
-  <section>
+  <!-- <section>
     <div class="container-fluid" style="background: aqua; text-align: center; height:400px; margin-top: 50px;">
       <h1 style="line-height: 400px;">추후 업데이트 예정입니다.</h1>
     </div>
-  </section>
-  <footer>
+  </section> -->
+  <!-- <footer>
     <div class="container-fluid" style="background: #333; text-align: center; height:100px; ">
         <h6 style="line-height: 100px; color:#ccc;">Copyright <i class="fa-regular fa-copyright"></i>  2023. 투두리 All rights reserved.</h6>
     </div>
-  </footer>
+  </footer> -->
 </body>
 </html>
