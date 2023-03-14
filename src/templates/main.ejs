@@ -72,7 +72,6 @@
     margin-bottom: 0 !important;
     height: 120px;
   }
-
 </style>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -136,6 +135,12 @@
   //   }
   // });
   // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
+  function imageChange(){
+    $(event.target).parents('.col-md-6').css('background-image','url("img/ac2.png")','transition', '0.5s','background-size','100% 100%');
+  }
+  function imageChange2(){
+    $(event.target).parents('.col-md-6').css('background-image','url("img/abc.png" )','transition', '0.5s');
+  }
 </script>
 <body>
   <!--네비게이션-->
@@ -154,16 +159,29 @@
   </div>
   <div clsss="container-fluid">
     <div class = "container">
-      <section style="height:400px;">
+      <section style="height:650px;">
         <div class="container-fluid">
           <div class = "row" style="margin-top:20px;">
             <div class = "col-md-6" style="min-height: 650px; background-image: url('img/abc.png'); background-size: 100% 100%; border-radius: 10px; width: 48%; padding-top: 60px;">
-              <p style="text-align: right; padding-top: 45px; padding-right: 70px;"><a href="/page/todoListMonth" style="color: blue; text-decoration-line: none;">+More</a></p>
-              <h3 style="text-align: center; border-radius: 10px;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
-              <div style="text-align: center; border-radius: 10px;" id="todoPreview">
+              <div class="row" style="margin-top: 80px; margin-bottom: 30px;">
+                <div class="col-md-3"></div>
+                <div class="col-md-6" style="padding: 0">
+                  <h3 style="text-align: center; border-radius: 10px;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
+                </div>
+                <div class="col-md-3" style="padding-left:20px;line-height: 58px; ">
+                  <p style="text-align: left; padding-right: 70px; margin:0;"><a href="/page/todoListMonth" style="color: blue; text-decoration-line: none;" class="more" onmouseover="imageChange()" onmouseleave="imageChange2()">+More</a></p>
+                </div>
               </div>
+              <div style="text-align: center; border-radius: 10px;" id="todoPreview">
+<!--              <p style="text-align: right"><a href="/page/todoListMonth" style="color: #888; text-decoration-line: none;" >+More</a></p>-->
+<!--              <div style="text-align: center;  border-radius: 10px;" id="todoPreview">-->
+<!--                <p style="vertical-align: bottom; padding:0; margin:0;">asd-->
+<!--                <hr style="width:80%; margin: 0 auto">-->
+<!--                </p>-->
+<!--              </div>-->
             </div>
-            <div class = "col-md-6" style=" min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 50px; border-radius: 10px; width: 48%; padding-top: 60px;">
+            </div>
+            <div class = "col-md-6" style=" min-height: 650px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 50px; border-radius: 10px; width: 48%; padding-top: 60px;">
               <p style="text-align: right; padding-top: 45px; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; text-decoration-line: none;">+More</a></p>
               <h3 style="text-align: center; border-radius: 10px;"><img src="/img/bucket-list.png" style="width:50px; height:50px;">버킷 리스트</h3>
               <div style="text-align: center; border-radius: 10px;" id="bucketPreview">
