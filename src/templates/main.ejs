@@ -45,14 +45,6 @@
 	background-color: #ffe0ef;
   }
 
-  /* .fc-daygrid-day-frame {
-    background: #fff;
-  } */
-
-  /* .fc-day-today {
-    background-color: #ffe0ef !important;
-  } */
-
   .fc-day a {
     color: black;
     text-decoration: none;
@@ -75,29 +67,59 @@
 </style>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      height:750,
-      contentHeight:180,
-      timeZone: 'UTC',
-      initialView: 'dayGridMonth',
-      // locale: 'ko',
-      titleFormat: function (date) {
+  var calendarEl = document.getElementById('calendar');
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    height: 750,
+    contentHeight: 180,
+    timeZone: 'UTC',
+    initialView: 'dayGridMonth',
+    // locale: 'ko',
+    titleFormat: function (date) {
       year = date.date.year;
       month = date.date.month + 1;
       return year + "년 " + month + "월";
+    },
+    events: function (info, success, failure) {
+      // BucketList 데이터 가져오기
+      fetch('http://localhost:3000/calendar/preview/bucket')
+        .then((response) => response.json())
+        .then((data) => {
+          const bucket = data.data;
+          const events = [];
+          for (let i = 0; i < bucket.length; i++) {
+            events.push({
+              title: bucket[i].title,
+              start: bucket[i].d_day,
+              color: '#FF7F50', // bucket 이벤트는 주황색으로 표시
+            });
+          }
+
+          // // TodoList 데이터 가져오기
+          // fetch('http://localhost:3000/calendar/preview/todo')
+          //   .then((response) => response.json())
+          //   .then((data) => {
+          //     const todo = data.data;
+          //     for (let i = 0; i < todo.length; i++) {
+          //       events.push({
+          //         title: todo[i].title,
+          //         start: todo[i].d_day, // 이벤트 시작 날짜
+          //       });
+          //     }
+          //     success(events);
+          //   })
+          //   .catch((error) => {
+          //     failure(error);
+          //   });
+        })
+        .catch((error) => {
+          failure(error);
+        });
       },
-      events: [
-        {
-          title: 'all',
-          color: 'blue',
-          start: '2023-03-10',
-        },
-      ]
     });
     calendar.render();
   });
-
+  
+  // TodoList 미리보기
   fetch(`http://localhost:3000/calendar/preview/todo`)
     .then((response) => response.json())
     .then((data) => {
@@ -110,6 +132,7 @@
       }
     });
 
+  // BucketList 미리보기
   fetch(`http://localhost:3000/calendar/preview/bucket`)
     .then((response) => response.json())
     .then((data) => {
@@ -135,19 +158,20 @@
   //   }
   // });
   // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
+
   function imageChange(){
     $(event.target).parents('.col-md-6').css('background-image','url("img/ac2.png")','transition', '0.5s','background-size','100% 100%');
   }
   function imageChange2(){
     $(event.target).parents('.col-md-6').css('background-image','url("img/abc.png" )','transition', '0.5s');
   }
+
 </script>
 <body>
   <!--네비게이션-->
   <%-include('./topNav')%>
   <!--바디-->
-  <div clsss="container-fluid" style="margin-top: 80px;">
-  <div clsss="container-fluid" style="background-size: 100% 100%; margin-top: 80px;">
+  <div clsss="container-fluid" style="background-size: 100% 100%; margin-top: 130px;">
     <div class = "container" style="background-image: url('img/main1.png'); background-size: 100% 100%; padding-top: 50px; padding-right: 20px; padding-bottom: 10px;">
       <!--   달력 들어가야 하는부분-->
       <section style="height: 800px; border-radius: 5px;">
@@ -162,30 +186,30 @@
       <section style="height:650px;">
         <div class="container-fluid">
           <div class = "row" style="margin-top:20px;">
-            <div class = "col-md-6" style="min-height: 650px; background-image: url('img/abc.png'); background-size: 100% 100%; border-radius: 10px; width: 48%; padding-top: 60px;">
-              <div class="row" style="margin-top: 80px; margin-bottom: 30px;">
+            <div class = "col-md-6" style="min-height: 720px; background-image: url('img/abc.png'); background-size: 100% 100%; width: 48%; padding-top: 60px;">
+              <div class="row" style="margin-top: 60px; margin-bottom: 30px;">
                 <div class="col-md-3"></div>
                 <div class="col-md-6" style="padding: 0">
-                  <h3 style="text-align: center; border-radius: 10px;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
+                  <h3 style="text-align: center;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
                 </div>
-                <div class="col-md-3" style="padding-left:20px;line-height: 58px; ">
-                  <p style="text-align: left; padding-right: 70px; margin:0;"><a href="/page/todoListMonth" style="color: blue; text-decoration-line: none;" class="more" onmouseover="imageChange()" onmouseleave="imageChange2()">+More</a></p>
+                <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
+                  <p style="text-align: left; padding-right:70px; margin:0;"><a href="/page/todoListMonth" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more" onmouseover="imageChange()" onmouseleave="imageChange2()">+More</a></p>
                 </div>
               </div>
               <div style="text-align: center; border-radius: 10px;" id="todoPreview">
-<!--              <p style="text-align: right"><a href="/page/todoListMonth" style="color: #888; text-decoration-line: none;" >+More</a></p>-->
-<!--              <div style="text-align: center;  border-radius: 10px;" id="todoPreview">-->
-<!--                <p style="vertical-align: bottom; padding:0; margin:0;">asd-->
-<!--                <hr style="width:80%; margin: 0 auto">-->
-<!--                </p>-->
-<!--              </div>-->
             </div>
             </div>
-            <div class = "col-md-6" style=" min-height: 650px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 50px; border-radius: 10px; width: 48%; padding-top: 60px;">
-              <p style="text-align: right; padding-top: 45px; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; text-decoration-line: none;">+More</a></p>
-              <h3 style="text-align: center; border-radius: 10px;"><img src="/img/bucket-list.png" style="width:50px; height:50px;">버킷 리스트</h3>
-              <div style="text-align: center; border-radius: 10px;" id="bucketPreview">
-              </div>
+            <div class = "col-md-6" style=" min-height: 720px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 50px; width: 48%; padding-top: 60px;">
+              <div class="row" style="margin-top: 60px; margin-bottom: 30px;">
+                <div class="col-md-3"></div>
+                <div class="col-md-6" style="padding: 0">
+                  <h3 style="text-align: center;"><img src="/img/bucket-list.png" style="width:50px; height:50px;">버킷 리스트</h3>
+                </div>
+                <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
+                  <p style="text-align: right; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more" onmouseover="imageChange()" onmouseleave="imageChange2()">+More</a></p>
+                </div>
+              </div>  
+              <div style="text-align: center;" id="bucketPreview"></div>
             </div>
           </div>
         </div>

@@ -10,7 +10,7 @@ class CalendarRepository {
   findTodoList = async () => {
     const todolist = await this.todoListModel.findAll({
       order: [['id', 'desc']],
-      // limit: 5
+      limit: 10
     });
     return todolist;
   };
@@ -18,7 +18,7 @@ class CalendarRepository {
   findBucketList = async () => {
     const bucketlist = await this.bucketListModel.findAll({
       order: [['id', 'desc']],
-      // limit: 5
+      limit: 10
     });
     return bucketlist;
   };
