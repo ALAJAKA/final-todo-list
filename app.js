@@ -4,23 +4,23 @@ const cookieParser = require('cookie-parser');
 const app = express();
 app.use(cookieParser());
 
-const router = require('./routes');
-const {sequelize} = require("./models");
+const router = require('./src/routes');
+const {sequelize} = require("./src/models");
 
 
-app.set('views', './templates');
+app.set('views', './src/templates');
 app.set('view engine', 'ejs');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static('static'));
+app.use(express.static('./src/static'));
 
 app.use('/', router);
 
 require('dotenv').config();
 
 sequelize
-    .sync({ force: true })
+    .sync({ force: false })
     .then(() => {
       console.log('데이터베이스 연결 성공!');
     })

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>todo 상세보기</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/2fb62d0520.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<script>
+    // 달력 기능
+    //현재 날짜
+    var year = new Date().getFullYear();// 현재 날짜의 년
+    var month =new Date().getMonth()+1;// 현재 날짜의 월
+    var day =new Date().getDate();// 현재 날짜
+    $(document).ready(function() {
+        calender();
+        getBucketList();
+    });
+    // 달력만들기
+    function calender(){
+        // 월별 일수 처리
+        const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+        const thisYear = new Date().getFullYear(); // 오늘 날짜의 년
+        const thisMonth = new Date().getMonth()+1; // 오늘 날짜의 월
+        const thisDate = new Date().getDate();//      오늘 날짜의 일
+        if(year%4==0){//윤년처리
+            days[2]++;
+        }
+
+        $('#headerImg').removeClass('winter');
+        $('#headerImg').removeClass('spring');
+        $('#headerImg').removeClass('summer');
+        $('#headerImg').removeClass('fall');
+        if (month == 3 ||month == 4 ||month == 5 ) $('#headerImg').addClass('spring');
+        if (month == 6 ||month == 7 ||month == 8 ) $('#headerImg').addClass('summer');
+        if (month == 9 ||month == 10 ||month == 11 ) $('#headerImg').addClass('fall');
+        if (month == 12 ||month == 1 ||month == 2 ) $('#headerImg').addClass('winter');
+        $('#thisDay').append(`<span>TODAY</span>`);
+        $('#today').append(`<span>${month} 월 ${day} 일</span>`);
+    }
+
+    // 페이지 로딩시 데이터 가져오기
+    function getBucketList(){
+        const listBox = $('#bucketListD-day');
+        axios({
+            method: 'get',
+            url: '/bucketList/api',
+            data: {},
+        })
+            .then((response) => {
+                const bucketList = response.data;
+                console.log(bucketList);
+                for(let i=0; i<bucketList.length; i++){
+                    const title = bucketList[i].title;
+                    const dayValue = bucketList[i].d_day.substring(0,10);
+                    listBox.append(`
+                    <li class="bucketBoxLi">
+                        <div class="row" style="margin:0;">
+                            <div class="col-md-3 bucketDay calP">
+                                <p>${dayValue}</p>
+                            </div>
+                            <div class="col-md-9 bucketDay">
+                                <p style="text-align: left">${title}</p>
+                                    <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                    `)
+                }
+            })
+            .catch((response) => {
+                const data = response.response.data;
+                console.log(data.errorMessage);
+            });
+    }
+
+    //버킷 수정버튼
+    function bucketEdit(){
+        $('#BucketPlusBox').hide();
+        const myClass = $(event.target).parents('.bucketBoxLi');
+        const title = $(event.target).parents('.col-md-9').children('p').text();
+        const dayValue = $(event.target).parents('.bucketBoxLi').find('.calP').text().replaceAll("\n","").trim();
+        myClass.html(`
+            <li class="bucketBoxLi" id="bucketInputBox" >
+                        <div class="row" style="margin:0;">
+                            <div class="col-md-3 bucketDay">
+                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" value="${dayValue}" maxlength="10">
+                            </div>
+                            <div class="col-md-9 bucketDay">
+                                    <input class="bucketInput" id="bucketRe" type="text" placeholder="Bucket-List를 입력해주세요" maxlength="24" style="text-align: left"value="${title}">
+                                    <button class="bucketIcon" onclick="bucketEditSave()"><i class="fa-solid fa-check"></i></button>
+                                    <button class="bucketIcon deleteIcon" onclick="bucketEditCancel('${dayValue},${title}')"><i class="fa-solid fa-xmark"></i></button>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+            `);
+        $('#bucketRe').focus();
+    }
+    //버킷 수정저장
+    function bucketEditSave(){
+        const myClass = $(event.target).parents('.bucketBoxLi');
+        let title = $(event.target).parents('.col-md-9').children('input').val();
+        const dayValue = $(event.target).parents('.bucketBoxLi').find('.calInput').val();
+        if(title==='')alert('입력된 값이 없습니다.');
+        myClass.html(`
+        <li class="bucketBoxLi">
+                        <div class="row" style="margin:0;">
+                            <div class="col-md-3 bucketDay calP">
+                                <p>${dayValue}</p>
+                            </div>
+                            <div class="col-md-9 bucketDay">
+                                <p style="text-align: left" >${title}</p>
+                                    <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+                    </li>
+        `)
+        $('#BucketPlusBox').show();
+    }
+    //버킷 수정취소
+    function bucketEditCancel(dayValue,title){
+        const myClass = $(event.target).parents('.bucketBoxLi');
+        myClass.html(`
+        <li class="bucketBoxLi">
+                        <div class="row" style="margin:0;">
+                            <div class="col-md-3 bucketDay calP">
+                                <p>{dayValue}</p>
+                            </div>
+                            <div class="col-md-9 bucketDay">
+                                <p style="text-align: left">${title}</p>
+                                    <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+                    </li>
+        `)
+        $('#BucketPlusBox').show();
+    }
+    //버킷 삭제
+    function bucketDelete(){
+        const aaaa = $(event.target).parents('.bucketBoxLi');
+        aaaa.remove();
+    }
+    //버킷추가버튼
+    function bucketPlus() {
+        $('#BucketPlusBox').hide();
+        const listBox =  $('#bucketListD-day');
+        if(month.toString().length<2) month='0'+month;
+        let bucketInput=`
+                    <li class="bucketBoxLi" id="bucketInputBox" >
+                        <div class="row" style="margin:0;">
+                            <div class="col-md-3 bucketDay">
+                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" value="${year}-${month}-${day}" maxlength="10">
+                            </div>
+                            <div class="col-md-9 bucketDay">
+                                    <input class="bucketInput" id="bucketCr" type="text" placeholder="Bucket-List를 입력해주세요" maxlength="24" style="text-align: left">
+                                    <button class="bucketIcon" onclick="bucketSave()"><i class="fa-solid fa-check"></i></button>
+                                    <button class="bucketIcon deleteIcon" onclick="bucketPlusCancel()"><i class="fa-solid fa-xmark"></i></button>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+            `
+        listBox.append(bucketInput);
+    }
+    //버킷추가저장
+    function bucketSave(){
+        const listBox = $('#bucketListD-day');
+        const myClass = $(event.target).parents('.col-md-9').children('input').val();
+        const dayValue = $(event.target).parents('.bucketBoxLi').find('.calInput').val();
+        if (myClass === "") {
+            alert('내용을 입력해 주세요.');
+        }else {
+            const addBucketList = `<li class="bucketBoxLi">
+                        <div class="row" style="margin:0;">
+                            <div class="col-md-3 bucketDay calP">
+                                <p>${dayValue}</p>
+                            </div>
+                            <div class="col-md-9 bucketDay">
+                                <p style="text-align: left">${myClass}</p>
+                                    <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+                    </li>`;
+            listBox.append(addBucketList);
+            $('#bucketInputBox').remove();
+            $('#BucketPlusBox').show();
+        }
+    }
+    //버킷추가취소
+    function bucketPlusCancel(){
+        $('#bucketInputBox').remove();
+        $('#BucketPlusBox').show();
+    }
+</script>
+<style>
+    /*전체 옵션*/
+    *{margin:0;padding:0;}
+    input:focus {outline: none;}
+    ::-webkit-scrollbar {
+        width: 0px;
+    }
+    ul,li,ol{list-style: none; margin:0; padding:0;}
+
+    /* 헤더 네비게이션 */
+    .fo{background: red; border-radius: 5px;}
+    #leftNav {transition: 0.5s}
+    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 80%; padding: 10px; transition: 0.5s; border-radius: 5px;}
+    .leftMenu:hover {background: #777}
+    .btntt{width:50px; height:50px; line-height: 50px; border:0; border-radius: 5px; background: rgba(255,255,255,0.3);; font-size: 20px; transition: 1s; }
+    .btntt:hover{background-color: rgba(255,255,255,0.7);}
+
+    /* 카드섹션 */
+    /* 카드 영역*/
+    .slide { height: 450px;}
+    .cardBox {display: flex;  text-align: center;}
+    /*개별 카드*/
+    .card { width: 19rem; height: 400px; margin: 30px 25px 20px 25px; position: relative}
+    .card-img-top {height: 170px;}
+    .card-body {background-color: hsl(0, 0%, 80%, 0.3)}
+    .cardPlus {background: none; width:100px; height:100px;  margin: 0 auto; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; padding:0; font-size: 45pt; border-radius: 45px; transition: 1s; }
+    .cardPlus:hover{background-color: rgba(255,255,255,0.7);}
+    .cardPlusBox{background-image: url(/img/winter.jpg); display: flex;  text-align: center; justify-content: center; align-content: center;}
+    .bucketEdit {background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0;
+        border-radius: 10px; transition: 1s;
+        position: absolute; padding: 0px; line-height: 25px; width:25px; height:25px; top:5px; right:35px;}
+    .bucketEdit:hover{background-color: rgba(255,255,255,0.7);}
+    .bucketDelete {background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; font-size: 17pt;
+        border-radius: 10px; transition: 1s;
+        position: absolute; padding: 0px; line-height: 25px; width:25px; height:25px; top:5px; right:5px;}
+    .bucketDelete:hover{background-color: rgba(255,255,255,0.7);}
+    .bucketCheck {background: none; border: 0px;}
+    .fa-solid{color: rgb(61, 59, 59);}
+
+    .abs2 {position: absolute; height: 70px; box-sizing: border-box; padding: 10px; border-radius: 35px; bottom:15px; transform: translate(-50%); transition: 0.2s;}
+    .abs2:hover{background-color:  rgba(255,255,255,0.7); box-sizing: border-box; }
+    .modal-body {text-align: left;}
+    .form-label{font-size: 17pt;}
+
+    /* 리스트섹션 */
+    .bucketBoxes{position: relative; margin-top: 20px;}
+    .bucketBoxLi{position: relative; height:70px; z-index: 10; border: 1px solid rgb(163, 156, 156); border-radius:35px; margin-top: 15px;}
+    .bucketBoxLi:nth-of-type(1){margin:0;}
+        /*아이콘 설정*/
+        .bucketIcon {width:40px; top:25%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
+        position: absolute; right:7%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s; z-index: 1000;}
+        .bucketIcon>i{z-index: 10;}
+        .bucketIcon:hover{background-color:rgba(0,0,0,0.7);}
+        .deleteIcon {right:2%;}
+        /*내부 문자들*/
+        .bucketDay {maring:0;padding:0; box-sizing: border-box}
+        .bucketDay p{height:70px; line-height:70px; padding:0; margin:0; text-align: center; font-size: 14pt;}
+        .calInput{width:100%; line-height:35px; height:65px; border-radius: 35px 0 0 35px; text-align: center; border: 0; font-size: 14pt;}
+        .calInput::after{padding-right: 20%;}
+    .PlusBtn {width:50px; height:50px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; border-radius: 25px; padding:0; font-size: 25pt;  transition: 1s;
+        position: absolute; margin-top: 10px;}
+    .PlusBtn:hover{background-color: rgba(0,0,0,0.7);}
+    .bucketInput {width:100%; line-height:35px; border-radius:0 35px 35px 0; height:65px; border: 0; text-align: left;font-size: 14pt;}
+    input[type="date"]::-webkit-calendar-picker-indicator{
+        display: none;
+    }
+
+</style>
+<body>
+<!--네비게이션-->
+<%-include('./topNav')%>
+<!--바디-->
+
+<!--헤더-->
+<section style="background-image: url('/img/winter.jpg'); background-size: cover; margin-top: 80px;">
+    <div class="container-fluid" style="height:400px; text-align: center;" >
+        <h1 style="padding-top: 100px; color:#000; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;">BUCKET 리스트</h1>
+        <div>
+            <p style="margin: 0;padding: 0">
+                <span id="thisDay" style="text-align: center;color:#000; font-size: 30px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></span>
+                <br/>
+                <span id="today" style="text-align: center;color:#000; font-size: 30px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;"></span>
+            </p>
+        </div>
+    </div>
+</section>
+<!--카드섹션-->
+<section style="background-color: rgba(255,255,255); height: 550px;">
+    <div class="container" style="padding-bottom: 50px;">
+        <h2 style="text-align: center; margin-top: 50px;">버킷리스트 카드</h2>
+        <div id="carouselExampleControlsNoTouching" class="carousel slide" data-bs-touch="false">
+            <div class="carousel-inner" style="position: relative; width: 100%;"><!-- 카드 뭉치-->
+                <div class="carousel-item active" >
+                    <div class="cardBox w-100" >
+                        <div class="card cardPlusBox" data-bs-slide-to="0">
+                            <!-- 모달 버튼-->
+                            <button type="button" class="btn cardPlus" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="card" data-bs-slide-to="1">
+                            <div>
+                                <img src="/img/1296285.jpg" class="card-img-top" alt="...">
+                                <button class="bucketEdit abs"><i class="fa-solid fa-pen"></i></button>
+                                <button class="bucketDelete abs"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">기간이 없는 리스트</h5>
+                                <p class="card-text">아침 7시에 일어나서 바깥 산책하기</p>
+                                <button class="bucketCheck abs2"><img src="/img/check2.png" height="50px;"></button>
+                            </div>
+                        </div>
+                        <div class="card" data-bs-slide-to="2">
+                            <div>
+                                <img src="/img/fall.jpg" class="card-img-top" alt="...">
+                                <button class="bucketEdit abs"><i class="fa-solid fa-pen"></i></button>
+                                <button class="bucketDelete abs"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">매일운동하기운동하기운동하기</h5>
+                                <p class="card-text">아침 7시에 일어나서 바깥 산책하기</p>
+                                <button class="bucketCheck abs2"><img src="/img/check2.png" height="50px;"></button>
+                            </div>
+                        </div>
+                        <div class="card" data-bs-slide-to="3">
+                            <div>
+                                <img src="/img/black.jpg" class="card-img-top" alt="...">
+                                <button class="bucketEdit abs"><i class="fa-solid fa-pen"></i></button>
+                                <button class="bucketDelete abs"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">매일운동하기운동하기운동하기</h5>
+                                <p class="card-text">아침 7시에 일어나서 바깥 산책하기</p>
+                                <button class="bucketCheck abs2"><img src="/img/check2.png" height="50px;"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!--처음 카드 뭉치-->
+                <div class="carousel-item">
+                    <div class="cardBox w-100" style="margin:0 auto;" >
+                        <div class="card" style="width: 18rem;" data-bs-slide-to="2">
+                            <img src="..." class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <a href="#" class="btn btn-primary">Go somewhere</a>
+                            </div>
+                        </div>
+                        <div class="card" style=" width: 18rem;"data-bs-slide-to="3">
+                            <img src="..." class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <a href="#" class="btn btn-primary">Go somewhere</a>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- 두번째 카드 뭉치-->
+            </div>
+            <!--        카드 이동 버튼-->
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="prev" style="width:5%; position: absolute;left:-5%;" >
+                <span class="carousel-control-prev-icon" style="background-color: #000;" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="next"style="width:5%;position: absolute; right:-5%;"  >
+                <span class="carousel-control-next-icon" style="background-color: #000;" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</section>
+<!--버킷리스트 섹션-->
+<div class="container" style="padding: 0;">
+    <div class="row" style="padding: 0;">
+<!--        여백 div-->
+        <div class="col-md-2" style="margin: 0;"></div>
+        <!--        버킷리스트  인풋 및 상자-->
+        <div class="col-md-8" style="padding: 0; margin: 0;">
+            <h2 style="text-align: center; margin-bottom: 30px;">버킷리스트 플랜</h2>
+            <section id="listBox" style="text-align: center;">
+                <ul class="bucketBoxes" id="bucketListD-day">
+<!--                    <li class="bucketBoxLi">-->
+<!--                        <div class="row" style="margin:0;">-->
+<!--                            <div class="col-md-3 bucketDay">-->
+<!--                                <p>2023-03-10</p>-->
+<!--                            </div>-->
+<!--                            <div class="col-md-9 bucketDay">-->
+<!--                                <p style="text-align: left">집에서 빈둥거리기</p>-->
+<!--                                    <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>-->
+<!--                                    <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                    <li class="bucketBoxLi">-->
+<!--                        <div class="row" style="margin:0;">-->
+<!--                            <div class="col-md-3 bucketDay">-->
+<!--                                <p>2023-03-10</p>-->
+<!--                            </div>-->
+<!--                            <div class="col-md-9 bucketDay">-->
+<!--                                <p style="text-align: left">집에서 빈둥거리기</p>-->
+<!--                                    <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>-->
+<!--                                    <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </li>-->
+
+                </ul>
+
+<!--                +버튼 구조-->
+                <ul class="bucketBoxes" >
+                    <li class="bucketBoxLi" id="BucketPlusBox">
+                        <button type="button" class="PlusBtn" onclick="bucketPlus()">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </div>
+<!--    여백 div-->
+    <div class="col-md-2"style="margin: 0;"></div>
+</div>
+</div>
+<!--모달-->
+<!-- 모달창 -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">TODO 리스트 추가</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/user/login" enctype="multipart/form-data" method="POST">
+                    <div class="mb-3">
+
+                        <input type="text" name="title" class="form-control" id="exampleFormControlInput1" maxlength="13">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+                        <textarea class="form-control" name="content" id="exampleFormControlTextarea1" rows="3" maxlength="40"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="formFileSm" class="form-label">Image</label>
+                        <input class="form-control form-control-sm" name="image" id="formFileSm" type="file">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn btn-primary">등록</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--풋터-->
+<footer style="margin-top: 50px;">
+    <div class="container-fluid" style="background: #333; text-align: center; height:200px; ">
+        <h6 style="line-height: 200px; color:#ccc;">Copyright <i class="fa-regular fa-copyright"></i>  2023. 투두리 All rights reserved.</h6>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+</html>
