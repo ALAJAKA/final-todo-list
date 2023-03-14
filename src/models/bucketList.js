@@ -20,12 +20,6 @@ module.exports = (sequelize, DataTypes) => {
             type:DataTypes.STRING,
             allowNull:false
         },
-        image: {
-            type:DataTypes.STRING
-        },
-        content:{
-            type:DataTypes.STRING
-        },
         success: {
             type:DataTypes.ENUM('SUCCESS','READY'),
             defaultValue: 'READY'
@@ -35,6 +29,14 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: null,
             allowNull:true
         },
+        createdAt:{
+            type:DataTypes.DATEONLY,
+            defaultValue:new Date()
+        },
+        updatedAt:{
+            type:DataTypes.DATEONLY,
+            defaultValue:new Date()
+        }
     },
     {
       sequelize,
