@@ -274,14 +274,13 @@
             `
         listBox.insertAdjacentHTML('beforeend', todoInput);
     }
-    //투두추가저장 d
+    //투두추가저장
     function todoPlusSave(){
         let uuid = self.crypto.randomUUID();
         const title = document.getElementById('todayTodo').value;
         if (title.trim() == ""){
             alert("내용이 없습니다.")
         }else{
-            console.log(title)
             const todoBoxes = document.getElementById('todoBoxes');
             let todoPlusBoxInput=`
                     <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
