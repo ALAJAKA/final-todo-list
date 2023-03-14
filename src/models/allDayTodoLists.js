@@ -1,22 +1,30 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class TodoList extends Model {
+  class AllDayTodoLists extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(db) {
-        db.TodoList.belongsTo(db.User,{
+        db.AllDayTodoLists.belongsTo(db.User,{
             foreignKey:{name:'userId'},
             targetKey:'id'
         });
     }
   }
-  TodoList.init(
+    AllDayTodoLists.init(
     {
       title: {
+        type:DataTypes.STRING,
+        allowNull:false
+      },
+      content: {
+        type:DataTypes.STRING,
+        allowNull:false
+      },
+      image: {
         type:DataTypes.STRING,
         allowNull:false
       },
@@ -24,15 +32,12 @@ module.exports = (sequelize, DataTypes) => {
         type:DataTypes.ENUM('SUCCESS','READY'),
         defaultValue: 'READY'
       },
-      today: {
-        type:DataTypes.DATEONLY
-      },
     },
     {
       sequelize,
-        tableName:'todoLists',
-      modelName: 'TodoList',
+        tableName:'allDayTodoLists',
+      modelName: 'AllDayTodoLists',
     }
   );
-  return TodoList;
+  return AllDayTodoLists;
 };
