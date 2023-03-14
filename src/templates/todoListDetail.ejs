@@ -59,6 +59,7 @@
             $('#month *').remove();
             $('#day *').remove();
             calender()
+            todoGet();
         }
         // 이전일로 이동
         function lastDay(){
@@ -70,6 +71,7 @@
             $('#month *').remove();
             $('#day *').remove();
             calender()
+            todoGet();
         }
 
         //투두get
@@ -149,7 +151,7 @@
 
     //카드저장
     function cardSave(happy){
-
+        card()
     }
     //카드완료d
     function cardSuccess(happy){
@@ -183,6 +185,7 @@
     //카드삭제
     function cardDelete(happy){
             $(`#card${happy}`).remove();
+            card()
         }
 
 
