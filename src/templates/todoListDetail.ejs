@@ -74,11 +74,11 @@
             todoGet();
         }
 
-        //투두get
-        function todoGet(){
+        //카드get
+        function cardGet(){
             axios({
                 method: 'get',
-                url: '/todoList/1234',
+                url: '/api/todoLists/1234',
                 params: {
                     year, month, day
                 }
@@ -88,6 +88,7 @@
                     const oneDay = response.data.oneDay;
                     console.log(always);
                     console.log(oneDay);
+                    $('.cards').remove();
                     for (let i = 0; i < always.length; i++){
                         const content = always[i].content
                         const image = always[i].image
@@ -97,7 +98,7 @@
                         let uuid = self.crypto.randomUUID();
                         const slider = document.getElementById('slider');
                         let sliderInput=`
-                                <div class="card" id="card${uuid}">
+                                <div class="card cards" id="card${uuid}">
                                     <div>
                                         <img src="/img/1296285.jpg" class="card-img-top" alt="...">
                                         <button class="todoEdit abs" id="cardEdit${uuid}"><i class="fa-solid fa-pen"></i></button>
@@ -112,26 +113,51 @@
                         slider.insertAdjacentHTML('beforeend', sliderInput);
                     }
                     card()
-                    for (let i = 0; i < oneDay.length; i++){
-                        const image = oneDay[i].image
-                        const title = oneDay[i].title
-                        const success = oneDay[i].success
-                        let uuid = self.crypto.randomUUID();
-                        const todoBoxes = document.getElementById('todoBoxes');
-                        let todoPlusBoxInput=`
-                                <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
-                                    ${title}
-                                    <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
-                                </li>`
-                        todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
-                    }
                 })
                 .catch((response) => {
                     const data = response.response.data;
                     console.log(data.errorMessage);
                 });
             }
+        //투두get
+        function todoGet(){
+            axios({
+                method: 'get',
+                url: '/api/todoLists/todayTodo',
+                params: {
+                    year, month, day
+                }
+            })
+                .then((response) => {
+                    const todayTodo = response.data.todayTodo;
+                    $('.todoBox').remove();
+                    for (let i = 0; i < todayTodo.length; i++){
+                        const title = todayTodo[i].title
+                        const success = todayTodo[i].success
+                        let uuid = self.crypto.randomUUID();
+                        const todoBoxes = document.getElementById('todoBoxes');
+                        if(success=="SUCCESS"){
+                            let todoSuccessInput=`
+                                <li class="todoBox" id="happy${uuid}" onclick="todoSuccessCancel('${uuid}')">
+                                    ${title}
+                                    <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                </li>`
+                            todoBoxes.insertAdjacentHTML('beforeend', todoSuccessInput);    
+                            $(`#happy${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
+                            $(`#todoEdit${uuid}`).hide();
+                        }else{
+                            let todoReadyInput=`
+                                <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
+                                    ${title}
+                                    <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                </li>`
+                            todoBoxes.insertAdjacentHTML('beforeend', todoReadyInput);
+                            }
+                        }
+                    })
+            }    
         
 </script>
 <script>
@@ -311,7 +337,7 @@
 </script>
 <script>
     function card(){
-        let leftBtn = [...document.getElementsByClassName("slider-leftBtn")]
+    let leftBtn = [...document.getElementsByClassName("slider-leftBtn")]
     let rightBtn = [...document.getElementsByClassName("slider-rightBtn")]
     let slider = [...document.querySelectorAll(".card-container")]
     let sliderDimension = document.querySelector(".card-container")
@@ -385,12 +411,6 @@
     .btntt:hover{background-color: rgba(255,255,255,0.7);}
     h2{text-align:center; margin-top: 50px;}
 
-    /* 카드섹션 */
-    /* .container {background-color: rgba(255,255,255);}
-    .cardBox {display: flex;  text-align: center;} */
-    /* .card { width: 19rem; height: 400px; margin: 80px 25px 20px 25px; position: relative} */
-    /* .card-img-top {height: 170px;} */
-        
     .FlipCardcontainer {
         width: 100%;
         height: 100%;
@@ -422,7 +442,6 @@
         scroll-padding-inline: 1rem;
         align-items: center;
     }
-
     .card {
         /* .card { width: 19rem; height: 400px; margin: 80px 25px 20px 25px; position: relative} */
         position: relative;

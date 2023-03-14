@@ -1,11 +1,19 @@
 const { Op } = require('sequelize');
 class TodoListRepository {
-  constructor(TodoModel) {
-    this.TodoModel = TodoModel;
+  constructor(TodoList, AllDayTodoList, AllDayTodoLists) {
+    this.TodoList = TodoList;
+    this.AllDayTodoList = AllDayTodoList;
+    this.AllDayTodoLists = AllDayTodoLists;
   }
-  semplefunc = async (req,res) =>{
-    const sempleV = await this.TodoModel;
-    return sempleV;
+  getTodayTodo = async (Day, userId) =>{
+    const todayTodo = await this.TodoList.findAll({
+      where: {
+        [Op.and]: [{ today:Day }, { userId }],
+      },
+      raw: true,
+    });
+    console.log(todayTodo);
+    return todayTodo;
   }
 }
 
