@@ -29,6 +29,14 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: null,
             allowNull:true
         },
+        createdAt:{
+            type:DataTypes.DATEONLY,
+            defaultValue:new Date()
+        },
+        updatedAt:{
+            type:DataTypes.DATEONLY,
+            defaultValue:new Date()
+        }
     },
     {
       sequelize,

@@ -31,6 +31,14 @@ module.exports = (sequelize, DataTypes) => {
         success: {
             type:DataTypes.ENUM('SUCCESS','READY'),
             defaultValue: 'READY'
+        },
+        createdAt:{
+            type:DataTypes.DATEONLY,
+            defaultValue:new Date()
+        },
+        updatedAt:{
+            type:DataTypes.DATEONLY,
+            defaultValue:new Date()
         }
     },
     {

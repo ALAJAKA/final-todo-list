@@ -9,13 +9,13 @@ const pageRouter = require('./pageRoute');
 
 
 //메인페이지 관련 컨트롤로
-router.use('/calendar', calendarRouter)
+router.use('/api', calendarRouter)
 //회원 관련 컨트롤러로
-router.use('/user', userRouter);
+router.use('/api', userRouter);
 //투두리스트 관련 컨트롤러로
-router.use('/todoList', todoListRouter);
+router.use('/api', todoListRouter);
 //버킷리스트 관련 컨트롤러로
-router.use('/bucketList', bucketListRouter);
+router.use('/api', bucketListRouter);
 //패아자 이동에 관한 라우터로
 router.use('/', pageRouter);
 // 메인페이지

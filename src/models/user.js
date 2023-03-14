@@ -29,6 +29,14 @@ module.exports = (sequelize, DataTypes) => {
       phone: {
           type:DataTypes.STRING
       },
+        createdAt:{
+            type:DataTypes.DATEONLY,
+            defaultValue:new Date()
+        },
+        updatedAt:{
+            type:DataTypes.DATEONLY,
+            defaultValue:new Date()
+        }
     },
     {
       sequelize,
