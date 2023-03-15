@@ -8,6 +8,7 @@ router.get("/cards", bucketListController.getBucketListCard);
 
 
 router.post("/plan", bucketListController.createBucketList);
+router.post("/cards", bucketListController.createBucketListCard);
 router.put("/plan", bucketListController.updateBucketList);
 
 

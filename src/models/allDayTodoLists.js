@@ -22,11 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       content: {
         type:DataTypes.STRING,
-        allowNull:false
       },
       image: {
         type:DataTypes.STRING,
-        allowNull:false
       },
       success: {
         type:DataTypes.ENUM('SUCCESS','READY'),
@@ -34,11 +32,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       createdAt:{
         type:DataTypes.DATEONLY,
-        defaultValue:new Date()
+        defaultValue:new Date().toISOString()
       },
       updatedAt:{
         type:DataTypes.DATEONLY,
-        defaultValue:new Date()
+        defaultValue:new Date().toISOString()
       }
     },
     {

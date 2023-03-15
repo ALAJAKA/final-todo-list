@@ -53,6 +53,19 @@ class BucketListController {
             console.log(err);
         };
     }
+
+    createBucketListCard = async (req, res) => {
+        try {
+            const userId = 1;
+            console.log(req.body);
+            console.log(req.file);
+            console.log('req',req);
+            res.status(200).json({msg: '수정완료'});
+        } catch (err) {
+            //error는 나중에
+            console.log(err);
+        };
+    }
 }
 
 module.exports = BucketListController;
