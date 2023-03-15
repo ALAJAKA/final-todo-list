@@ -58,9 +58,7 @@ class BucketListController {
         try {
             const userId = 1;
             console.log(req.body);
-            console.log(req.file);
-            console.log('req',req);
-            res.status(200).json({msg: '수정완료'});
+            res.status(200).json({msg: '카드 작성 완료'});
         } catch (err) {
             //error는 나중에
             console.log(err);

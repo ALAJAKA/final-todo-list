@@ -252,6 +252,9 @@
         $('#bucketInputBox').remove();
         $('#BucketPlusBox').show();
     }
+    function asd(){
+        alert("스파코 극혐")
+    }
 </script>
 <style>
     /*전체 옵션*/
@@ -403,9 +406,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/user/login" enctype="multipart/form-data" method="POST">
+                <form action="/api/bucketLists/cards" method="POST">
                     <div class="mb-3">
-
                         <input type="text" name="title" class="form-control" id="exampleFormControlInput1" maxlength="13">
                     </div>
                     <div class="mb-3">
@@ -414,11 +416,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="formFileSm" class="form-label">Image</label>
-                        <input class="form-control form-control-sm" name="image" id="formFileSm" type="file">
+                        <input type="file" class="form-control form-control-sm" name="image" id="formFileSm" >
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                        <button type="submit" class="btn btn-primary">등록</button>
+                        <button onclick="asd()" data-bs-dismiss="modal" class="btn btn-primary">등록</button>
                     </div>
                 </form>
             </div>
@@ -435,5 +437,5 @@
 </body>
 </html>
 
-
+<!--enctype="multipart/form-data"-->
 
