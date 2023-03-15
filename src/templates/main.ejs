@@ -60,12 +60,20 @@
     text-decoration: none;
   }
   .fc-header-toolbar{
-
     margin-bottom: 0 !important;
     height: 120px;
   }
+
+  .more {
+    display: inline-block;
+    transform: rotate(15deg);
+    position: relative;
+    top: -12px;
+  }
+
 </style>
 <script>
+  // main Calnedar 데이터 표시
   document.addEventListener('DOMContentLoaded', function () {
   var calendarEl = document.getElementById('calendar');
   var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -80,36 +88,54 @@
       return year + "년 " + month + "월";
     },
     events: function (info, success, failure) {
-      // BucketList 데이터 가져오기
-      fetch('/api/calendar/calendar')
+      // Calendar TodoList 데이터 가져오기
+      fetch('/api/calendar/todo')
         .then((response) => response.json())
         .then((data) => {
-          const bucket = data.data;
+          const todo = data.data;
+
+          // 달성률 계산
+          const achievements = {}; // 빈 객체 생성
+          for (let i = 0; i < todo.length; i++) {
+            const date = todo[i].today;
+            const achieved = todo[i].success === 'SUCCESS' ? 1 : 0; // 'SUCCESS'일 경우 1을, 아닐 경우('READY') 0
+            if (!achievements[date]) {
+              achievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
+            }
+            achievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
+            achievements[date].total++; // 해당 날짜의 total 에 +1 함 
+          }
+
+          // 이벤트 생성
           const events = [];
-          for (let i = 0; i < bucket.length; i++) {
+          for (const date in achievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
+            const achievementRate = achievements[date].total > 0
+              ? Math.round((achievements[date].achieved / achievements[date].total) * 100)
+              : 0; // 삼항 연산자를 사용하여 값이 0보다 크면 달성률 계산, 0보다 작거나 같으면(해당 날짜에 할 일 없는 경우) 0
             events.push({
-              title: bucket[i].title,
-              start: bucket[i].d_day,
-              color: '#FF7F50', // bucket 이벤트는 주황색으로 표시
+              title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
+              start: date, // 이벤트 시작 날짜
+              color: 'green', // todo 달성률 이벤트는 초록색으로 표시
             });
           }
 
-          // // TodoList 데이터 가져오기
-          // fetch('http://localhost:3000/calendar/preview/todo')
-          //   .then((response) => response.json())
-          //   .then((data) => {
-          //     const todo = data.data;
-          //     for (let i = 0; i < todo.length; i++) {
-          //       events.push({
-          //         title: todo[i].title,
-          //         start: todo[i].d_day, // 이벤트 시작 날짜
-          //       });
-          //     }
+          // Calendar BucketList 데이터 가져오기
+          fetch('/api/calendar/bucket')
+            .then((response) => response.json())
+            .then((data) => {
+              const bucket = data.data;
+              for (let i = 0; i < bucket.length; i++) {
+                events.push({
+                  title: bucket[i].title,
+                  start: bucket[i].d_day,
+                  color: '#FF7F50', // bucket 이벤트는 주황색으로 표시
+                });
+              }
               success(events);
-          //   })
-          //   .catch((error) => {
-          //     failure(error);
-          //   });
+            })
+            .catch((error) => {
+              failure(error);
+            });
         })
         .catch((error) => {
           failure(error);
@@ -118,9 +144,10 @@
     });
     calendar.render();
   });
+
   
   // TodoList 미리보기
-  fetch(`/api/calendar/preview/todo`)
+  fetch(`/api/preview/todo`)
     .then((response) => response.json())
     .then((data) => {
       const todo = data.data;
@@ -133,7 +160,7 @@
     });
 
   // BucketList 미리보기
-  fetch(`/api/calendar/preview/bucket`)
+  fetch(`/api/preview/bucket`)
     .then((response) => response.json())
     .then((data) => {
       const bucket = data.data;
@@ -159,15 +186,16 @@
   // });
   // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
 
-  function imageChange(){
-    $(event.target).parents('.col-md-6').css({'background-image': 'url("img/ac2.png")', 'background-size': '100% 100%'});
-    $(event.target).parents('.col-md-3').css({'transition': '0.5s','background-size': '100% 100%', 'transform': 'rotate(45deg)', 'position': 'relative'}).animate({'top': '30px'}, 100);
-  }
+  // function imageChange(){
+  //   $(event.target).parents('.col-md-6').css({'background-image': 'url("img/ac2.png")', 'background-size': '100% 100%'});
+  //   $(event.target).parents('.col-md-3').css({'transition': '0.5s','background-size': '100% 100%', 'position': 'relative'}).animate({'top': '10px'});
+  // }
 
-  function imageChange2(){
-    $(event.target).parents('.col-md-6').css({'background-image': 'url("img/abc.png")'});
-    $(event.target).parents('.col-md-3').animate({'transition': '0.5s','background-size': '100% 100%', 'transform': 'none', 'position': 'static'}).animate({'top': '0'}, 100);
-  }
+  // function imageChange2(){
+  //   $(event.target).parents('.col-md-6').css({'background-image': 'url("img/abc.png")'});
+  //   $(event.target).parents('.col-md-3').animate({'transition': '0.5s','background-size': '100% 100%', 'transform': 'none', 'position': 'static'}).animate({'top': '0'});
+  // }
+  // onmouseover="imageChange()" onmouseleave="imageChange2()"
 
 </script>
 <body>
@@ -196,7 +224,7 @@
                   <h3 style="text-align: center;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
                 </div>
                 <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
-                  <p style="text-align: left; padding-right:70px; margin:0;"><a href="/page/todoListMonth" style="color: blue; font-weight: bold; text-decoration-line: none; " class="more" onmouseover="imageChange()" onmouseleave="imageChange2()">+More</a></p>
+                  <p style="text-align: left; padding-right:70px; margin:0;"><a href="/page/todoListMonth" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
                 </div>
               </div>
               <div style="text-align: center; border-radius: 10px;" id="todoPreview">
@@ -209,7 +237,7 @@
                   <h3 style="text-align: center;"><img src="/img/bucket-list.png" style="width:50px; height:50px;">버킷 리스트</h3>
                 </div>
                 <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
-                  <p style="text-align: right; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more" onmouseover="imageChange()" onmouseleave="imageChange2()">+More</a></p>
+                  <p style="text-align: right; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
                 </div>
               </div>  
               <div style="text-align: center;" id="bucketPreview"></div>

@@ -7,11 +7,18 @@ class CalendarRepository {
     this.bucketListModel = BucketListModel;
   }
 
-  findCalendar = async () => {
-    const calendar = await this.bucketListModel.findAll({
+  findBucketCalendar = async () => {
+    const bucketCalendar = await this.bucketListModel.findAll({
       order: [['id', 'desc']],
     });
-    return calendar;
+    return bucketCalendar;
+  };
+
+  findTodoCalendar = async () => {
+    const todoCalendar = await this.todoListModel.findAll({
+      order: [['id', 'desc']],
+    });
+    return todoCalendar;
   };
 
   findTodoList = async () => {

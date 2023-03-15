@@ -9,7 +9,7 @@ const pageRouter = require('./pageRoute');
 
 
 //메인페이지 관련 컨트롤로
-router.use('/api/calendar', calendarRouter);
+router.use('/api', calendarRouter);
 //회원 관련 컨트롤러로
 router.use('/api/user/', userRouter);
 //투두리스트 관련 컨트롤러로
