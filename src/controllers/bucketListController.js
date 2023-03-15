@@ -16,6 +16,18 @@ class BucketListController {
     };
   }
 
+    getBucketListCard= async (req, res) => {
+        try {
+            const userId = 1;
+            const BucketListCards = await this.bucketListService.getBucketListCards(userId);
+            res.status(200).json(BucketListCards);
+        }
+        catch (err) {
+            //error는 나중에
+            console.log(err);
+        };
+    }
+
   createBucketList = async (req, res) => {
     try {
       const userId = 1;

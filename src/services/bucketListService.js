@@ -1,6 +1,5 @@
 const BucketListRepository = require('../repositories/bucketRepository')
-// const {BucketList} = require('../models/bucketList')
-// const config = require('../config/config');
+
 
 class BucketListService {
   bucketListRepository = new BucketListRepository();
@@ -8,6 +7,10 @@ class BucketListService {
       const BucketList = await this.bucketListRepository.getBucketList(userId,date);
       return BucketList;
   }
+    getBucketListCards = async (userId) => {
+        const BucketListCards = await this.bucketListRepository.getBucketListCards(userId);
+        return BucketListCards;
+    }
 
     createBucketList = async (userId,title,date) => {
         const BucketList = await this.bucketListRepository.createBucketList(userId,title,date);

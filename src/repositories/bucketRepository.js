@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { BucketList } = require('../models')
+const {BucketListCard} = require('../models')
 
 class BucketListRepository {
 
@@ -12,6 +13,16 @@ class BucketListRepository {
     });
     return BucketLists;
   }
+
+  getBucketListCards= async (userId) => {
+    const BucketListCards = await BucketListCard.findAll({ where : {
+        userId
+      }
+    });
+    return BucketListCards;
+  }
+
+
   createBucketList = async (userId,title,date) => {
     const bucketList = await BucketList.create({
       userId,
