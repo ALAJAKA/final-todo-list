@@ -3,7 +3,16 @@ const CalendarService = require('../services/calendarService');
 class CalendarController {
   calendarService = new CalendarService();
 
-  findTodoList = async (req, res, next) => {
+  findCalendar = async (req, res) => {
+    try {
+      const calendar = await this.calendarService.findCalendar();
+      res.status(200).json({ data: calendar });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  findTodoList = async (req, res) => {
     try {
       const todolist = await this.calendarService.findTodoList();
       res.status(200).json({ data: todolist });
@@ -12,7 +21,7 @@ class CalendarController {
     }
   }
 
-  findBucketList = async (req, res, next) => {
+  findBucketList = async (req, res) => {
     try {
       const bucketlist = await this.calendarService.findBucketList();
       res.status(200).json({ data: bucketlist });
