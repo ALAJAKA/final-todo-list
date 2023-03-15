@@ -74,11 +74,13 @@
             todoGet();
         }
 
-        //투두get
-        function todoGet(){
+        //카드get
+        function cardGet(){
+            const date = new Date(year, month-1, day).toISOString().substring(0,10);
+            console.log(date);
             axios({
                 method: 'get',
-                url: '/todoList/1234',
+                url: '/api/todoLists/1234',
                 params: {
                     year, month, day
                 }
@@ -88,6 +90,7 @@
                     const oneDay = response.data.oneDay;
                     console.log(always);
                     console.log(oneDay);
+                    $('.cards').remove();
                     for (let i = 0; i < always.length; i++){
                         const content = always[i].content
                         const image = always[i].image
@@ -97,7 +100,7 @@
                         let uuid = self.crypto.randomUUID();
                         const slider = document.getElementById('slider');
                         let sliderInput=`
-                                <div class="card" id="card${uuid}">
+                                <div class="card cards" id="card${uuid}">
                                     <div>
                                         <img src="/img/1296285.jpg" class="card-img-top" alt="...">
                                         <button class="todoEdit abs" id="cardEdit${uuid}"><i class="fa-solid fa-pen"></i></button>
@@ -112,26 +115,52 @@
                         slider.insertAdjacentHTML('beforeend', sliderInput);
                     }
                     card()
-                    for (let i = 0; i < oneDay.length; i++){
-                        const image = oneDay[i].image
-                        const title = oneDay[i].title
-                        const success = oneDay[i].success
-                        let uuid = self.crypto.randomUUID();
-                        const todoBoxes = document.getElementById('todoBoxes');
-                        let todoPlusBoxInput=`
-                                <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
-                                    ${title}
-                                    <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
-                                </li>`
-                        todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
-                    }
                 })
                 .catch((response) => {
                     const data = response.response.data;
                     console.log(data.errorMessage);
                 });
             }
+        //투두get
+        function todoGet(){
+            const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+            axios({
+                method: 'get',
+                url: '/api/todoLists/todayTodo',
+                params: {
+                    date
+                }
+            })
+                .then((response) => {
+                    const getTodayTodo = response.data.getTodayTodo;
+                    $('.todoBox').remove();
+                    for (let i = 0; i < getTodayTodo.length; i++){
+                        const title = getTodayTodo[i].title
+                        const success = getTodayTodo[i].success
+                        let uuid = self.crypto.randomUUID();
+                        const todoBoxes = document.getElementById('todoBoxes');
+                        if(success=="SUCCESS"){
+                            let todoSuccessInput=`
+                                <li class="todoBox" id="happy${uuid}" onclick="todoSuccessCancel('${uuid}')">
+                                    ${title}
+                                    <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                </li>`
+                            todoBoxes.insertAdjacentHTML('beforeend', todoSuccessInput);    
+                            $(`#happy${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
+                            $(`#todoEdit${uuid}`).hide();
+                        }else{
+                            let todoReadyInput=`
+                                <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
+                                    ${title}
+                                    <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                </li>`
+                            todoBoxes.insertAdjacentHTML('beforeend', todoReadyInput);
+                            }
+                        }
+                    })
+            }    
         
 </script>
 <script>
@@ -191,26 +220,48 @@
 
     //투두 완료 d
     function todoSuccess(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         let title = document.getElementById(`happy${happy}`).innerText
-        $(`#happy${happy}`).replaceWith(`
-            <li class="todoBox" id="happy${happy}" onclick="todoSuccessCancel('${happy}')">
-                ${title}
-                <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
-            </li>`)
-        $(`#happy${happy}`).css({"text-decoration":"line-through", "color":"#777"})
-        $(`#todoEdit${happy}`).hide();
+        let success="SUCCESS"
+        axios({
+                method: 'put',
+                url: '/api/todoLists/todoSuccess',
+                data: {
+                    date, title, success
+                }
+            })
+                .then((response) => {
+                    $(`#happy${happy}`).replaceWith(`
+                        <li class="todoBox" id="happy${happy}" onclick="todoSuccessCancel('${happy}')">
+                            ${title}
+                            <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
+                            <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                        </li>`)
+                    $(`#happy${happy}`).css({"text-decoration":"line-through", "color":"#777"})
+                    $(`#todoEdit${happy}`).hide();
+                })
         }
     //투두 완료취소 d
     function todoSuccessCancel(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         let title = document.getElementById(`happy${happy}`).innerText
-        $(`#happy${happy}`).replaceWith(`
-            <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
-            ${title}
-            <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
-            <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
-            </li>`)
-        $(`#todoEdit${happy}`).show();
+        let success="READY"
+        axios({
+                method: 'put',
+                url: '/api/todoLists/todoSuccess',
+                data: {
+                    date, title, success
+                }
+            })
+                .then((response) => {
+                    $(`#happy${happy}`).replaceWith(`
+                        <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
+                        ${title}
+                        <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                        </li>`)
+                    $(`#todoEdit${happy}`).show();
+                })
     }
     //투두 수정버튼
     function todoEdit(happy){
@@ -220,7 +271,7 @@
         $(`#happy${happy}`).replaceWith(`
             <li class="todoBoxLi" id="todoEditBox${happy}">                       
                 <div class="todoBox">
-                    <input class="todoInput" id="todoEdit${happy}" type="text" value="${title}" maxlength="24">
+                    <input class="todoInput" id="todoEdit${happy}" type="text" name="${title}" value="${title}" maxlength="24">
                     <button class="todoCheck2" onclick="todoEditSave('${happy}')"><i class="fa-solid fa-check"></i></button>
                     <button class="todoCancel2" onclick="todoEditCancel('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                 </div>
@@ -228,20 +279,36 @@
             `);
     }
     //투두 수정저장 d
-    function todoEditSave(happy){   
-        const title = document.getElementById(`todoEdit${happy}`).value;
-        // console.log(title);
-        // console.log(happy);
-        if (title.trim() == ""){
+    function todoEditSave(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        const beforeTitle = document.getElementById(`todoEdit${happy}`).name;
+        const afterTitle = document.getElementById(`todoEdit${happy}`).value;
+        console.log(beforeTitle);
+        console.log(afterTitle);
+        if (afterTitle.trim() == ""){
             alert("내용이 없습니다.")
         }else{
-            $(`#todoEditBox${happy}`).replaceWith(`
+            if(beforeTitle==afterTitle){
+                todoEditCancel(happy)
+                return;
+            }
+            let success="READY"
+            axios({
+                    method: 'put',
+                    url: '/api/todoLists/todayTodo',
+                    data: {
+                        date, beforeTitle, afterTitle
+                    }
+                })
+                .then((response) => {
+                    $(`#todoEditBox${happy}`).replaceWith(`
                     <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
-                        ${title}
+                        ${afterTitle}
                         <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
                         <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                     </li>  
                     `);
+                })
         }
     }
     //투두 수정취소
@@ -259,7 +326,18 @@
     //투두 삭제 d
     function todoDelete(happy){
         cp();
-        $(`#happy${happy}`).remove();
+        let title = document.getElementById(`happy${happy}`).innerText
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        axios({
+                method: 'delete',
+                url: '/api/todoLists/todayTodo',
+                data: {
+                    date, title
+                }
+            })
+                .then((response) => {
+                    $(`#happy${happy}`).remove();
+                })
     }
     //투두추가버튼
     function todoPlus() {
@@ -279,26 +357,36 @@
     }
     //투두추가저장
     function todoPlusSave(){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         let uuid = self.crypto.randomUUID();
         const title = document.getElementById('todayTodo').value;
         if (title.trim() == ""){
             alert("내용이 없습니다.")
         }else{
-            const todoBoxes = document.getElementById('todoBoxes');
-            let todoPlusBoxInput=`
+            axios({
+                method: 'post',
+                url: '/api/todoLists/todayTodo',
+                data: {
+                    date, title
+                }
+            })
+                .then((response) => {
+                    const todoBoxes = document.getElementById('todoBoxes');
+                    let todoPlusBoxInput=`
                     <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
-                        ${title}
-                        <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
-                        <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
-                    </li>  `
-            $(`#todoPlusBtn`).replaceWith(`
-                    <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>`);
+                                ${title}
+                                <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                            </li>  `
+                    $(`#todoPlusBtn`).replaceWith(`
+                            <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>`);
 
-            todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
-            $('#todoInputBox').remove();
-            $('#todoPlusBox').show();
+                    todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+                    $('#todoInputBox').remove();
+                    $('#todoPlusBox').show();
+                })
         }
     }
     //투두추가취소
@@ -311,7 +399,7 @@
 </script>
 <script>
     function card(){
-        let leftBtn = [...document.getElementsByClassName("slider-leftBtn")]
+    let leftBtn = [...document.getElementsByClassName("slider-leftBtn")]
     let rightBtn = [...document.getElementsByClassName("slider-rightBtn")]
     let slider = [...document.querySelectorAll(".card-container")]
     let sliderDimension = document.querySelector(".card-container")
@@ -385,12 +473,6 @@
     .btntt:hover{background-color: rgba(255,255,255,0.7);}
     h2{text-align:center; margin-top: 50px;}
 
-    /* 카드섹션 */
-    /* .container {background-color: rgba(255,255,255);}
-    .cardBox {display: flex;  text-align: center;} */
-    /* .card { width: 19rem; height: 400px; margin: 80px 25px 20px 25px; position: relative} */
-    /* .card-img-top {height: 170px;} */
-        
     .FlipCardcontainer {
         width: 100%;
         height: 100%;
@@ -422,7 +504,6 @@
         scroll-padding-inline: 1rem;
         align-items: center;
     }
-
     .card {
         /* .card { width: 19rem; height: 400px; margin: 80px 25px 20px 25px; position: relative} */
         position: relative;

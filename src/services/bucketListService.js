@@ -1,32 +1,26 @@
 const BucketListRepository = require('../repositories/bucketRepository')
-// const {BucketList} = require('../models/bucketList')
-// const config = require('../config/config');
+
 
 class BucketListService {
   bucketListRepository = new BucketListRepository();
-
-  // C -------------------------------------------------------------------------------------------------------------------
-  createBucketList = async (title, image, content, success, d_day, id) =>{
-      const createBucketList = await this.bucketListRepository.createBucketList(title, image, content, success, d_day, id);
-      return createBucketList;
+  getBucketList = async (userId,date) => {
+      const BucketList = await this.bucketListRepository.getBucketList(userId,date);
+      return BucketList;
   }
+    getBucketListCards = async (userId) => {
+        const BucketListCards = await this.bucketListRepository.getBucketListCards(userId);
+        return BucketListCards;
+    }
 
-  // R -------------------------------------------------------------------------------------------------------------------
-  getBucketList = async (userId) => {
-      const userBucketList = await this.bucketListRepository.getBucketList(userId);
-      return userBucketList;
-  }
+    createBucketList = async (userId,title,date) => {
+        const BucketList = await this.bucketListRepository.createBucketList(userId,title,date);
+        return BucketList;
+    }
 
-  // U -------------------------------------------------------------------------------------------------------------------
-  editBucketList = async (id, title, image, content, success, d_day) => {
-      const editBucketList = await this.bucketListRepository.editBucketList(id, title, image, content, success, d_day);
-      return editBucketList;
-  }
-
-  // D -------------------------------------------------------------------------------------------------------------------
-  deleteBucketList = async (id) => {
-      await this.bucketListRepository.deleteBucketList(id);
-    };
+    updateBucketList = async (userId,title,date,before,beforeDay) => {
+        const BucketList = await this.bucketListRepository.updateBucketList(userId,title,date,before,beforeDay);
+        return BucketList;
+    }
 }
 
 module.exports = BucketListService;

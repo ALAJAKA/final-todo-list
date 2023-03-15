@@ -3,13 +3,12 @@ const router = express.Router();
 const BucketListController = require('../controllers/bucketListController');
 const bucketListController = new BucketListController();
 
-// C
-router.post("/api/bucket",bucketListController.createBucketList);
-// R
-router.get("/api/bucket", bucketListController.getBucketList);
-// U
-router.put("/api/bucket/:id", bucketListController.editBucketList);
-// D
-router.delete("/api/bucket/:id", bucketListController.deleteBucketList);
+router.get("/plan", bucketListController.getBucketList);
+router.get("/cards", bucketListController.getBucketListCard);
+
+
+router.post("/plan", bucketListController.createBucketList);
+router.put("/plan", bucketListController.updateBucketList);
+
 
 module.exports = router;
