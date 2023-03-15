@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>todo 상세보기</title>
+    <title>bucketList</title>
     <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
@@ -17,69 +17,72 @@
     var month =new Date().getMonth()+1;// 현재 날짜의 월
     var day =new Date().getDate();// 현재 날짜
     $(document).ready(function() {
-        calender();
         getBucketList();
     });
-    // 달력만들기
-    function calender(){
-        // 월별 일수 처리
-        const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
-        const thisYear = new Date().getFullYear(); // 오늘 날짜의 년
-        const thisMonth = new Date().getMonth()+1; // 오늘 날짜의 월
-        const thisDate = new Date().getDate();//      오늘 날짜의 일
-        if(year%4==0){//윤년처리
-            days[2]++;
-        }
+    //페이지 로딩시 데이터 가져오기 카드
 
-        $('#headerImg').removeClass('winter');
-        $('#headerImg').removeClass('spring');
-        $('#headerImg').removeClass('summer');
-        $('#headerImg').removeClass('fall');
-        if (month == 3 ||month == 4 ||month == 5 ) $('#headerImg').addClass('spring');
-        if (month == 6 ||month == 7 ||month == 8 ) $('#headerImg').addClass('summer');
-        if (month == 9 ||month == 10 ||month == 11 ) $('#headerImg').addClass('fall');
-        if (month == 12 ||month == 1 ||month == 2 ) $('#headerImg').addClass('winter');
-        $('#thisDay').append(`<span>TODAY</span>`);
-        $('#today').append(`<span>${month} 월 ${day} 일</span>`);
-    }
-
-    // 페이지 로딩시 데이터 가져오기
+    // 페이지 로딩시 데이터 가져오기 하단
     function getBucketList(){
         const listBox = $('#bucketListD-day');
-        axios({
-            method: 'get',
-            url: '/bucketList/api',
-            data: {},
-        })
-            .then((response) => {
-                const bucketList = response.data;
-                console.log(bucketList);
-                for(let i=0; i<bucketList.length; i++){
-                    const title = bucketList[i].title;
-                    const dayValue = bucketList[i].d_day.substring(0,10);
-                    listBox.append(`
-                    <li class="bucketBoxLi">
-                        <div class="row" style="margin:0;">
-                            <div class="col-md-3 bucketDay calP">
-                                <p>${dayValue}</p>
+        const date = new Date().toISOString().substring(0,10);
+        $.ajax({
+            type: 'GET',
+            url: '/api/bucketLists/plan',
+            data: {date:date},
+            success: function (response) {
+                const bucketLists = response;
+                for(let i =0; i<bucketLists.length; i++){
+                    const title = bucketLists[i].title;
+                    const dayValue = bucketLists[i].d_day.substring(0,10);
+                        listBox.append(`
+                        <li class="bucketBoxLi">
+                            <div class="row" style="margin:0;">
+                                <div class="col-md-3 bucketDay calP">
+                                    <p>${dayValue}</p>
+                                </div>
+                                <div class="col-md-9 bucketDay">
+                                    <p style="text-align: left">${title}</p>
+                                        <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
+                                        <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
                             </div>
-                            <div class="col-md-9 bucketDay">
-                                <p style="text-align: left">${title}</p>
-                                    <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                    `)
+                        </li>
+                        `);
                 }
-            })
-            .catch((response) => {
-                const data = response.response.data;
-                console.log(data.errorMessage);
-            });
-    }
+            },
+            error: function (error){
+                listBox.append('<h1> 현재는 데이터 조회가 되지 않습니다.</h1>');
+                $('#BucketPlusBox').hide();
+            }
+        });
 
-    //버킷 수정버튼
+        //     .then((response) => {
+        //         const bucketList = response.data;
+        //         for(let i=0; i<bucketList.length; i++){
+        //             const title = bucketList[i].title;
+        //             const dayValue = bucketList[i].d_day.substring(0,10);
+        //             listBox.append(`
+        //             <li class="bucketBoxLi">
+        //                 <div class="row" style="margin:0;">
+        //                     <div class="col-md-3 bucketDay calP">
+        //                         <p>${dayValue}</p>
+        //                     </div>
+        //                     <div class="col-md-9 bucketDay">
+        //                         <p style="text-align: left">${title}</p>
+        //                             <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
+        //                             <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
+        //                     </div>
+        //                 </div>
+        //             </li>
+        //             `)
+        //         }
+        //     })
+        //     .catch((response) => {
+        //         const data = response.response.data;
+        //         console.log(data.errorMessage);
+        //     });
+    }
+    //버킷 수정버튼 데이터 처리 필요X
     function bucketEdit(){
         $('#BucketPlusBox').hide();
         const myClass = $(event.target).parents('.bucketBoxLi');
@@ -93,8 +96,8 @@
                             </div>
                             <div class="col-md-9 bucketDay">
                                     <input class="bucketInput" id="bucketRe" type="text" placeholder="Bucket-List를 입력해주세요" maxlength="24" style="text-align: left"value="${title}">
-                                    <button class="bucketIcon" onclick="bucketEditSave()"><i class="fa-solid fa-check"></i></button>
-                                    <button class="bucketIcon deleteIcon" onclick="bucketEditCancel('${dayValue},${title}')"><i class="fa-solid fa-xmark"></i></button>
+                                    <button class="bucketIcon" onclick="bucketEditSave('${title}','${dayValue}')"><i class="fa-solid fa-check"></i></button>
+                                    <button class="bucketIcon deleteIcon" onclick="bucketEditCancel('${dayValue}','${title}')"><i class="fa-solid fa-xmark"></i></button>
                                 </button>
                             </div>
                         </div>
@@ -103,28 +106,29 @@
         $('#bucketRe').focus();
     }
     //버킷 수정저장
-    function bucketEditSave(){
+    function bucketEditSave(before,beforeDay){
+        const listBox = $('#bucketListD-day *');
         const myClass = $(event.target).parents('.bucketBoxLi');
         let title = $(event.target).parents('.col-md-9').children('input').val();
         const dayValue = $(event.target).parents('.bucketBoxLi').find('.calInput').val();
-        if(title==='')alert('입력된 값이 없습니다.');
-        myClass.html(`
-        <li class="bucketBoxLi">
-                        <div class="row" style="margin:0;">
-                            <div class="col-md-3 bucketDay calP">
-                                <p>${dayValue}</p>
-                            </div>
-                            <div class="col-md-9 bucketDay">
-                                <p style="text-align: left" >${title}</p>
-                                    <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
-                            </div>
-                        </div>
-                    </li>
-        `)
+        if(title==='') return alert('입력된 값이 없습니다.');
+        $.ajax({
+            type : "PUT",
+            url : '/api/bucketLists/plan',
+            data : {date:dayValue,
+                title:title,
+                before:before,
+                beforeDay:beforeDay,
+            },
+            success: function (response) {
+                alert(response.msg);
+                listBox.remove();
+                getBucketList();
+            }
+        });
         $('#BucketPlusBox').show();
     }
-    //버킷 수정취소
+    //버킷 수정취소 데이터 처리 필요X
     function bucketEditCancel(dayValue,title){
         const myClass = $(event.target).parents('.bucketBoxLi');
         myClass.html(`
@@ -143,21 +147,29 @@
         `)
         $('#BucketPlusBox').show();
     }
-    //버킷 삭제
+    //버킷 삭제 나중에
     function bucketDelete(){
-        const aaaa = $(event.target).parents('.bucketBoxLi');
-        aaaa.remove();
+        const listBox = $(event.target).parents('.bucketBoxLi');
+        $.ajax({
+            type:"DELETE",
+            url:'/api/bucketLists/plan',
+            data:{},
+            success:function(response){
+
+            }
+        })
+        listBox.remove();
     }
-    //버킷추가버튼
+    //버킷추가버튼 데이터 처리 필요 X
     function bucketPlus() {
         $('#BucketPlusBox').hide();
         const listBox =  $('#bucketListD-day');
-        if(month.toString().length<2) month='0'+month;
+        const date = new Date().toISOString().substring(0,10);
         let bucketInput=`
                     <li class="bucketBoxLi" id="bucketInputBox" >
                         <div class="row" style="margin:0;">
                             <div class="col-md-3 bucketDay">
-                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" value="${year}-${month}-${day}" maxlength="10">
+                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" value="${date}" maxlength="10">
                             </div>
                             <div class="col-md-9 bucketDay">
                                     <input class="bucketInput" id="bucketCr" type="text" placeholder="Bucket-List를 입력해주세요" maxlength="24" style="text-align: left">
@@ -170,30 +182,43 @@
             `
         listBox.append(bucketInput);
     }
-    //버킷추가저장
+    //버킷추가저장 데이터 처리O
     function bucketSave(){
         const listBox = $('#bucketListD-day');
-        const myClass = $(event.target).parents('.col-md-9').children('input').val();
+        const title = $(event.target).parents('.col-md-9').children('input').val();
         const dayValue = $(event.target).parents('.bucketBoxLi').find('.calInput').val();
-        if (myClass === "") {
+        if (title === "") {
             alert('내용을 입력해 주세요.');
-        }else {
-            const addBucketList = `<li class="bucketBoxLi">
-                        <div class="row" style="margin:0;">
-                            <div class="col-md-3 bucketDay calP">
-                                <p>${dayValue}</p>
-                            </div>
-                            <div class="col-md-9 bucketDay">
-                                <p style="text-align: left">${myClass}</p>
-                                    <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
-                            </div>
-                        </div>
-                    </li>`;
-            listBox.append(addBucketList);
-            $('#bucketInputBox').remove();
-            $('#BucketPlusBox').show();
+            return ;
         }
+        $.ajax({
+            type : "POST",
+            url : '/api/bucketLists/plan',
+            data : {date:dayValue,
+                    title:title},
+            success: function (response) {
+                alert(response.msg);
+            },
+            error: function (error){
+                listBox.append('<h1> 현재는 데이터 조회가 되지 않습니다.</h1>');
+            }
+        });
+        const addBucketList = `<li class="bucketBoxLi">
+                    <div class="row" style="margin:0;">
+                        <div class="col-md-3 bucketDay calP">
+                            <p>${dayValue}</p>
+                        </div>
+                        <div class="col-md-9 bucketDay">
+                            <p style="text-align: left">${title}</p>
+                                <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
+                                <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                </li>`;
+        listBox.append(addBucketList);
+        $('#bucketInputBox').remove();
+        $('#BucketPlusBox').show();
+
     }
     //버킷추가취소
     function bucketPlusCancel(){
@@ -293,15 +318,15 @@
         <h2 style="text-align: center; margin-top: 50px;">버킷리스트 카드</h2>
         <div id="carouselExampleControlsNoTouching" class="carousel slide" data-bs-touch="false">
             <div class="carousel-inner" style="position: relative; width: 100%;"><!-- 카드 뭉치-->
-                <div class="carousel-item active" >
-                    <div class="cardBox w-100" >
+                <div class="carousel-item active">
+                    <div class="cardBox w-100">
                         <div class="card cardPlusBox" data-bs-slide-to="0">
                             <!-- 모달 버튼-->
                             <button type="button" class="btn cardPlus" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         </div>
-                        <div class="card" data-bs-slide-to="1">
+                        <div class="card">
                             <div>
                                 <img src="/img/1296285.jpg" class="card-img-top" alt="...">
                                 <button class="bucketEdit abs"><i class="fa-solid fa-pen"></i></button>
@@ -341,16 +366,16 @@
                 </div> <!--처음 카드 뭉치-->
                 <div class="carousel-item">
                     <div class="cardBox w-100" style="margin:0 auto;" >
-                        <div class="card" style="width: 18rem;" data-bs-slide-to="2">
-                            <img src="..." class="card-img-top" alt="...">
+                        <div class="card" style="width: 18rem;">
+                            <img src="" class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">Card title</h5>
                                 <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                                 <a href="#" class="btn btn-primary">Go somewhere</a>
                             </div>
                         </div>
-                        <div class="card" style=" width: 18rem;"data-bs-slide-to="3">
-                            <img src="..." class="card-img-top" alt="...">
+                        <div class="card" style=" width: 18rem;">
+                            <img src="" class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">Card title</h5>
                                 <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
@@ -406,9 +431,7 @@
 <!--                            </div>-->
 <!--                        </div>-->
 <!--                    </li>-->
-
                 </ul>
-
 <!--                +버튼 구조-->
                 <ul class="bucketBoxes" >
                     <li class="bucketBoxLi" id="BucketPlusBox">

@@ -1,35 +1,39 @@
 const { Op } = require('sequelize');
 const { BucketList } = require('../models')
-// const BucketListModel = require('../models/bucketList');
 
 class BucketListRepository {
-  // constructor(BucketListModel) {
-  //   this.bucketListModel = BucketListModel;
-  // }
 
-  // C -------------------------------------------------------------------------------------------------------------------
-  createBucketList = async (title, image, content, success, d_day, userId) =>{
-    const createBucketList = await BucketList.create({ title, image, content, success, d_day, userId });
-    return createBucketList;
+  getBucketList = async (userId,date) => {
+    const BucketLists = await BucketList.findAll({ where : {
+      userId ,
+      d_day: {[Op.gte]:date},
+    },
+      order:[['d_day','ASC']]
+    });
+    return BucketLists;
   }
-
-  // R -------------------------------------------------------------------------------------------------------------------
-  getBucketList = async (userId) => {
-    const userBucketList = await BucketList.findAll({ where : { userId } });
-    return userBucketList;
+  createBucketList = async (userId,title,date) => {
+    const bucketList = await BucketList.create({
+      userId,
+      title,
+      d_day:date,
+    });
+    return bucketList;
   }
-
-  // U -------------------------------------------------------------------------------------------------------------------
-  editBucketList = async (id, title, image, content, success, d_day) => {
-    await BucketList.update( { title, image, content, success, d_day }, { where: { id } });
-    const editBucketList = { id, title, image, content, success, d_day }
-    return editBucketList;
+  updateBucketList= async (userId,title,date,before,beforeDay) => {
+    console.log(title);
+    const bucketList = await BucketList.update({
+      title:title,
+      d_day:date,
+    },{where :{
+        userId:userId,
+        title:before,
+        d_day:beforeDay
+      },
+      limit:1
+    });
+    return bucketList;
   }
-
-  // D -------------------------------------------------------------------------------------------------------------------
-  deleteBucketList = async (id) => {
-    await BucketList.destroy({ where: { id } });
-  };
 }
 
 module.exports = BucketListRepository;
