@@ -17,11 +17,14 @@
         const thisYear = new Date().getFullYear(); // 오늘 날짜의 년
         const thisMonth = new Date().getMonth()+1; // 오늘 날짜의 월
         const thisDate = new Date().getDate();//      오늘 날짜의 일
+        const today = new Date(thisYear, thisMonth-1, thisDate, 9).toISOString().substring(0,10);
         var year = new Date().getFullYear();// 현재 날짜의 년
         var month =new Date().getMonth()+1;// 현재 날짜의 월
         var day =new Date().getDate();// 현재 날짜
         $(document).ready(function() {
             calender();
+            dayDiv();
+            cardGet();
             todoGet();
         });
         // 달력만들기
@@ -59,6 +62,8 @@
             $('#month *').remove();
             $('#day *').remove();
             calender()
+            dayDiv();
+            cardGet()
             todoGet();
         }
         // 이전일로 이동
@@ -71,35 +76,55 @@
             $('#month *').remove();
             $('#day *').remove();
             calender()
+            dayDiv();
+            cardGet()
             todoGet();
         }
 
         //카드get
         function cardGet(){
-            const date = new Date(year, month-1, day).toISOString().substring(0,10);
+            const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
             console.log(date);
+            console.log(today);
             axios({
                 method: 'get',
-                url: '/api/todoLists/1234',
+                url: '/api/todoLists/alldayTodo',
                 params: {
-                    year, month, day
+                    date
                 }
             })
                 .then((response) => {
-                    const always = response.data.always;
-                    const oneDay = response.data.oneDay;
-                    console.log(always);
-                    console.log(oneDay);
+                    const getAlldayTodo = response.data.getAlldayTodo;
                     $('.cards').remove();
-                    for (let i = 0; i < always.length; i++){
-                        const content = always[i].content
-                        const image = always[i].image
-                        const title = always[i].title
-                        const success = always[i].success
+                    for (let i = 0; i < getAlldayTodo.length; i++){
+                        const content = getAlldayTodo[i].content
+                        const image = getAlldayTodo[i].image
+                        const title = getAlldayTodo[i].title
+                        const success = getAlldayTodo[i].success
 
                         let uuid = self.crypto.randomUUID();
-                        const slider = document.getElementById('slider');
-                        let sliderInput=`
+                        const cardBox = document.getElementById('slider');
+                        if(success=="SUCCESS"){
+                            let cardSuccessInput=`
+                                            <div class="card cards" id="card${uuid}">
+                                                <div>
+                                                    <img src="/img/1296285.jpg" class="card-img-top" alt="...">
+                                                    <button class="todoEdit abs" id="cardEdit${uuid}"><i class="fa-solid fa-pen"></i></button>
+                                                    <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                                </div>
+                                                <div class="card-body" id="cardBody${uuid}">
+                                                    <h5 class="card-title" id="cardTitle${uuid}">${title}</h5>
+                                                    <p class="card-text" id="cardText${uuid}">${content}</p>
+                                                    <button class="todoBack abs3" id="cardSuccessCancel${uuid}" onclick="cardSuccessCancel('${uuid}')"><i class="fa-solid fa-rotate-left"></i></button>
+                                                </div>
+                                            </div>
+                                            `
+                            cardBox.insertAdjacentHTML('beforeend', cardSuccessInput);
+                            $(`#cardTitle${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
+                            $(`#cardText${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
+                            $(`#cardEdit${uuid}`).hide();
+                        }else{
+                            let cardReadyInput=`
                                 <div class="card cards" id="card${uuid}">
                                     <div>
                                         <img src="/img/1296285.jpg" class="card-img-top" alt="...">
@@ -112,14 +137,13 @@
                                         <button class="todoCheck abs2" id="cardSuccess${uuid}" onclick="cardSuccess('${uuid}')"><img src="/img/check2.png" height="50px;"></button>
                                     </div>
                                 </div>`
-                        slider.insertAdjacentHTML('beforeend', sliderInput);
+                            cardBox.insertAdjacentHTML('beforeend', cardReadyInput);
+                        }
+                    }if(date>today){
+                        $('.todoCheck').hide();
                     }
-                    card()
+                card()
                 })
-                .catch((response) => {
-                    const data = response.response.data;
-                    console.log(data.errorMessage);
-                });
             }
         //투두get
         function todoGet(){
@@ -177,39 +201,114 @@
         let uuid = self.crypto.randomUUID();
         console.log(uuid);
     };
+    //dayDiv 추가
+    function dayDiv(){
+        $('#dayDiv').remove();
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
+        const inputImage = document.getElementById('inputImage');
+        let divHtml=`
+                    <input type="hidden" name="date" id="dayDiv" value="${date}">`
+        inputImage.insertAdjacentHTML('beforebegin', divHtml);
 
-    //카드저장
-    function cardSave(happy){
-        card()
+    }
+    //카드추가d
+    function cardSave(){
+        window.location.reload()
+        // const title = document.getElementById('inputTitle').value;
+        // const content = document.getElementById('inputContent').value;
+        // const image = document.getElementsByName('inputImage').file;
+        // const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        // console.log(inputTitle, inputContent, inputImage);
+
+        // let uuid = self.crypto.randomUUID();
+        // if (inputTitle.trim() == ""){
+        //     alert("내용이 없습니다.")
+        // }else{
+        //     axios({
+        //         method: 'post',
+        //         url: '/api/todoLists/alldayTodo',
+        //         data: {
+        //             inputTitle,
+        //             inputContent,
+        //             inputImage,
+        //             date
+        //         }
+        //     })
+        //         .then((response) => {
+        //             modal.style.display = "none"
+        //             const cardBox = document.getElementById('cardBox');
+        //             let cardReadyInput=`
+        //                 <div class="card cards" id="card${uuid}">
+        //                     <div>
+        //                         <img src="/img/1296285.jpg" class="card-img-top" alt="...">
+        //                         <button class="todoEdit abs" id="cardEdit${uuid}"><i class="fa-solid fa-pen"></i></button>
+        //                         <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+        //                     </div>
+        //                     <div class="card-body" id="cardBody${uuid}">
+        //                         <h5 class="card-title" id="cardTitle${uuid}">${inputTitle}</h5>
+        //                         <p class="card-text" id="cardText${uuid}">${inputContent}</p>
+        //                         <button class="todoCheck abs2" id="cardSuccess${uuid}" onclick="cardSuccess('${uuid}')"><img src="/img/check2.png" height="50px;"></button>
+        //                     </div>
+        //                 </div>`
+        //             cardBox.insertAdjacentHTML('beforeend', cardReadyInput);
+        //         })
+        // }
+        // card()
+    }
+    //카드편집
+    function cardEdit(){
+        window.location.reload()
     }
     //카드완료d
     function cardSuccess(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
         let title = document.getElementById(`cardTitle${happy}`).innerText
         let content = document.getElementById(`cardText${happy}`).innerText
-        $(`#cardBody${happy}`).replaceWith(`
-                            <div class="card-body" id="cardBody${happy}">
-                                <h5 class="card-title" id="cardTitle${happy}">${title}</h5>
-                                <p class="card-text" id="cardText${happy}">${content}</p>
-                                <button class="todoBack abs3" id="cardSuccessCancel${happy}" onclick="cardSuccessCancel('${happy}')"><i class="fa-solid fa-rotate-left"></i></button>
-                            </div>
-                            `)
-        $(`#cardTitle${happy}`).css({"text-decoration":"line-through", "color":"#777"})
-        $(`#cardText${happy}`).css({"text-decoration":"line-through", "color":"#777"})
-        $(`#cardEdit${happy}`).hide();
+        let success="SUCCESS"
+        axios({
+                method: 'put',
+                url: '/api/todoLists/cardSuccess',
+                data: {
+                    date, title, success
+                }
+            })
+                .then((response) => {
+                    $(`#cardBody${happy}`).replaceWith(`
+                                        <div class="card-body" id="cardBody${happy}">
+                                            <h5 class="card-title" id="cardTitle${happy}">${title}</h5>
+                                            <p class="card-text" id="cardText${happy}">${content}</p>
+                                            <button class="todoBack abs3" id="cardSuccessCancel${happy}" onclick="cardSuccessCancel('${happy}')"><i class="fa-solid fa-rotate-left"></i></button>
+                                        </div>
+                                        `)
+                    $(`#cardTitle${happy}`).css({"text-decoration":"line-through", "color":"#777"})
+                    $(`#cardText${happy}`).css({"text-decoration":"line-through", "color":"#777"})
+                    $(`#cardEdit${happy}`).hide();
+                })
         }
-    //카드취소
+    //카드완료취소
     function cardSuccessCancel(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
         let title = document.getElementById(`cardTitle${happy}`).innerText
         let content = document.getElementById(`cardText${happy}`).innerText
-        $(`#cardBody${happy}`).replaceWith(`
-                            <div class="card-body" id="cardBody${happy}">
-                                <h5 class="card-title" id="cardTitle${happy}">${title}</h5>
-                                <p class="card-text" id="cardText${happy}">${content}</p>
-                                <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
-                            </div>
-                            `)
-        $(`#cardEdit${happy}`).show();
-        $(`#cardDelete${happy}`).show();
+        let success="READY"
+        axios({
+                method: 'put',
+                url: '/api/todoLists/cardSuccess',
+                data: {
+                    date, title, success
+                }
+            })
+                .then((response) => {
+                    $(`#cardBody${happy}`).replaceWith(`
+                                        <div class="card-body" id="cardBody${happy}">
+                                            <h5 class="card-title" id="cardTitle${happy}">${title}</h5>
+                                            <p class="card-text" id="cardText${happy}">${content}</p>
+                                            <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
+                                        </div>
+                                        `)
+                    $(`#cardEdit${happy}`).show();
+                    $(`#cardDelete${happy}`).show();
+                })
         }
     //카드삭제
     function cardDelete(happy){
@@ -218,7 +317,7 @@
         }
 
 
-    //투두 완료 d
+    //투두 완료
     function todoSuccess(happy){
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         let title = document.getElementById(`happy${happy}`).innerText
@@ -241,7 +340,7 @@
                     $(`#todoEdit${happy}`).hide();
                 })
         }
-    //투두 완료취소 d
+    //투두 완료취소
     function todoSuccessCancel(happy){
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         let title = document.getElementById(`happy${happy}`).innerText
@@ -278,7 +377,7 @@
             </li>
             `);
     }
-    //투두 수정저장 d
+    //투두 수정저장
     function todoEditSave(happy){
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         const beforeTitle = document.getElementById(`todoEdit${happy}`).name;
@@ -323,7 +422,7 @@
                     </li>
             `);
     }
-    //투두 삭제 d
+    //투두 삭제
     function todoDelete(happy){
         cp();
         let title = document.getElementById(`happy${happy}`).innerText
@@ -399,62 +498,63 @@
 </script>
 <script>
     function card(){
-    let leftBtn = [...document.getElementsByClassName("slider-leftBtn")]
-    let rightBtn = [...document.getElementsByClassName("slider-rightBtn")]
-    let slider = [...document.querySelectorAll(".card-container")]
-    let sliderDimension = document.querySelector(".card-container")
+        let leftBtn = [...document.getElementsByClassName("slider-leftBtn")]
+        let rightBtn = [...document.getElementsByClassName("slider-rightBtn")]
+        let slider = [...document.querySelectorAll(".card-container")]
+        let sliderDimension = document.querySelector(".card-container")
 
 
-    slider.forEach((item, i) => {
-        // let containerDimension = item.getBoundingClientRect().width;
-        let containerDimension = 300;
-        if ((item.childElementCount * 300) < 1300){
-            rightBtn[i].style.display = 'none';
-            leftBtn[i].style.display = 'none';
-            item.style.justifyContent = 'space-around';
-        }else{
-            item.scrollLeft +=300;
-        }
-        if ((item.childElementCount * 300) < (containerDimension + 100)) {
-            rightBtn[i].style.display = 'none';
-            leftBtn[i].style.display = 'none';
-            item.style.justifyContent = 'space-around';
-        }
-        leftBtn[i].style.display = "none"
-        rightBtn[i].addEventListener('click', () => {
-            item.scrollLeft += containerDimension;
-            leftBtn[i].style.display = 'block';
-        })
-        leftBtn[i].addEventListener('click', () => {
-            item.scrollLeft -= containerDimension;
-            rightBtn[i].style.display = 'block';
-        })
-        item.addEventListener('scroll', () => {
-            if (item.offsetWidth + item.scrollLeft >= (item.scrollWidth - 100)) {
+        slider.forEach((item, i) => {
+            item.scrollLeft = 0;
+            // let containerDimension = item.getBoundingClientRect().width;
+            let containerDimension = 300;
+            if ((item.childElementCount * 300) < 1300){
                 rightBtn[i].style.display = 'none';
-                leftBtn[i].style.display = 'block';
-            } else if (item.scrollLeft == 0) {
                 leftBtn[i].style.display = 'none';
-                rightBtn[i].style.display = 'block';
-            } else if (item.scrollLeft > 0) {
-                leftBtn[i].style.display = 'block';
+                item.style.justifyContent = 'space-around';
+            }else{
+                item.scrollLeft +=300;
             }
-            if (item.offsetWidth + item.scrollLeft < (item.scrollWidth - 50)) {
+            if ((item.childElementCount * 300) < (containerDimension + 100)) {
+                rightBtn[i].style.display = 'none';
+                leftBtn[i].style.display = 'none';
+                item.style.justifyContent = 'space-around';
+            }
+            leftBtn[i].style.display = "none"
+            rightBtn[i].addEventListener('click', () => {
+                item.scrollLeft += containerDimension;
+                leftBtn[i].style.display = 'block';
+            })
+            leftBtn[i].addEventListener('click', () => {
+                item.scrollLeft -= containerDimension;
                 rightBtn[i].style.display = 'block';
+            })
+            item.addEventListener('scroll', () => {
+                if (item.offsetWidth + item.scrollLeft >= (item.scrollWidth - 100)) {
+                    rightBtn[i].style.display = 'none';
+                    leftBtn[i].style.display = 'block';
+                } else if (item.scrollLeft == 0) {
+                    leftBtn[i].style.display = 'none';
+                    rightBtn[i].style.display = 'block';
+                } else if (item.scrollLeft > 0) {
+                    leftBtn[i].style.display = 'block';
+                }
+                if (item.offsetWidth + item.scrollLeft < (item.scrollWidth - 50)) {
+                    rightBtn[i].style.display = 'block';
+                }
+            })
+
+            const slidingFunction = () => {
+                if (item.offsetWidth + item.scrollLeft >= (item.scrollWidth - 100)) {
+                    // item.style.scrollBehavior = "auto";
+                    item.scrollLeft = 0;
+                }
+                if (item.offsetWidth + item.scrollLeft < (item.scrollWidth - 50)) {
+                    // item.style.scrollBehavior = "smooth";
+                    item.scrollLeft += containerDimension;
+                }
             }
         })
-
-        const slidingFunction = () => {
-            if (item.offsetWidth + item.scrollLeft >= (item.scrollWidth - 100)) {
-                // item.style.scrollBehavior = "auto";
-                item.scrollLeft = 0;
-            }
-            if (item.offsetWidth + item.scrollLeft < (item.scrollWidth - 50)) {
-                // item.style.scrollBehavior = "smooth";
-                item.scrollLeft += containerDimension;
-            }
-        }
-    })
     }
 </script>
 <style>
@@ -655,16 +755,6 @@
         <div class="col-md-8" style="padding: 0; margin: 0;">
             <section id="listBox" style="text-align: center;">
                 <ul class="todoBoxes" id="todoBoxes">
-                    <!-- <li class="todoBox" id="happy1" onclick="todoSuccess(1)">
-                        8시에 축구보기   
-                        <button class="todoEdit2" id="todoEdit1" onclick="todoEdit(1)"><i class="fa-solid fa-pen"></i></button>
-                        <button class="todoDelete2" id="todoDelete1" onclick="todoDelete(1)"><i class="fa-solid fa-xmark"></i></button>
-                    </li>  
-                    <li class="todoBox" id="happy2" onclick="todoSuccess(2)">
-                        공부하기
-                        <button class="todoEdit2" id="todoEdit2" onclick="todoEdit(2)"><i class="fa-solid fa-pen"></i></button>
-                        <button class="todoDelete2" id="todoDelete2" onclick="todoDelete(2)"><i class="fa-solid fa-xmark"></i></button>
-                    </li>   -->
                 </ul>
                 <li class="todoBox2" id="todoPlusBox">                       
                     <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus(0)">
@@ -687,22 +777,21 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/user/login" enctype="multipart/form-data" method="POST">
+                <form action="/api/todoLists/alldayTodo" method="POST">
                     <div class="mb-3">
-                        
-                        <input type="text" name="title" class="form-control" id="exampleFormControlInput1" maxlength="13">
+                        <input type="text" name="title" class="form-control" id="inputTitle" maxlength="13">
                     </div>
                     <div class="mb-3">
                         <label for="exampleFormControlTextarea1" class="form-label">Content</label>
-                        <textarea class="form-control" name="content" id="exampleFormControlTextarea1" rows="3" maxlength="40"></textarea>
+                        <textarea class="form-control" name="content" id="inputContent" rows="3" maxlength="40"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="formFileSm" class="form-label">Image</label>
-                        <input class="form-control form-control-sm" name="image" id="formFileSm" type="file">
+                        <input class="form-control form-control-sm" name="image" id="inputImage" type="file">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                        <button type="submit" class="btn btn-primary">등록</button>
+                        <button onclick="cardSave()" data-bs-dismiss="modal" class="btn btn-primary">등록</button>
                     </div>
                 </form>
             </div>
@@ -717,24 +806,3 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </body>
 </html>
-
-<!-- <div class="carousel-item">
-    <div class="cardBox w-100" style="margin:0 auto;" >
-        <div class="card" style="width: 18rem;" data-bs-slide-to="2">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-        <div class="card" style=" width: 18rem;"data-bs-slide-to="3">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-    </div>
-</div>두번째 카드 뭉치 -->

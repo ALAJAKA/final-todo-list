@@ -5,6 +5,42 @@ class TodoListRepository {
     this.AllDayTodoList = AllDayTodoList;
     this.AllDayTodoLists = AllDayTodoLists;
   }
+
+  postAlldayTodoList = async (inputTitle, inputContent, inputImage, userId) =>{
+    const postAlldayTodoList = await this.AllDayTodoList.create({
+      title:inputTitle, content:inputContent, image:inputImage, userId
+    });
+      console.log(2);
+    return  postAlldayTodoList;
+  }
+  postAlldayTodoLists = async (inputTitle, inputContent, inputImage, userId, success) =>{
+    const postAlldayTodoLists = await this.AllDayTodoLists.create({
+      title:inputTitle, content:inputContent, image:inputImage, userId, success
+    });
+    console.log(3);
+    return  postAlldayTodoLists;
+  }
+  
+  getAlldayTodoLists = async (date, userId) =>{
+    const getAlldayTodoLists = await this.AllDayTodoLists.findAll({
+      where: {
+        [Op.and]: [{ createdAt:date }, { userId }],
+      },
+      raw: true,
+    });
+    return getAlldayTodoLists;
+  }
+
+  getAlldayTodoList = async (date, userId) =>{
+    const getAlldayTodoList = await this.AllDayTodoList.findAll({
+      where: {
+        [Op.and]: [{ createdAt: {[Op.lt]:date }}, { userId }],
+      },
+      raw: true,
+    });
+    return getAlldayTodoList;
+  }
+  
   postTodayTodo = async (date, title, success, userId) =>{
     const postTodayTodo = await this.TodoList.create({
       today:date,
@@ -52,8 +88,20 @@ class TodoListRepository {
         [Op.and]: [{ today:date }, {title}, { userId }],
       }
     });
-    console.log("성공성공", todoSuccess);
+    console.log("성공성공1", todoSuccess);
     return todoSuccess;
+  }
+
+  cardSuccess = async (date, title, success, userId) =>{
+    console.log(date, title, success, userId);
+    const cardSuccess = await this.AllDayTodoLists.update(
+      {success},{
+      where: {
+        [Op.and]: [{ createdAt:date }, {title}, { userId }],
+      }
+    });
+    console.log("성공성공2", cardSuccess);
+    return cardSuccess;
   }
 }
 
