@@ -5,6 +5,18 @@ class TodoListRepository {
     this.AllDayTodoList = AllDayTodoList;
     this.AllDayTodoLists = AllDayTodoLists;
   }
+  getMonthTodo = async (date,date2,userId) =>{
+    const MonthTodo = await this.TodoList.findAll({
+      where :{
+        userId,
+        today : {[Op.between]:[date,date2]}
+      },
+      order:[['today','ASC']]
+    });
+    return MonthTodo;
+  }
+
+
 
   postAlldayTodoList = async (inputTitle, inputContent, inputImage, userId) =>{
     const postAlldayTodoList = await this.AllDayTodoList.create({

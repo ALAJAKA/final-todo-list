@@ -3,6 +3,12 @@ const TodoListService = require('../services/todoListService');
 class TodoListController {
   todoListService = new TodoListService();
 
+  getMonthTodo =async (req,res) => {
+    const userId = 1;
+    const {date,date2} = req.query;
+    const monthTodoList = await this.todoListService.getMonthTodo(date,date2, userId);
+    res.status(200).json({monthTodoList});
+  }
   postAlldayTodo = async(req, res) =>{
     const {title, content, image, date} = req.body;
     console.log(title, content, image, date);

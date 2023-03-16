@@ -3,6 +3,18 @@ const {TodoList, AllDayTodoList, AllDayTodoLists} = require('../models/index')
 
 class TodoListService {
     todoListRepository = new TodoListRepository(TodoList, AllDayTodoList, AllDayTodoLists);
+
+    getMonthTodo =async (date,date2,userId)=>{
+        const MonthTodo = await this.todoListRepository.getMonthTodo(date,date2,userId);
+        return MonthTodo.map((TodoList) =>{
+            return {
+                title : TodoList.title,
+                success : TodoList.success,
+                today : TodoList.today
+            };
+        });
+    }
+
     
     postAlldayTodo = async(inputTitle, inputContent, inputImage, date, userId) =>{
         const success = "READY"
