@@ -5,7 +5,7 @@ const todoListController = new TodoListController();
 
 router.post("/alldayTodo",todoListController.postAlldayTodo);
 router.get("/alldayTodo",todoListController.getAlldayTodo);
-// router.put("/alldayTodo",todoListController.putAlldayTodo);
+router.put("/alldayTodo",todoListController.putAlldayTodo);
 // router.delete("/alldayTodo",todoListController.deleteAlldayTodo);
 router.put("/cardSuccess",todoListController.cardSuccess);
 

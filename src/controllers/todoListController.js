@@ -14,9 +14,7 @@ class TodoListController {
     console.log(title, content, image, date);
     let userId = 1
     const postAlldayTodo = await this.todoListService.postAlldayTodo(title, content, image, date, userId)
-    // res.status(201).json({
-    //   postAlldayTodo
-    // });
+    res.status(200).json({postAlldayTodo});
   }
 
   getAlldayTodo = async(req, res) =>{
@@ -28,6 +26,16 @@ class TodoListController {
     });
   }
 
+  putAlldayTodo = async(req, res) =>{
+    const {date, beforeTitle, content, image, afterTitle} = req.body;
+    
+    let userId = 1
+    const putAlldayTodo = await this.todoListService.putAlldayTodo(date, beforeTitle, content, image, afterTitle, userId)
+    res.status(201).json({
+      putAlldayTodo
+    });
+  }
+  
   postTodayTodo = async(req, res) =>{
     const {date, title} = req.body;
     

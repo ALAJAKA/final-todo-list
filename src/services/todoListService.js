@@ -16,20 +16,29 @@ class TodoListService {
     }
 
     
-    postAlldayTodo = async(inputTitle, inputContent, inputImage, date, userId) =>{
+    postAlldayTodo = async(title, content, image, date, userId) =>{
         const success = "READY"
         const today = new Date().toISOString().substring(0,10);
         console.log(date, today);
 
         if (date==today){
-            const postAlldayTodoLists = await this.todoListRepository.postAlldayTodoLists(inputTitle, inputContent, inputImage, userId, success)
-            console.log(22);
+            const postAlldayTodoLists = await this.todoListRepository.postAlldayTodoLists(title, content, image, userId, success)
         }
-        const postAlldayTodoList = await this.todoListRepository.postAlldayTodoList(inputTitle, inputContent, inputImage, userId)
-        console.log(33);
+        const postAlldayTodoList = await this.todoListRepository.postAlldayTodoList(title, content, image, userId)
         return postAlldayTodoList;
     }
     
+    putAlldayTodo = async(date, beforeTitle, content, image, afterTitle, userId) =>{
+        const today = new Date().toISOString().substring(0,10);
+        console.log(date, today);
+
+        if (date==today){
+            const putAlldayTodoLists = await this.todoListRepository.putAlldayTodoLists(date, beforeTitle, content, image, afterTitle, userId)
+        }
+        const putAlldayTodoList = await this.todoListRepository.putAlldayTodoList(date, beforeTitle, content, image, afterTitle, userId)
+        return putAlldayTodoList;
+    }
+
     getAlldayTodo = async(date, userId) =>{
         const today = new Date().toISOString().substring(0,10);
         if (date > today){

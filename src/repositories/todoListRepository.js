@@ -18,21 +18,41 @@ class TodoListRepository {
 
 
 
-  postAlldayTodoList = async (inputTitle, inputContent, inputImage, userId) =>{
+  postAlldayTodoList = async (title, content, image, userId) =>{
     const postAlldayTodoList = await this.AllDayTodoList.create({
-      title:inputTitle, content:inputContent, image:inputImage, userId
+      title, content, image, userId
     });
-      console.log(2);
     return  postAlldayTodoList;
   }
-  postAlldayTodoLists = async (inputTitle, inputContent, inputImage, userId, success) =>{
+  postAlldayTodoLists = async (title,content, image, userId, success) =>{
     const postAlldayTodoLists = await this.AllDayTodoLists.create({
-      title:inputTitle, content:inputContent, image:inputImage, userId, success
+      title, content, image, userId, success
     });
-    console.log(3);
     return  postAlldayTodoLists;
   }
   
+  putAlldayTodoList = async (date, beforeTitle, content, image, afterTitle, userId) =>{
+    const putAlldayTodoList = await this.AllDayTodoList.update(
+      {title:afterTitle, content, image},{
+      where: {
+        [Op.and]: [ {title:beforeTitle}, { userId }],
+      }
+    });
+    return putAlldayTodoList;
+  }
+
+  putAlldayTodoLists = async (date, beforeTitle, content, image, afterTitle, userId) =>{
+    const putAlldayTodoLists = await this.AllDayTodoLists.update(
+      {title:afterTitle, content, image},{
+      where: {
+        [Op.and]: [{ createdAt:date }, {title:beforeTitle}, { userId }],
+      }
+    });
+    return putAlldayTodoLists;
+  }
+
+  
+
   getAlldayTodoLists = async (date, userId) =>{
     const getAlldayTodoLists = await this.AllDayTodoLists.findAll({
       where: {
@@ -100,7 +120,6 @@ class TodoListRepository {
         [Op.and]: [{ today:date }, {title}, { userId }],
       }
     });
-    console.log("성공성공1", todoSuccess);
     return todoSuccess;
   }
 
@@ -112,7 +131,6 @@ class TodoListRepository {
         [Op.and]: [{ createdAt:date }, {title}, { userId }],
       }
     });
-    console.log("성공성공2", cardSuccess);
     return cardSuccess;
   }
 }

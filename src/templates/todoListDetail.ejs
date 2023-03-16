@@ -23,7 +23,6 @@
         var day =new Date().getDate();// 현재 날짜
         $(document).ready(function() {
             calender();
-            dayDiv();
             cardGet();
             todoGet();
         });
@@ -62,7 +61,6 @@
             $('#month *').remove();
             $('#day *').remove();
             calender()
-            dayDiv();
             cardGet();
             todoGet();
         }
@@ -76,7 +74,6 @@
             $('#month *').remove();
             $('#day *').remove();
             calender()
-            dayDiv();
             cardGet();
             todoGet();
         }
@@ -97,7 +94,7 @@
                     $('.card').remove();
                     const getAlldayTodo = response.data.getAlldayTodo;
                         $('#cards').append(`<div class="card cardPlusBox">
-                            <button type="button" class="btn cardPlus" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                            <button type="button" class="btn cardPlus" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         </div>`)
@@ -116,7 +113,7 @@
                                             <div class="card cards" id="card${uuid}">
                                                 <div>
                                                     <img src="/img/1296285.jpg" class="card-img-top" alt="...">
-                                                    <button class="todoEdit abs" id="cardEdit${uuid}"><i class="fa-solid fa-pen"></i></button>
+                                                    <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
                                                     <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                                 </div>
                                                 <div class="card-body" id="cardBody${uuid}">
@@ -136,7 +133,7 @@
                                 <div class="card cards" id="card${uuid}">
                                     <div>
                                         <img src="/img/1296285.jpg" class="card-img-top" alt="...">
-                                        <button class="todoEdit abs" id="cardEdit${uuid}"><i class="fa-solid fa-pen"></i></button>
+                                        <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
                                         <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                     </div>
                                     <div class="card-body" id="cardBody${uuid}">
@@ -150,9 +147,9 @@
                         }
                     }if(getAlldayTodo.length>3) {$('#cards').animate({left:-322})}
                     else{$('#cards').animate({left:0})}
-                    //     if(date>today){
-                    //     $('.todoCheck').hide();
-                    // }
+                        if(date>today){
+                        $('.todoCheck').hide();
+                    }
                 })
             }
         
@@ -237,63 +234,123 @@
         let uuid = self.crypto.randomUUID();
         console.log(uuid);
     };
-    //dayDiv 추가
-    function dayDiv(){
-        $('#dayDiv').remove();
-        const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
-        const inputImage = document.getElementById('inputImage');
-        let divHtml=`
-                    <input type="hidden" name="date" id="dayDiv" value="${date}">`
-        inputImage.insertAdjacentHTML('beforebegin', divHtml);
-
-    }
     //카드추가d
     function cardSave(){
-        window.location.reload()
-        // const title = document.getElementById('inputTitle').value;
-        // const content = document.getElementById('inputContent').value;
-        // const image = document.getElementsByName('inputImage').file;
-        // const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
-        // console.log(inputTitle, inputContent, inputImage);
-
-        // let uuid = self.crypto.randomUUID();
-        // if (inputTitle.trim() == ""){
-        //     alert("내용이 없습니다.")
-        // }else{
-        //     axios({
-        //         method: 'post',
-        //         url: '/api/todoLists/alldayTodo',
-        //         data: {
-        //             inputTitle,
-        //             inputContent,
-        //             inputImage,
-        //             date
-        //         }
-        //     })
-        //         .then((response) => {
-        //             modal.style.display = "none"
-        //             const cardBox = document.getElementById('cardBox');
-        //             let cardReadyInput=`
-        //                 <div class="card cards" id="card${uuid}">
-        //                     <div>
-        //                         <img src="/img/1296285.jpg" class="card-img-top" alt="...">
-        //                         <button class="todoEdit abs" id="cardEdit${uuid}"><i class="fa-solid fa-pen"></i></button>
-        //                         <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
-        //                     </div>
-        //                     <div class="card-body" id="cardBody${uuid}">
-        //                         <h5 class="card-title" id="cardTitle${uuid}">${inputTitle}</h5>
-        //                         <p class="card-text" id="cardText${uuid}">${inputContent}</p>
-        //                         <button class="todoCheck abs2" id="cardSuccess${uuid}" onclick="cardSuccess('${uuid}')"><img src="/img/check2.png" height="50px;"></button>
-        //                     </div>
-        //                 </div>`
-        //             cardBox.insertAdjacentHTML('beforeend', cardReadyInput);
-        //         })
-        // }
-        // card()
+        const title = document.getElementById('inputTitle').value;
+        const content = document.getElementById('inputContent').value;
+        const image = document.getElementsByName('inputImage').file;
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        let uuid = self.crypto.randomUUID();
+        if (title.trim() == ""){
+            alert("내용이 없습니다.")
+        }else{
+            axios({
+                method: 'post',
+                url: '/api/todoLists/alldayTodo',
+                data: {
+                    title,
+                    content,
+                    image,
+                    date
+                }
+            })
+                .then((response) => { 
+                    $('#staticBackdrop').modal('hide');    
+                    let slideWidth = $('#cards').width();
+                    console.log("기본 ", slideWidth);
+                    let uuid = self.crypto.randomUUID();
+                    $('#cards').append(`
+                                <div class="card cards" id="card${uuid}">
+                                    <div>
+                                        <img src="/img/1296285.jpg" class="card-img-top" alt="...">
+                                        <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
+                                        <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                    </div>
+                                    <div class="card-body" id="cardBody${uuid}">
+                                        <h5 class="card-title" id="cardTitle${uuid}">${title}</h5>
+                                        <p class="card-text" id="cardText${uuid}">${content}</p>
+                                        <button class="todoCheck abs2" id="cardSuccess${uuid}" onclick="cardSuccess('${uuid}')"><img src="/img/check2.png" height="50px;"></button>
+                                    </div>
+                                </div>`)
+                    slideWidth += 322;
+                    $('#cards').css({width:`${slideWidth}`});
+                    if(slideWidth>1298) {$('#cards').animate({left:-322})}
+                    else{$('#cards').animate({left:0})}
+                        if(date>today){
+                        $('.todoCheck').hide();
+                    }
+                })
+        }
+    }
+    //카드 편집전
+    function cardEditBefore(happy){
+        let title = document.getElementById(`cardTitle${happy}`).innerText
+        let content = document.getElementById(`cardText${happy}`).innerText
+        $(`#modal2`).replaceWith(`
+                                <div class="modal-body" id="modal2">
+                                        <div class="mb-3">
+                                            <input type="text" name="${title}" class="form-control" id="editTitle" maxlength="13" value="${title}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+                                            <textarea class="form-control" name="${happy}" id="editContent" rows="3" maxlength="40" >${content}</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="formFileSm" class="form-label">Image</label>
+                                            <input class="form-control form-control-sm" name="image" id="editImage" type="file">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                                            <button type="button" onclick="cardEdit()" data-bs-dismiss="modal" class="btn btn-primary">수정</button>
+                                        </div>
+                                </div>
+                                `)
+                        
     }
     //카드편집
     function cardEdit(){
-        window.location.reload()
+        const beforeTitle = document.getElementById('editTitle').name;
+        const afterTitle = document.getElementById('editTitle').value;
+        const happy = document.getElementById('editContent').name;
+        const content = document.getElementById('editContent').value;
+        const image = document.getElementsByName('editImage').file;
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        console.log(beforeTitle,
+                    afterTitle,
+                    content,
+                    image,
+                    date);
+        if (afterTitle.trim() == ""){
+            alert("내용이 없습니다.")
+        }else{
+            axios({
+                method: 'put',
+                url: '/api/todoLists/alldayTodo',
+                data: {
+                    beforeTitle,
+                    afterTitle,
+                    content,
+                    image,
+                    date
+                }
+            })
+                .then((response) => { 
+                    $('#staticBackdrop2').modal('hide');    
+                    let slideWidth = $('#cards').width();
+                    console.log("기본 ", slideWidth);
+
+                    $(`#cardBody${happy}`).replaceWith(`
+                                    <div class="card-body" id="cardBody${happy}">
+                                        <h5 class="card-title" id="cardTitle${happy}">${afterTitle}</h5>
+                                        <p class="card-text" id="cardText${happy}">${content}</p>
+                                        <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
+                                    </div>`)
+                    if(date>today){
+                        $('.todoCheck').hide();
+                    }
+
+                })
+        }
     }
     //카드완료d
     function cardSuccess(happy){
@@ -349,7 +406,6 @@
     //카드삭제
     function cardDelete(happy){
             $(`#card${happy}`).remove();
-            card()
         }
 
 
@@ -551,7 +607,7 @@
 
     /* 카드 영역*/
     #slide {position: relative; text-align: center;overflow-x: hidden; height:550px; margin: 0; padding:0 !important;}
-    #cards{position: absolute; width:1288px; height:500px; margin: 0; padding:50px 0 0 0; left:0; }
+    #cards{position: absolute; width:1298px; height:500px; margin: 0; padding:50px 0 0 0; left:0; }
     /*개별 카드*/
     .card { width: 300px; height: 400px; margin:0 10px 0 11px; float: left; box-sizing: border-box;}
     .card:nth-of-type(1){margin-left:20px;}
@@ -634,20 +690,13 @@
         <h2 style="text-align: center; margin-top: 50px;">투두리스트 카드</h2>
         <div id="slide">
             <div id="cards">
-                <!--+카드-->
-                <!-- <div class="card cardPlusBox">
-                    <button type="button" class="btn cardPlus" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </div> -->
-                <!--카드 시작-->
             </div>
         </div>
         <div>
             <button id="cbl" class="cardBtn" onclick="cardMoveLeft()"style="left:-50px;"><i class="fa-solid fa-chevron-left"></i></button>
             <button id="cbr" class="cardBtn" style="right:-50px;" onclick="cardMoveRight()"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
-        <!--        카드 이동 버튼-->
+        <!--   카드 이동 버튼-->
     </div>
 
 </section>
@@ -662,7 +711,7 @@
                 <ul class="todoBoxes" id="todoBoxes">
                 </ul>
                 <li class="todoBox2" id="todoPlusBox">                       
-                    <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus(0)">
+                    <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </li>
@@ -673,8 +722,8 @@
     </div>
 </div>
 <!--모달-->
-<!-- 모달창 -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<!-- 모달창1 -->
+<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -682,23 +731,49 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/api/todoLists/alldayTodo" method="POST">
-                    <div class="mb-3">
-                        <input type="text" name="title" class="form-control" id="inputTitle" maxlength="13">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleFormControlTextarea1" class="form-label">Content</label>
-                        <textarea class="form-control" name="content" id="inputContent" rows="3" maxlength="40"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="formFileSm" class="form-label">Image</label>
-                        <input class="form-control form-control-sm" name="image" id="inputImage" type="file">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                        <button onclick="cardSave()" data-bs-dismiss="modal" class="btn btn-primary">등록</button>
-                    </div>
-                </form>
+                <div class="mb-3">
+                    <input type="text" name="title" class="form-control" id="inputTitle" maxlength="13">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+                    <textarea class="form-control" name="content" id="inputContent" rows="3" maxlength="40"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="formFileSm" class="form-label">Image</label>
+                    <input class="form-control form-control-sm" name="image" id="inputImage" type="file">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" onclick="cardSave()" data-bs-dismiss="modal" class="btn btn-primary">등록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 모달창2 -->
+<div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel2">TODO 리스트 수정</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal2">
+                <div class="mb-3">
+                    <input type="text" name="title" class="form-control" id="editTitle" maxlength="13">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+                    <textarea class="form-control" name="content" id="editContent" rows="3" maxlength="40" ></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="formFileSm" class="form-label">Image</label>
+                    <input class="form-control form-control-sm" name="image" id="editImage" type="file">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" onclick="cardEdit()" data-bs-dismiss="modal" class="btn btn-primary">수정</button>
+                </div>
             </div>
         </div>
     </div>
