@@ -15,4 +15,5 @@ router.put("/todayTodo",todoListController.putTodayTodo);
 router.delete("/todayTodo",todoListController.deleteTodayTodo);
 router.put("/todoSuccess",todoListController.todoSuccess);
 
+router.get("/monthTodo", todoListController.getMonthTodo);
 module.exports = router;
