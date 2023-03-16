@@ -22,13 +22,22 @@
     });
     //페이지 로딩시 데이터 가져오기 카드
     function getCards(){
+        $('#cards *').remove();
+        $('#cards').append(`
+                <!--+카드-->
+                <div class="card cardPlusBox">
+                    <button type="button" class="btn cardPlus" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <!--카드 시작-->
+        `)
         $.ajax({
             type:"GET",
             url: "/api/bucketLists/cards",
             data:{},
             success:function (res){
                 let slideWidth = $('#cards').width();
-                console.log("기본 ", slideWidth);
                 for(let i=0; i<res.length; i++){
                     if(i>2) slideWidth += 322;
                     $('#cards').append(`
@@ -57,7 +66,7 @@
     function cardMoveLeft(){
         const w = $('#cards').width();
         let scrollX =document.getElementById('cards').offsetLeft;
-        if(w<=1288 || scrollX >=0) {
+        if(w<=1298 || scrollX >=0) {
             scrollX = 0;
             $('#cards').animate({left:`${scrollX}`});
         }else{
@@ -69,8 +78,8 @@
     function cardMoveRight(){
         const w = $('#cards').width();
         let scrollX =document.getElementById('cards').offsetLeft;
-        if(w<=1288 || w+scrollX<=1288){
-            scrollX = 1288-w;
+        if(w<=1298 || w+scrollX<=1298){
+            scrollX = 1298-w;
             $('#cards').animate({left:`${scrollX}`});
         }else{
             scrollX -= 322;
@@ -255,7 +264,10 @@
         $('#bucketInputBox').remove();
         $('#BucketPlusBox').show();
     }
-
+    function asd(){
+        alert("등록 완료");
+        getCards();
+    }
 </script>
 <style>
     /*전체 옵션*/
@@ -277,9 +289,9 @@
     /* 카드섹션 */
     /* 카드 영역*/
     #slide {position: relative; text-align: center;overflow-x: hidden; height:550px; margin: 0; padding:0 !important;}
-    #cards{position: absolute; width:1288px; height:500px; margin: 0; padding:50px 0 0 0; left:0; }
+    #cards{position: absolute; width:1300px; height:500px; margin: 0; padding:50px 0 0 0; left:0; }
     /*개별 카드*/
-    .card { width: 300px; height: 400px; margin:0 10px 0 11px; float: left; box-sizing: border-box;}
+    .card { width: 300px; height: 400px; margin:0 10px 0 10px; float: left; box-sizing: border-box;}
     .card:nth-of-type(1){margin-left:20px;}
     .card-img-top {height: 170px;}
     .card-body {background-color: hsl(0, 0%, 80%, 0.3)}
