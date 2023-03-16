@@ -102,7 +102,7 @@
                             </button>
                         </div>`)
                     let slideWidth = $('#cards').width();
-                    slideWidth = 1300
+                    slideWidth = 1298
                     console.log("기본 ", slideWidth);
                     for (let i = 0; i < getAlldayTodo.length; i++){
                         if(i>2) slideWidth += 322;
@@ -160,7 +160,7 @@
             function cardMoveLeft(){
                 const w = $('#cards').width();
                 let scrollX =document.getElementById('cards').offsetLeft;
-                if(w<=1288 || scrollX >=0) {
+                if(w<=1298 || scrollX >=0) {
                     scrollX = 0;
                     $('#cards').animate({left:`${scrollX}`});
                 }else{
@@ -172,8 +172,8 @@
             function cardMoveRight(){
                 const w = $('#cards').width();
                 let scrollX =document.getElementById('cards').offsetLeft;
-                if(w<=1288 || w+scrollX<=1288){
-                    scrollX = 1288-w;
+                if(w<=1298 || w+scrollX<=1298){
+                    scrollX = 1298-w;
                     $('#cards').animate({left:`${scrollX}`});
                 }else{
                     scrollX -= 322;
@@ -588,7 +588,7 @@
     .form-check-label{width:750px; font-size: 22pt;}
     .todoBox{ cursor : pointer; position: relative; background: none;  width:100%; height: 70px; line-height: 65px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
     .todoBox:hover{background-color: rgb(163, 156, 156);}
-    .todoBox2{ position: relative; background: none;  width:100%; height: 70px; line-height: 65px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
+    .todoBox2{ position: relative; background: none;  width:100%; height: 70px;  line-height: 65px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
     .todoEdit2 { width:40px; top:20%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
                 position: absolute; right:7%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
     .todoEdit2:hover{background-color: rgba(0,0,0,0.7);}
@@ -602,7 +602,7 @@
                 position: absolute; right:2%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
     .todoCancel2:hover{background-color: rgba(0,0,0,0.7);}
     .todoPlus {background: none; width:50px; height:50px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; border-radius: 25px; padding:0; font-size: 25pt;  transition: 1s; 
-                position: absolute; margin-top: 10px;}
+                position: absolute; transform: translate(-50%); margin-top: 10px;}
     .todoPlus:hover{background-color: rgba(0,0,0,0.7);}
     .todoInput { width:600px;  background:none; border: 5px solid; margin: 0 auto; height: 63px;  text-align: center; justify-content: center; align-content: center;}
     
