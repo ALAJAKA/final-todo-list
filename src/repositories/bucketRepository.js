@@ -32,7 +32,6 @@ class BucketListRepository {
     return bucketList;
   }
   updateBucketList= async (userId,title,date,before,beforeDay) => {
-    console.log(title);
     const bucketList = await BucketList.update({
       title:title,
       d_day:date,
@@ -44,6 +43,15 @@ class BucketListRepository {
       limit:1
     });
     return bucketList;
+  }
+  createBucketListCard = async (title,content,image,userId) =>{
+    const bucketListCard = await BucketListCard.create({
+      title,
+      content,
+      image:image,
+      userId
+    });
+    return bucketListCard;
   }
 }
 

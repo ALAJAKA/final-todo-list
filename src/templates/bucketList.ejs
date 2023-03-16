@@ -28,21 +28,20 @@
             data:{},
             success:function (res){
                 let slideWidth = $('#cards').width();
-                console.log(res);
                 for(let i=0; i<res.length; i++){
-                    if(i>=3) slideWidth+=322;
+                    if(i>3) slideWidth+=322;
                     $('#cards').append(`
                     <div class="card">
                     <div>
                     <!--여기 src 다음에 이미지 경로 넣어줄-->
-                        <img src="/img/1296285.jpg" class="card-img-top" alt="...">
+                        <img src="${res[i].image}" class="card-img-top" alt="...">
                         <button class="bucketEdit abs"><i class="fa-solid fa-pen"></i></button>
                         <button class="bucketDelete abs"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">${res[i].title}</h5>
                         <p class="card-text">${res[i].content}</p>
-                        <button class="bucketCheck abs2" onclick="cardSuccess(1)"><img src="/img/check2.png" height="50px;"></button>
+                        <button class="bucketCheck abs2"><img src="/img/check2.png" height="50px;" alt="이미지"></button>
                     </div>
                 </div>
                     `);
@@ -54,23 +53,25 @@
     }
     //카드 오른쪽으로 이동
     function cardMoveLeft(){
+        const w = $('#cards').width();
+        if(w<1290) return ;
         let scrollX =document.getElementById('cards').offsetLeft;
         scrollX += 322;
         if(scrollX>0) {
             scrollX=0;
-            return ;
         }
         $('#cards').animate({left:`${scrollX}`});
     }
     //카드 왼쪽으로 이동
     function cardMoveRight(){
+        const w = $('#cards').width();
+        if(w<1290)return ;
         let scrollX =document.getElementById('cards').offsetLeft;
         scrollX -= 322;
-        if(1288+scrollX<=0) {
-            scrollX=-1288;
-            return ;
+        console.log(scrollX);
+        if(1290+scrollX<=0) {
+            scrollX=-1290;
         }
-
         $('#cards').animate({left:`${scrollX}`});
     }
 
@@ -135,7 +136,6 @@
     //버킷 수정저장
     function bucketEditSave(before,beforeDay){
         const listBox = $('#bucketListD-day *');
-        const myClass = $(event.target).parents('.bucketBoxLi');
         let title = $(event.target).parents('.col-md-9').children('input').val();
         const dayValue = $(event.target).parents('.bucketBoxLi').find('.calInput').val();
         if(title==='') return alert('입력된 값이 없습니다.');
@@ -252,16 +252,18 @@
         $('#bucketInputBox').remove();
         $('#BucketPlusBox').show();
     }
-    function asd(){
-        alert("스파코 극혐")
-    }
+
+    // function asd(){
+    //     alert("등록 완료");
+    //     getCards();
+    // }
 </script>
 <style>
     /*전체 옵션*/
     *{margin:0;padding:0;}
     input:focus {outline: none;}
     ::-webkit-scrollbar {
-        width: 0px;
+        width: 0;
     }
     ul,li,ol{list-style: none; margin:0; padding:0;}
 
@@ -276,7 +278,7 @@
     /* 카드섹션 */
     /* 카드 영역*/
     #slide {position: relative; text-align: center;overflow-x: hidden; height:550px; margin: 0; padding:0 !important;}
-    #cards{position: absolute; width:1288px; height:500px; margin: 0; padding:50px 0 0 0; left:0; }
+    #cards{position: absolute; width:1290px; height:500px; margin: 0; padding:50px 0 0 0; left:0; }
     /*개별 카드*/
     .card { width: 300px; height: 400px; margin:0 10px; float: left; box-sizing: border-box;}
     .card:nth-of-type(1){margin-left:20px;}
@@ -290,13 +292,13 @@
 
     .bucketEdit {background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0;
         border-radius: 10px; transition: 1s;
-        position: absolute; padding: 0px; line-height: 25px; width:25px; height:25px; top:5px; right:35px;}
+        position: absolute; padding: 0; line-height: 25px; width:25px; height:25px; top:5px; right:35px;}
     .bucketEdit:hover{background-color: rgba(255,255,255,0.7);}
     .bucketDelete {background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; font-size: 17pt;
         border-radius: 10px; transition: 1s;
-        position: absolute; padding: 0px; line-height: 25px; width:25px; height:25px; top:5px; right:5px;}
+        position: absolute; padding: 0; line-height: 25px; width:25px; height:25px; top:5px; right:5px;}
     .bucketDelete:hover{background-color: rgba(255,255,255,0.7);}
-    .bucketCheck {background: none; border: 0px;}
+    .bucketCheck {background: none; border: 0;}
     .fa-solid{color: rgb(61, 59, 59);}
 
     .abs2 {position: absolute; height: 70px; box-sizing: border-box; padding: 10px; border-radius: 35px; bottom:15px; transform: translate(-50%); transition: 0.2s;}
@@ -315,7 +317,7 @@
         .bucketIcon:hover{background-color:rgba(0,0,0,0.7);}
         .deleteIcon {right:2%;}
         /*내부 문자들*/
-        .bucketDay {maring:0;padding:0; box-sizing: border-box}
+        .bucketDay {margin:0;padding:0; box-sizing: border-box}
         .bucketDay p{height:70px; line-height:70px; padding:0; margin:0; text-align: center; font-size: 14pt;}
         .calInput{width:100%; line-height:35px; height:65px; border-radius: 35px 0 0 35px; text-align: center; border: 0; font-size: 14pt;}
         .calInput::after{padding-right: 20%;}
@@ -406,7 +408,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/api/bucketLists/cards" method="POST">
+                <form action="/api/bucketLists/cards" method="POST"enctype="multipart/form-data">
                     <div class="mb-3">
                         <input type="text" name="title" class="form-control" id="exampleFormControlInput1" maxlength="13">
                     </div>
@@ -437,5 +439,5 @@
 </body>
 </html>
 
-<!--enctype="multipart/form-data"-->
+
 

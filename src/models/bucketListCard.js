@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         image: {
             type:DataTypes.STRING,
+            defaultValue : '/img/1296285.jpg'
         },
         content: {
             type:DataTypes.STRING,

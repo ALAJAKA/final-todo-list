@@ -21,6 +21,10 @@ class BucketListService {
         const BucketList = await this.bucketListRepository.updateBucketList(userId,title,date,before,beforeDay);
         return BucketList;
     }
+    createBucketListCard = async (title,content,image,userId) =>{
+      const BucketListCard = await this.bucketListRepository.createBucketListCard(title,content,image,userId);
+      return BucketListCard;
+    }
 }
 
 module.exports = BucketListService;

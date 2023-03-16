@@ -8,7 +8,7 @@ class BucketListController {
       const userId = 1;
       const {date} = req.query;
       const BucketList = await this.bucketListService.getBucketList(userId,date);
-      res.status(200).json(BucketList);
+      return res.status(200).json(BucketList);
     }
     catch (err) {
         //error는 나중에
@@ -20,7 +20,7 @@ class BucketListController {
         try {
             const userId = 1;
             const BucketListCards = await this.bucketListService.getBucketListCards(userId);
-            res.status(200).json(BucketListCards);
+            return res.status(200).json(BucketListCards);
         }
         catch (err) {
             //error는 나중에
@@ -34,7 +34,7 @@ class BucketListController {
       const {date} = req.body;
       const {title} = req.body;
       await this.bucketListService.createBucketList(userId,title,date);
-      res.status(200).json({msg:'등록완료'});
+      return res.status(200).json({msg:'등록완료'});
     }
     catch (err) {
         //error는 나중에
@@ -47,7 +47,7 @@ class BucketListController {
             const userId = 1;
             const {date,title,before,beforeDay} = req.body;
             await this.bucketListService.updateBucketList(userId, title, date,before,beforeDay);
-            res.status(200).json({msg: '수정완료'});
+            return res.status(200).json({msg: '수정완료'});
         } catch (err) {
             //error는 나중에
             console.log(err);
@@ -57,8 +57,12 @@ class BucketListController {
     createBucketListCard = async (req, res) => {
         try {
             const userId = 1;
-            console.log(req.body);
-            res.status(200).json({msg: '카드 작성 완료'});
+            let image;
+            if(req.file !== undefined) image = req.file.location;
+            else image = '';
+            const {title,content} = req.body;
+            await this.bucketListService.createBucketListCard(title,content,image,userId);
+            return res.status(200);
         } catch (err) {
             //error는 나중에
             console.log(err);
