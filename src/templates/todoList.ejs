@@ -44,7 +44,6 @@
 
         for(let i=1; i<=days[month]; i++){
             const todayDate = new Date(year,month-1,i,9).toISOString().substring(0,10);
-            console.log(todayDate)
             const dayOfWeek = week[new Date(`${year}-${month}-${i}`).getDay()]; // 해당 날짜의 요일
             let temp;
             if(thisYear === year && thisMonth === month && thisDate ===i){
