@@ -3,6 +3,24 @@ const TodoListService = require('../services/todoListService');
 class TodoListController {
   todoListService = new TodoListService();
 
+  postAlldayTodo = async(req, res) =>{
+    const {title, content, image, date} = req.body;
+    console.log(title, content, image, date);
+    let userId = 1
+    const postAlldayTodo = await this.todoListService.postAlldayTodo(title, content, image, date, userId)
+    // res.status(201).json({
+    //   postAlldayTodo
+    // });
+  }
+
+  getAlldayTodo = async(req, res) =>{
+    const {date} = req.query;
+    let userId = 1
+    const getAlldayTodo = await this.todoListService.getAlldayTodo(date, userId)
+    res.status(200).json({
+      getAlldayTodo
+    });
+  }
 
   postTodayTodo = async(req, res) =>{
     const {date, title} = req.body;
@@ -52,6 +70,17 @@ class TodoListController {
     const todoSuccess = await this.todoListService.todoSuccess(date, title, success, userId)
     res.status(201).json({
       todoSuccess
+    });
+  }
+
+  cardSuccess = async(req, res) =>{
+    const {date, title, success} = req.body;
+    let userId = 1
+    console.log(date);
+    console.log(success);
+    const cardSuccess = await this.todoListService.cardSuccess(date, title, success, userId)
+    res.status(201).json({
+      cardSuccess
     });
   }
 }// class 끝
