@@ -78,7 +78,6 @@
         }
 
     }
-
     // 페이지 로딩시 데이터 가져오기 하단
     function getBucketList(){
         const listBox = $('#bucketListD-day');
@@ -247,7 +246,7 @@
                     </div>
                 </li>`;
         listBox.append(addBucketList);
-        $('#bucketInputBox').remove();
+        $('#bucketInputBox *').remove();
         $('#BucketPlusBox').show();
 
     }
@@ -257,10 +256,6 @@
         $('#BucketPlusBox').show();
     }
 
-    // function asd(){
-    //     alert("등록 완료");
-    //     getCards();
-    // }
 </script>
 <style>
     /*전체 옵션*/
@@ -435,11 +430,7 @@
     </div>
 </div>
 <!--풋터-->
-<footer style="margin-top: 50px;">
-    <div class="container-fluid" style="background: #333; text-align: center; height:200px; ">
-        <h6 style="line-height: 200px; color:#ccc;">Copyright <i class="fa-regular fa-copyright"></i>  2023. 투두리 All rights reserved.</h6>
-    </div>
-</footer>
+<%-include('./footer')%>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </body>
 </html>
