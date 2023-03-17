@@ -11,6 +11,9 @@ router.get('/page/bucketList', async (req,res) => {
 router.get('/page/todoListDetail', async (req,res) => {
     return res.render('todolistDetail');
 });
+router.get('/logout',async (req,res)=>{
+    return res.render('main');
+})
 router.get('/', async (req,res) => {
     return res.render('main');
 });

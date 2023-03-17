@@ -82,6 +82,9 @@
   }
 </style>
 <script>
+  $(document).ready(function(){
+    console.log(document.location.hash);
+  })
   // main Calnedar 데이터 표시
   document.addEventListener('DOMContentLoaded', function () {
   var calendarEl = document.getElementById('calendar');

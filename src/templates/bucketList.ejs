@@ -45,7 +45,7 @@
                     <div>
                     <!--여기 src 다음에 이미지 경로 넣어줄-->
                         <img src="${res[i].image}" class="card-img-top" alt="...">
-                        <button class="bucketEdit abs"><i class="fa-solid fa-pen"></i></button>
+                        <button class="bucketEdit abs" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="fa-solid fa-pen" onclick="cardFix('${res[i].image}')"></i></button>
                         <button class="bucketDelete abs"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                     <div class="card-body">
@@ -61,6 +61,14 @@
                 if(res.length>3) {$('#cards').animate({left:-322})};
             }
         })
+    }
+    function cardFix(image){
+        const title = $(event.target).parents('.card').find('.card-title').text();
+        const content = $(event.target).parents('.card').find('.card-text').text();
+        const img = image;
+        $('#title').val(`${title}`);
+        $('#content').val(`${content}`);
+
     }
     //카드 오른쪽으로 이동
     function cardMoveLeft(){
@@ -108,7 +116,7 @@
                                 </div>
                                 <div class="col-md-9 bucketDay">
                                     <p style="text-align: left">${title}</p>
-                                        <button class="bucketIcon editIcon" onclick="bucketEdit()"><i class="fa-solid fa-pen"></i></button>
+                                        <button class="bucketIcon editIcon" onclick="bucketEdit()" ><i class="fa-solid fa-pen"></i></button>
                                         <button class="bucketIcon deleteIcon" onclick="bucketDelete()"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
                             </div>
@@ -431,6 +439,36 @@
                     <div class="mb-3">
                         <label for="formFileSm" class="form-label">Image</label>
                         <input type="file" class="form-control form-control-sm" name="image" id="formFileSm" >
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button onclick="asd()" data-bs-dismiss="modal" class="btn btn-primary">등록</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 수정 모달창 -->
+<div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">TODO 리스트 수정</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/api/bucketLists/cards" method="POST"enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <input type="text" id="title" name="title" class="form-control" id="exampleFormControlInput1" maxlength="13">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+                        <textarea class="form-control"id="content" name="content" id="exampleFormControlTextarea1" rows="3" maxlength="40"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="formFileSm" class="form-label">Image</label>
+                        <input type="file" id="img"class="form-control form-control-sm" name="image" id="formFileSm" >
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
