@@ -10,7 +10,10 @@ class TodoListController {
     res.status(200).json({monthTodoList});
   }
   postAlldayTodo = async(req, res) =>{
-    const {title, content, image, date} = req.body;
+    let image;
+    if(req.file !== undefined) image = req.file.location;
+    else image = '';
+    const {title, content, date} = req.body;
     console.log(title, content, image, date);
     let userId = 1
     const postAlldayTodo = await this.todoListService.postAlldayTodo(title, content, image, date, userId)
@@ -27,7 +30,10 @@ class TodoListController {
   }
 
   putAlldayTodo = async(req, res) =>{
-    const {date, beforeTitle, content, image, afterTitle} = req.body;
+    let image;
+    if(req.file !== undefined) image = req.file.location;
+    else image = '';
+    const {date, beforeTitle, content, afterTitle} = req.body;
     
     let userId = 1
     const putAlldayTodo = await this.todoListService.putAlldayTodo(date, beforeTitle, content, image, afterTitle, userId)
