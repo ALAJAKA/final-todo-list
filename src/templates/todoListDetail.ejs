@@ -112,7 +112,7 @@
                             $('#cards').append(`
                                             <div class="card cards" id="card${uuid}">
                                                 <div>
-                                                    <img src="/img/1296285.jpg" class="card-img-top" alt="...">
+                                                    <img src="${image}" class="card-img-top" alt="...">
                                                     <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
                                                     <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                                 </div>
@@ -132,7 +132,7 @@
                             $('#cards').append(`
                                 <div class="card cards" id="card${uuid}">
                                     <div>
-                                        <img src="/img/1296285.jpg" class="card-img-top" alt="...">
+                                        <img src="${image}" class="card-img-top" alt="...">
                                         <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
                                         <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                     </div>
@@ -238,23 +238,28 @@
     function cardSave(){
         const title = document.getElementById('inputTitle').value;
         const content = document.getElementById('inputContent').value;
-        const image = document.getElementsByName('inputImage').file;
+        const image = document.getElementsByName('inputImage')[0].files[0];
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
-        let uuid = self.crypto.randomUUID();
+        let Data = new FormData();
+        Data.append('title', title)
+        Data.append('content', content)
+        Data.append('date', date)
+        Data.append('image', image)
         if (title.trim() == ""){
             alert("내용이 없습니다.")
         }else{
             axios({
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
                 method: 'post',
                 url: '/api/todoLists/alldayTodo',
-                data: {
-                    title,
-                    content,
-                    image,
-                    date
-                }
+                data: Data,
+                
             })
                 .then((response) => { 
+                    let imgLink = response.data.image
+                    console.log(imgLink);
                     $('#staticBackdrop').modal('hide');    
                     let slideWidth = $('#cards').width();
                     console.log("기본 ", slideWidth);
@@ -262,7 +267,7 @@
                     $('#cards').append(`
                                 <div class="card cards" id="card${uuid}">
                                     <div>
-                                        <img src="/img/1296285.jpg" class="card-img-top" alt="...">
+                                        <img src="${imgLink}" class="card-img-top" alt="...">
                                         <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
                                         <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                     </div>
@@ -297,7 +302,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="formFileSm" class="form-label">Image</label>
-                                            <input class="form-control form-control-sm" name="image" id="editImage" type="file">
+                                            <input class="form-control form-control-sm" name="editImage" id="editImage" type="file">
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
@@ -313,38 +318,47 @@
         const afterTitle = document.getElementById('editTitle').value;
         const happy = document.getElementById('editContent').name;
         const content = document.getElementById('editContent').value;
-        const image = document.getElementsByName('editImage').file;
+        const image = document.getElementsByName('editImage')[0].files[0];
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
-        console.log(beforeTitle,
-                    afterTitle,
-                    content,
-                    image,
-                    date);
+        
+        let Data = new FormData();
+        console.log(image);
+        
+        Data.append('beforeTitle', beforeTitle)
+        Data.append('afterTitle', afterTitle)
+        Data.append('content', content)
+        Data.append('date', date)
+        Data.append('image', image)
         if (afterTitle.trim() == ""){
             alert("내용이 없습니다.")
         }else{
             axios({
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
                 method: 'put',
                 url: '/api/todoLists/alldayTodo',
-                data: {
-                    beforeTitle,
-                    afterTitle,
-                    content,
-                    image,
-                    date
-                }
+                data: Data,
             })
                 .then((response) => { 
+                    console.log(response.data.image);
+                    let imgLink = response.data.image
                     $('#staticBackdrop2').modal('hide');    
                     let slideWidth = $('#cards').width();
                     console.log("기본 ", slideWidth);
-
-                    $(`#cardBody${happy}`).replaceWith(`
+                    $(`#card${happy}`).replaceWith(`
+                                <div class="card cards" id="card${happy}">
+                                    <div>
+                                        <img src="${imgLink}" class="card-img-top" alt="...">
+                                        <button class="todoEdit abs" id="cardEdit${happy}" onclick="cardEditBefore('${happy}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
+                                        <button class="todoDelete abs" id="cardDelete${happy}" onclick="cardDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                                    </div>
                                     <div class="card-body" id="cardBody${happy}">
                                         <h5 class="card-title" id="cardTitle${happy}">${afterTitle}</h5>
                                         <p class="card-text" id="cardText${happy}">${content}</p>
                                         <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
-                                    </div>`)
+                                    </div>
+                                </div>`)
                     if(date>today){
                         $('.todoCheck').hide();
                     }
@@ -740,7 +754,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="formFileSm" class="form-label">Image</label>
-                    <input class="form-control form-control-sm" name="image" id="inputImage" type="file">
+                    <input class="form-control form-control-sm" accept="image/*" name="inputImage" id="inputImage" type="file">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
@@ -768,7 +782,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="formFileSm" class="form-label">Image</label>
-                    <input class="form-control form-control-sm" name="image" id="editImage" type="file">
+                    <input class="form-control form-control-sm" accept="image/*" name="editImage" id="editImage" type="file">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>

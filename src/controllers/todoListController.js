@@ -38,7 +38,7 @@ class TodoListController {
     let userId = 1
     const putAlldayTodo = await this.todoListService.putAlldayTodo(date, beforeTitle, content, image, afterTitle, userId)
     res.status(201).json({
-      putAlldayTodo
+      image
     });
   }
   
