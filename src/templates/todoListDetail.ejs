@@ -104,7 +104,10 @@
                     for (let i = 0; i < getAlldayTodo.length; i++){
                         if(i>2) slideWidth += 322;
                         const content = getAlldayTodo[i].content
-                        const image = getAlldayTodo[i].image
+                        let image = getAlldayTodo[i].image
+                        if(!image){
+                            image = "https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679019089265_%C3%AC%C2%9C%C2%A0%C3%AB%C2%9F%C2%BD.jpg"
+                        }
                         const title = getAlldayTodo[i].title
                         const success = getAlldayTodo[i].success
                         let uuid = self.crypto.randomUUID();
@@ -259,7 +262,9 @@
             })
                 .then((response) => { 
                     let imgLink = response.data.image
-                    console.log(imgLink);
+                    if(!imgLink){
+                        imgLink = "https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679019089265_%C3%AC%C2%9C%C2%A0%C3%AB%C2%9F%C2%BD.jpg"
+                        }
                     $('#staticBackdrop').modal('hide');    
                     let slideWidth = $('#cards').width();
                     console.log("기본 ", slideWidth);
@@ -343,6 +348,9 @@
                 .then((response) => { 
                     console.log(response.data.image);
                     let imgLink = response.data.image
+                    if(!imgLink){
+                        imgLink = "https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679019089265_%C3%AC%C2%9C%C2%A0%C3%AB%C2%9F%C2%BD.jpg"
+                        }
                     $('#staticBackdrop2').modal('hide');    
                     let slideWidth = $('#cards').width();
                     console.log("기본 ", slideWidth);
