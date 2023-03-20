@@ -42,6 +42,16 @@ class TodoListController {
     });
   }
   
+  deleteAlldayTodo = async(req, res) =>{
+    const {date, title} = req.body;
+    console.log(req.body);
+    let userId = 1
+    const deleteAlldayTodo = await this.todoListService.deleteAlldayTodo(date, title, userId)
+    res.status(201).json({
+      deleteAlldayTodo
+    });
+  }
+
   postTodayTodo = async(req, res) =>{
     const {date, title} = req.body;
     

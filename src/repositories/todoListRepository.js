@@ -51,7 +51,15 @@ class TodoListRepository {
     return putAlldayTodoLists;
   }
 
-  
+  getAlldayTodoList = async (date, userId) =>{
+    const getAlldayTodoList = await this.AllDayTodoList.findAll({
+      where: {
+        [Op.and]: [{ createdAt: {[Op.lt]:date }}, { userId }],
+      },
+      raw: true,
+    });
+    return getAlldayTodoList;
+  }
 
   getAlldayTodoLists = async (date, userId) =>{
     const getAlldayTodoLists = await this.AllDayTodoLists.findAll({
@@ -63,16 +71,24 @@ class TodoListRepository {
     return getAlldayTodoLists;
   }
 
-  getAlldayTodoList = async (date, userId) =>{
-    const getAlldayTodoList = await this.AllDayTodoList.findAll({
+  deleteAlldayTodoList = async (title, userId) =>{
+    const deleteAlldayTodoList = await this.AllDayTodoList.destroy({
       where: {
-        [Op.and]: [{ createdAt: {[Op.lt]:date }}, { userId }],
-      },
-      raw: true,
-    });
-    return getAlldayTodoList;
+        [Op.and]: [ {title}, { userId }],
+      }
+  });
+    return deleteAlldayTodoList;
   }
-  
+    
+  deleteAlldayTodoLists = async (date, title, userId) =>{
+    const deleteAlldayTodoLists = await this.AllDayTodoLists.destroy({
+      where: {
+        [Op.and]: [{ createdAt:date }, {title}, { userId }],
+      }
+  });
+    return deleteAlldayTodoLists;
+  }
+
   postTodayTodo = async (date, title, success, userId) =>{
     const postTodayTodo = await this.TodoList.create({
       today:date,

@@ -12,7 +12,7 @@ router.get("/alldayTodo", todoListController.getAlldayTodo);
 //수정
 router.put("/alldayTodo", S3upload.single('image'), todoListController.putAlldayTodo);
 //삭제
-// router.delete("/alldayTodo", todoListController.deleteAlldayTodo);
+router.delete("/alldayTodo", todoListController.deleteAlldayTodo);
 //완료
 router.put("/cardSuccess", todoListController.cardSuccess);
 
