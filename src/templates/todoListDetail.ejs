@@ -261,7 +261,8 @@
                 
             })
                 .then((response) => { 
-                    let imgLink = response.data.image
+                    let imgLink = response.data.postAlldayTodo.image
+                    console.log(imgLink);
                     if(!imgLink){
                         imgLink = "https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679019089265_%C3%AC%C2%9C%C2%A0%C3%AB%C2%9F%C2%BD.jpg"
                         }
