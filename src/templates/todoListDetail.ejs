@@ -51,12 +51,15 @@
     
         // 다음일로 이동
         function nextDay(){
+            day +=1;
             const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
-            
-            if(day == days[month]){
-                document.getElementsById("btnRight").style.display = "none";
-            }else{
-                day +=1;
+            if(day > days[month]){
+                if (month==12){
+                    day = days[month]
+                }else{
+                    month +=1;
+                    day = 1;
+                }
             }
             $('#month *').remove();
             $('#day *').remove();
@@ -66,10 +69,15 @@
         }
         // 이전일로 이동
         function lastDay(){
-            if(day == 1){
-                document.getElementsById("btnLeft").style.display = "none";
-            }else{
-                day -=1;
+            day -=1;
+            const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+            if(day < 1){
+                if (month==1){
+                    day = 1
+                }else{
+                    month -=1;
+                    day = days[month];
+                }
             }
             $('#month *').remove();
             $('#day *').remove();
