@@ -131,6 +131,18 @@
               color: 'green', // todo 달성률 이벤트는 초록색으로 표시
             });
           }
+          
+          // 현재 날짜 TodoList 미리보기
+          const today = new Date(); 
+          const todayStr = today.toISOString().substr(0, 10); // YYYY-MM-DD 형식의 문자열로 변환
+          fetch(`/api/preview/todo?date=${todayStr}`)
+            .then(response => response.json())
+            .then(data => {
+              const todo = data.data.filter(todoo => todoo.today.startsWith(todayStr))
+                                    .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
+                                    .join('');
+              todoPreview.innerHTML = todo;
+            });
 
           // Calendar BucketList 데이터 가져오기
           fetch('/api/calendar/bucket')
@@ -157,7 +169,7 @@
       
       // 일자를 클릭할 때 실행되는 함수
       dateClick: function(info) {
-        const selectedDate = info.date;
+        const selectedDate = info.date || new Date(); // info.date가 존재하지 않으면 현재 날짜로 초기화
         const selectedDateCell = info.dayEl;
         const todayCells = document.getElementsByClassName('fc-day-today');
         for (let i = 0; i < todayCells.length; i++) {
