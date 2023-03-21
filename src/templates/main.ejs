@@ -154,22 +154,45 @@
           failure(error);
         });
       },
+      
+      // 일자를 클릭할 때 실행되는 함수
+      dateClick: function(info) {
+        const selectedDate = info.date;
+        const selectedDateCell = info.dayEl;
+        const todayCells = document.getElementsByClassName('fc-day-today');
+        for (let i = 0; i < todayCells.length; i++) {
+          todayCells[i].classList.remove('fc-day-today');
+        }
+        selectedDateCell.classList.add('fc-day-today');
+        calendar.gotoDate(selectedDate); // 클릭한 날짜로 이동
+
+        // 해당 일자에 맞는 TodoList 미리보기
+        const selectedDateStr = selectedDate.toISOString().substr(0, 10); // toISOString 메소드로 객체를 문자열 반환, YYYY-MM-DDTHH:mm:ss.sssZ 로 반환된 것을 subsrt 메소드로 첫 10자 추출
+        fetch(`/api/preview/todo?date=${selectedDateStr}`)
+          .then(response => response.json())
+          .then(data => {
+            const todo = data.data.filter(todoo => todoo.today.startsWith(selectedDateStr)) // todo 배열에서 선택한 날짜에 해당 항목만 필터링
+                                  .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`) // 각 항목을 html 문자열로 변환
+                                  .join(''); // html 문자열을 결합
+            todoPreview.innerHTML = todo;
+          });
+      },
     });
     calendar.render();
   });
 
-  // TodoList 미리보기
-  fetch(`/api/preview/todo`)
-    .then((response) => response.json())
-    .then((data) => {
-      const todo = data.data;
-      for (let i = 0; i < todo.length; i++){
-        const todoo = `<p style="line-height:5px">${todo[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
-        const p = document.createElement('p');
-        p.innerHTML = todoo;
-        document.getElementById('todoPreview').appendChild(p);
-      }
-    });
+  // // TodoList 미리보기
+  // fetch(`/api/preview/todo`)
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     const todo = data.data;
+  //     for (let i = 0; i < todo.length; i++){
+  //       const todoo = `<p style="line-height:5px">${todo[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
+  //       const p = document.createElement('p');
+  //       p.innerHTML = todoo;
+  //       document.getElementById('todoPreview').appendChild(p);
+  //     }
+  //   });
 
   // BucketList 미리보기
   fetch(`/api/preview/bucket`)
