@@ -106,6 +106,26 @@
         .then((response) => response.json())
         .then((data) => {
           const todo = data.data;
+          
+          // 캘린더의 날짜가 변경될 때마다 호출되는 함수
+          function updateTodoPreview() {
+            const currentDate = calendar.getDate(); // 현재 캘린더에 표시되는 날짜
+            const currentStr = currentDate.toISOString().substr(0, 10); // YYYY-MM-DD 형식의 문자열로 변환
+            fetch(`/api/preview/todo?date=${currentStr}`)
+              .then(response => response.json())
+              .then(data => {
+                const todo = data.data.filter(todoo => todoo.today.startsWith(currentStr))
+                                      .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
+                                      .join('');
+                todoPreview.innerHTML = todo;
+              });
+          }
+
+          updateTodoPreview(); // 페이지가 로드될 때 한 번 호출하여 현재 날짜 미리보기를 표시함
+
+          // 캘린더의 날짜 변경 이벤트에 updateTodoPreview 함수를 연결함
+          calendar.on('dateClick', updateTodoPreview);
+          calendar.on('viewSkeletonRender', updateTodoPreview);
 
           // 달성률 계산
           const achievements = {}; // 빈 객체 생성
@@ -131,18 +151,6 @@
               color: 'green', // todo 달성률 이벤트는 초록색으로 표시
             });
           }
-          
-          // 현재 날짜 TodoList 미리보기
-          const today = new Date(); 
-          const todayStr = today.toISOString().substr(0, 10); // YYYY-MM-DD 형식의 문자열로 변환
-          fetch(`/api/preview/todo?date=${todayStr}`)
-            .then(response => response.json())
-            .then(data => {
-              const todo = data.data.filter(todoo => todoo.today.startsWith(todayStr))
-                                    .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
-                                    .join('');
-              todoPreview.innerHTML = todo;
-            });
 
           // Calendar BucketList 데이터 가져오기
           fetch('/api/calendar/bucket')
@@ -188,6 +196,9 @@
                                   .join(''); // html 문자열을 결합
             todoPreview.innerHTML = todo;
           });
+        },
+        datesSet: function() {
+        todoPreview.innerHTML = ''; // 이전에 보여줬던 미리보기 데이터 삭제
       },
     });
     calendar.render();
