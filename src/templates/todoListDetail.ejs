@@ -51,12 +51,15 @@
     
         // 다음일로 이동
         function nextDay(){
+            day +=1;
             const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
-            
-            if(day == days[month]){
-                document.getElementsById("btnRight").style.display = "none";
-            }else{
-                day +=1;
+            if(day > days[month]){
+                if (month==12){
+                    day = days[month]
+                }else{
+                    month +=1;
+                    day = 1;
+                }
             }
             $('#month *').remove();
             $('#day *').remove();
@@ -66,10 +69,15 @@
         }
         // 이전일로 이동
         function lastDay(){
-            if(day == 1){
-                document.getElementsById("btnLeft").style.display = "none";
-            }else{
-                day -=1;
+            day -=1;
+            const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+            if(day < 1){
+                if (month==1){
+                    day = 1
+                }else{
+                    month -=1;
+                    day = days[month];
+                }
             }
             $('#month *').remove();
             $('#day *').remove();
@@ -81,8 +89,6 @@
         //카드get
         function cardGet(){
             const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
-            console.log(date);
-            console.log(today);
             axios({
                 method: 'get',
                 url: '/api/todoLists/alldayTodo',
@@ -100,7 +106,6 @@
                         </div>`)
                     let slideWidth = $('#cards').width();
                     slideWidth = 1298
-                    console.log("기본 ", slideWidth);
                     for (let i = 0; i < getAlldayTodo.length; i++){
                         if(i>2) slideWidth += 322;
                         const content = getAlldayTodo[i].content
@@ -129,8 +134,7 @@
                             $(`#cardTitle${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
                             $(`#cardText${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
                             $(`#cardEdit${uuid}`).hide();
-                            $('#cards').css({width:`${slideWidth}`});
-                            console.log(i,slideWidth);         
+                            $('#cards').css({width:`${slideWidth}`});     
                         }else{
                             $('#cards').append(`
                                 <div class="card cards" id="card${uuid}">
@@ -146,7 +150,6 @@
                                     </div>
                                 </div>`)
                             $('#cards').css({width:`${slideWidth}`});
-                            console.log(i,slideWidth);    
                         }
                     }if(getAlldayTodo.length>3) {$('#cards').animate({left:-322})}
                     else{$('#cards').animate({left:0})}
@@ -235,7 +238,6 @@
     //UUID 랜덤ID값
     function uuid() {
         let uuid = self.crypto.randomUUID();
-        console.log(uuid);
     };
     //카드추가d
     function cardSave(){
@@ -262,7 +264,6 @@
             })
                 .then((response) => { 
                     let imgLink = response.data.postAlldayTodo.image
-                    console.log(imgLink);
                     if(!imgLink){
                         imgLink = "https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679019089265_%C3%AC%C2%9C%C2%A0%C3%AB%C2%9F%C2%BD.jpg"
                         }
@@ -328,7 +329,6 @@
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         
         let Data = new FormData();
-        console.log(image);
         
         Data.append('beforeTitle', beforeTitle)
         Data.append('afterTitle', afterTitle)
@@ -347,14 +347,12 @@
                 data: Data,
             })
                 .then((response) => { 
-                    console.log(response.data.image);
                     let imgLink = response.data.image
                     if(!imgLink){
                         imgLink = "https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679019089265_%C3%AC%C2%9C%C2%A0%C3%AB%C2%9F%C2%BD.jpg"
                         }
                     $('#staticBackdrop2').modal('hide');    
                     let slideWidth = $('#cards').width();
-                    console.log("기본 ", slideWidth);
                     $(`#card${happy}`).replaceWith(`
                                 <div class="card cards" id="card${happy}">
                                     <div>
@@ -399,6 +397,7 @@
                     $(`#cardTitle${happy}`).css({"text-decoration":"line-through", "color":"#777"})
                     $(`#cardText${happy}`).css({"text-decoration":"line-through", "color":"#777"})
                     $(`#cardEdit${happy}`).hide();
+                    $(`#cardDelete${happy}`).hide();
                 })
         }
     //카드완료취소
@@ -428,7 +427,20 @@
         }
     //카드삭제
     function cardDelete(happy){
-            $(`#card${happy}`).remove();
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
+        let title = document.getElementById(`cardTitle${happy}`).innerText
+        // let content = document.getElementById(`cardText${happy}`).innerText
+        axios({
+                method: 'delete',
+                url: '/api/todoLists/alldayTodo',
+                data: {
+                    date, title
+                }
+            })
+                .then((response) => {
+                    
+                    $(`#card${happy}`).remove();
+                })
         }
 
 
@@ -453,6 +465,7 @@
                         </li>`)
                     $(`#happy${happy}`).css({"text-decoration":"line-through", "color":"#777"})
                     $(`#todoEdit${happy}`).hide();
+                    $(`#todoDelete${happy}`).hide();
                 })
         }
     //투두 완료취소
@@ -475,12 +488,12 @@
                         <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                         </li>`)
                     $(`#todoEdit${happy}`).show();
+                    $(`#todoDelete${happy}`).show();
                 })
     }
     //투두 수정버튼
     function todoEdit(happy){
         cp();
-        console.log("CHECK");
         let title = document.getElementById(`happy${happy}`).innerText
         $(`#happy${happy}`).replaceWith(`
             <li class="todoBoxLi" id="todoEditBox${happy}">                       
@@ -497,8 +510,6 @@
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         const beforeTitle = document.getElementById(`todoEdit${happy}`).name;
         const afterTitle = document.getElementById(`todoEdit${happy}`).value;
-        console.log(beforeTitle);
-        console.log(afterTitle);
         if (afterTitle.trim() == ""){
             alert("내용이 없습니다.")
         }else{
@@ -528,7 +539,6 @@
     //투두 수정취소
     function todoEditCancel(happy){
         const title = document.getElementById(`todoEdit${happy}`).value
-        console.log(title);
             $(`#todoEditBox${happy}`).replaceWith(`
                     <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
                         ${title}
@@ -555,7 +565,6 @@
     }
     //투두추가버튼
     function todoPlus() {
-        console.log();
         $('#todoPlusBox').hide();
         const listBox = document.getElementById('listBox');
         let todoInput=`
@@ -626,6 +635,10 @@
     .leftMenu:hover {background: #777}
     .btntt{width:50px; height:50px; line-height: 50px; border:0; border-radius: 5px; background: rgba(255,255,255,0.3);; font-size: 20px; transition: 1s; }
     .btntt:hover{background-color: rgba(255,255,255,0.7);}
+    .spring{background-image:url('https://blog.kakaocdn.net/dn/8ees0/btq33bjZoFY/6SSEPleWKXNwMHlW3p5mvk/img.jpg') ; background-size: 100.2%; background-repeat: no-repeat;}
+    .summer{background-image:url('https://www.icelandtours.is/wp-content/uploads/2019/10/Colorful-summer-sunset-with-kirkjufell-mountain-in-grundarfjordur.jpg.webp') ; background-size: 100% 700px; background-repeat: no-repeat;}
+    .fall{background-image: url('/img/fall.jpg'); background-size: cover; background-position: bottom;}
+    .winter{background-image: url('/img/winter.jpg'); background-size: cover;}
     h2{text-align:center; margin-top: 50px;}
 
     /* 카드 영역*/
@@ -692,7 +705,7 @@
 <!--바디-->
 
 <!--헤더-->
-<section style="background-image: url('/img/winter.jpg'); background-size: cover; margin-top: 80px;">
+<section id="headerImg">
     <div class="container-fluid" style="height:400px; text-align: center;" >
         <h1 style="padding-top: 100px; color:#000; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;">일간 TODO 리스트</h1>
         <div>

@@ -19,7 +19,6 @@ class TodoListService {
     postAlldayTodo = async(title, content, image, date, userId) =>{
         const success = "READY"
         const today = new Date().toISOString().substring(0,10);
-        console.log(date, today);
 
         if (date==today){
             const postAlldayTodoLists = await this.todoListRepository.postAlldayTodoLists(title, content, image, userId, success)
@@ -30,7 +29,6 @@ class TodoListService {
     
     putAlldayTodo = async(date, beforeTitle, content, image, afterTitle, userId) =>{
         const today = new Date().toISOString().substring(0,10);
-        console.log(date, today);
 
         if (date==today){
             const putAlldayTodoLists = await this.todoListRepository.putAlldayTodoLists(date, beforeTitle, content, image, afterTitle, userId)
@@ -48,6 +46,16 @@ class TodoListService {
             const getAlldayTodoLists = await this.todoListRepository.getAlldayTodoLists(date, userId)
             return getAlldayTodoLists;
         }
+    }
+
+    deleteAlldayTodo = async(date, title, userId) =>{
+        const today = new Date().toISOString().substring(0,10);
+
+        if (date==today){
+            const deleteAlldayTodoLists = await this.todoListRepository.deleteAlldayTodoLists(date, title, userId)
+        }
+        const deleteAlldayTodoList = await this.todoListRepository.deleteAlldayTodoList(title, userId)
+        return deleteAlldayTodoList;
     }
 
     postTodayTodo = async(date, title, userId) =>{
