@@ -20,6 +20,8 @@ router.post("/cards",S3upload.single('image'), bucketListController.createBucket
 router.get("/cards", bucketListController.getBucketListCard);
 //카드 삭제
 router.delete("/cards", bucketListController.deleteBucketListCard);
+//카드 수정
+router.put("/cards",S3upload.single('image'), bucketListController.updateBucketListCard);
 
 
 module.exports = router;

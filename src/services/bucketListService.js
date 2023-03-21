@@ -32,6 +32,16 @@ class BucketListService {
       await this.bucketListRepository.deleteBucketList(title,dayValue,userId);
       return "삭제 완료";
     }
+
+    deleteBucketListCard =async (title,content,img,userId) =>{
+      await this.bucketListRepository.deleteBucketListCard(title,content,img,userId);
+      return "삭제 완료;"
+    }
+
+    updateBucketListCard =async (title1,content1,img1,title,content,image,userId)=>{
+      await this.bucketListRepository.updateBucketListCard(title1,content1,img1,title,content,image,userId);
+      return "수정 완료";
+    }
 }
 
 module.exports = BucketListService;
