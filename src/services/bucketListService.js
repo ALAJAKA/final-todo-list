@@ -8,6 +8,9 @@ class BucketListService {
       return BucketList;
   }
     getBucketListCards = async (userId) => {
+
+
+
         const BucketListCards = await this.bucketListRepository.getBucketListCards(userId);
         return BucketListCards;
     }
@@ -24,6 +27,10 @@ class BucketListService {
     createBucketListCard = async (title,content,image,userId) =>{
       const BucketListCard = await this.bucketListRepository.createBucketListCard(title,content,image,userId);
       return BucketListCard;
+    }
+    deleteBucketList = async (title,dayValue,userId) =>{
+      await this.bucketListRepository.deleteBucketList(title,dayValue,userId);
+      return "삭제 완료";
     }
 }
 

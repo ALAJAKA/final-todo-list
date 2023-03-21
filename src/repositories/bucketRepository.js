@@ -53,6 +53,17 @@ class BucketListRepository {
     });
     return bucketListCard;
   }
+
+  deleteBucketList = async (title,dayValue,userId)=>{
+    await BucketList.destroy({
+      where:{
+        title:title,
+        d_day:dayValue,
+        userId:userId,
+      }
+    });
+  }
+
 }
 
 module.exports = BucketListRepository;

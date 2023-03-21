@@ -68,6 +68,22 @@ class BucketListController {
             console.log(err);
         };
     }
+
+    deleteBucketList = async (req,res)=>{
+        const userId= 1;
+        const {title,dayValue} = req.body;
+        const delBucket = await this.bucketListService.deleteBucketList(title,dayValue,userId);
+
+      return res.status(200).json({msg:delBucket});
+    }
+
+    deleteBucketListCard = async (req,res)=>{
+      const {title,content,img} = req.body;
+      const userId = 1;
+      const delBucketCard = await this.bucketListService.deleteBucketListCard(title,content,img,userId);
+
+    }
+
 }
 
 module.exports = BucketListController;

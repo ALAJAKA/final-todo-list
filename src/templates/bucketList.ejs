@@ -21,6 +21,27 @@
         getCards();
     });
     //페이지 로딩시 데이터 가져오기 카드
+    function delCard(){
+        const card = $(event.target).parents('.card');
+        const title = card.find('.card-title').text();
+        const content = card.find('.card-text').text();
+        const img = card.find('img').attr('src');
+
+        $.ajax({
+            type:"DELETE",
+            url:'/api/bucketLists/cards',
+            data:{
+                title:title,
+                content:content,
+                img:img
+            },
+            success:function(res){
+                alert(res.msg);
+            }
+        })
+        card.remove();
+    }
+
     function getCards(){
         $('#cards *').remove();
         $('#cards').append(`
@@ -46,7 +67,7 @@
                     <!--여기 src 다음에 이미지 경로 넣어줄-->
                         <img src="${res[i].image}" class="card-img-top" alt="...">
                         <button class="bucketEdit abs" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="fa-solid fa-pen" onclick="cardFix('${res[i].image}')"></i></button>
-                        <button class="bucketDelete abs"><i class="fa-solid fa-xmark"></i></button>
+                        <button class="bucketDelete abs" onclick="delCard()"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">${res[i].title}</h5>
@@ -194,15 +215,20 @@
         `)
         $('#BucketPlusBox').show();
     }
-    //버킷 삭제 나중에
+    //버킷 삭제
     function bucketDelete(){
         const listBox = $(event.target).parents('.bucketBoxLi');
+        const dayValue = listBox.find('.calP>p').text();
+        const title = listBox.find('.col-md-9>p').text();
         $.ajax({
             type:"DELETE",
             url:'/api/bucketLists/plan',
-            data:{},
-            success:function(response){
-
+            data:{
+                dayValue:dayValue,
+                title:title,
+            },
+            success:function(res){
+                alert(res.msg);
             }
         })
         listBox.remove();
@@ -273,8 +299,8 @@
         $('#BucketPlusBox').show();
     }
     function asd(){
-        alert("등록 완료");
         getCards();
+        // alert("등록 완료");
     }
 </script>
 <style>
