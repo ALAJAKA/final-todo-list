@@ -193,19 +193,6 @@
     calendar.render();
   });
 
-  // // TodoList 미리보기
-  // fetch(`/api/preview/todo`)
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     const todo = data.data;
-  //     for (let i = 0; i < todo.length; i++){
-  //       const todoo = `<p style="line-height:5px">${todo[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
-  //       const p = document.createElement('p');
-  //       p.innerHTML = todoo;
-  //       document.getElementById('todoPreview').appendChild(p);
-  //     }
-  //   });
-
   // BucketList 미리보기
   fetch(`/api/preview/bucket`)
     .then((response) => response.json())
