@@ -1,9 +1,34 @@
 <script>
+
+    $(document).ready(function(){
+        logined();
+    })
+
     function leftNavOn(){
         $('#leftNav').css('left','0px');
     }
     function leftNavHide(){
         $('#leftNav').css('left','-300px');
+    }
+    function logined(){
+        if(document.cookie){
+            $('#loginBtns').append(`
+            <p>닉네임 : </p>
+            <input type="button" class="btn btn-success" onclick="logout()" style="width: 90%; margin-top: 10px;"value="로그아웃">
+            `);
+        }else{
+            $('#loginBtns').append(`
+            <input type="button" class="btn btn-success" onclick="location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=http://localhost:3000/api/user/login'" style="width: 90%; margin-top: 10px;"value="로그인">
+            <input type="button" class="btn btn-success" onclick="location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=http://localhost:3000'" style="width: 90%; margin-top: 10px;"value="로그인">
+            <input type="button" class="btn btn-success" onclick="location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com/callback'" style="width: 90%; margin-top: 10px;"value="로그인">
+            <input type="button" class="btn btn-success" onclick="logout()" style="width: 90%; margin-top: 10px;"value="로그아웃">
+            <input type="button" class="btn btn-success" onclick="location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/logout?client_id=7r03hfgoepij4uajvqj1vq94d2&logout_uri=https://flutterStudy.com/logout'" style="width: 90%; margin-top: 10px;"value="로그아웃">
+            `)
+        }
+    }
+    function logout(){
+        document.cookie = "access_token= ; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/logout?client_id=7r03hfgoepij4uajvqj1vq94d2&logout_uri=http://localhost:3000/logout';
     }
 </script>
 
@@ -12,17 +37,9 @@
     <div id="leftNav" style="position:fixed; border:1px solid black;  top:0; left:-300px; width:300px; height:100%; background: #fff; padding-left: 40px;">
         <button style="border: 0;font-size: 2.5rem; margin-top: 10px; position: relative; left:0px; background: none;" onclick="leftNavHide()"><i class="fa-sharp fa-solid fa-circle-xmark"></i></button>
         <hr/>
-        <%if(1){%>
-            <input type="button" class="btn btn-success" onclick="location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=http://localhost:3000/callback'" style="width: 90%; margin-top: 10px;"value="로그인">
-            <input type="button" class="btn btn-success" onclick="location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com/callback'" style="width: 90%; margin-top: 10px;"value="로그인">
-            <input type="button" class="btn btn-success" onclick="location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/logout?client_id=7r03hfgoepij4uajvqj1vq94d2&logout_uri=http://localhost:3000/logout'" style="width: 90%; margin-top: 10px;"value="로그아웃">
-            <input type="button" class="btn btn-success" onclick="location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/logout?client_id=7r03hfgoepij4uajvqj1vq94d2&logout_uri=https://flutterStudy.com/logout'" style="width: 90%; margin-top: 10px;"value="로그아웃">
-            <!--            <button style="margin-top:10px; border: 1px solid black; border-radius: 2px; width: 95%; text-align: center; background: none;" onclick="location.href='#'">소셜 로그인? 할지 모름</button>-->
-        <%}else {%>
-            <input type="button" class="btn btn-success" onclick="location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/logout?client_id=7r03hfgoepij4uajvqj1vq94d2&logout_uri=http://localhost:3000/logout'" style="width: 90%; margin-top: 10px;"value="로그아웃">
-            <p>닉네임? 아이디</p>
-            <button style="border: 0; background: none">내 정보</button>
-        <%}%>
+        <div id ="loginBtns">
+
+        </div>
         <hr/>
         <button class="leftMenu" onclick="location.href='/page/todoListMonth'">월간 TO-DO 리스트</button>
         <button class="leftMenu" onclick="location.href='/page/todoListDetail'" style="margin-top: 20px;">일간 TO-DO 리스트</button>

@@ -99,9 +99,27 @@
 }
 </style>
 <script>
+
   $(document).ready(function(){
-    console.log(document.location.hash);
-  })
+      login();
+
+  });
+
+  // 로그인 리다이렉트
+  function login(){
+    const data = window.location.href.split('#')[1];
+    if(data===undefined) return ;
+    $.ajax({
+      type:"POST",
+      url:"/api/user/login",
+      data:{data},
+      success:function (res){
+        document.cookie = `access_token=${res['Atoken']}`;
+        location.href="/";
+      }
+    })
+  }
+
   // main Calnedar 데이터 표시
   document.addEventListener('DOMContentLoaded', function () {
   var calendarEl = document.getElementById('calendar');
@@ -366,7 +384,7 @@
                   <h3 style="text-align: center;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
                 </div>
                 <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
-                  <p style="text-align: left; padding-right:70px; margin:0;"><a href="/page/todoListMonth" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
+                  <p style="text-align: left; padding-right:70px; margin:0;"><a href="/page/todoListDetail" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
                 </div>
               </div>
               <div style="text-align: center; border-radius: 10px;" id="todoPreview">
