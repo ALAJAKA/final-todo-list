@@ -123,13 +123,16 @@
 </style>
 <script>
   $(document).ready(function(){
-      login();
+      loginCheck();
   });
 
   // 로그인 리다이렉트
-  function login(){
+  function loginCheck(){
+
     const data = window.location.href.split('#')[1];
-    if(data===undefined) return ;
+    const myName = localStorage.getItem('name');
+    if(document.cookie&& myName===null) logout();
+    if(data===undefined)return;
     $.ajax({
       type:"POST",
       url:"/api/user/login",
