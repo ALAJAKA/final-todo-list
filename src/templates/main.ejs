@@ -80,6 +80,46 @@
   .fc-event {
   text-align: center;
   }
+
+  /* slider */
+.slider1 {
+    height: 300px;
+}
+
+/* slider-cards */
+.slide-card1 {
+    width: 300px;
+    border-radius: 5px;
+}
+  /* slider */
+  .slider2 {
+    height: 300px;
+}
+
+/* slider-cards */
+.slide-card2 {
+    width: 300px;
+    border-radius: 5px;
+}
+
+/* slider-arrows */
+.arrow {
+    transition: 1s;
+    width: 40px;
+    height: 40px;
+}
+#todo-next-arrow{
+  transition: 1s;
+}
+#todo-previous-arrow{
+  transition: 1s;
+}
+#bucket-next-arrow{
+  transition: 1s;
+}
+#bucket-previous-arrow{
+  transition: 1s;
+}
 </style>
 <script>
   $(document).ready(function(){
@@ -211,6 +251,93 @@
       }
     });
 
+  // 추천 TodoList
+  fetch('/api/calendar/todo')
+    .then((response) => response.json())
+    .then((data) => {
+      const todoHtml = data.data.map(
+        (todo) => `
+          <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2">
+            <div class="text-decoration-none">
+              <img src="https://i.postimg.cc/wv0j2bCB/slide-1.jpg" alt="slide" width="100%">
+              <div class="p-3">
+                <p class="text-dark my-2 fs-5 fw-semibold">${todo.title}</p>
+                <p class="text-dark">${todo.today}</p>
+              </div>
+            </div>
+          </div>
+        `
+      );
+      document.getElementById('todofeed').innerHTML = todoHtml.join('');
+    });
+
+  // 추천 BucketList
+  fetch('/api/calendar/bucket')
+    .then((response) => response.json())
+    .then((data) => {
+      const bucketHtml = data.data.map(
+        (bucket) => `
+          <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2">
+            <div class="text-decoration-none">
+              <img src="https://i.postimg.cc/PJ7rsvrs/slide-3.jpg" alt="slide" width="100%">
+              <div class="p-4">
+                <p class="text-dark my-2 fs-5 fw-semibold">${bucket.title}</p>
+                <p class="text-dark">${bucket.d_day}</p>
+              </div>
+            </div>
+          </div>
+        `
+      );
+      document.getElementById('bucketfeed').innerHTML = bucketHtml.join('');
+    });
+
+    $(document).ready(function () {
+        // get card width dynamically
+        cardWidth = $(".slide-card1").width();
+        // todo-next-arrow
+        $('#todo-next-arrow').click(function () {
+            var firstChildAppend = $(".slide-card1:first-child()");
+            $(".slide-card1").animate({ left: -cardWidth }, function () {
+                $('#todofeed').append(firstChildAppend);
+                $(".slide-card1").css({
+                    left: 0,
+                })
+            })
+        });
+        // todo-previous-arrow
+        $('#todo-previous-arrow').click(function () {
+            var lastChildPrepend = $(".slide-card1:last-child()");
+            $(".slide-card1").animate({ left: cardWidth }, function () {
+                $('#todofeed').prepend(lastChildPrepend);
+                $(".slide-card1").css({
+                    left: 0,
+                })
+            })
+        });
+
+        // bucket-next-arrow
+        $('#bucket-next-arrow').click(function () {
+            var firstChildAppend = $(".slide-card2:first-child()");
+            $(".slide-card2").animate({ left: -cardWidth }, function () {
+                $('#bucketfeed').append(firstChildAppend);
+                $(".slide-card2").css({
+                    left: 0,
+                })
+            })
+        });
+        // bucket-previous-arrow
+        $('#bucket-previous-arrow').click(function () {
+            var lastChildPrepend = $(".slide-card2:last-child()");
+            $(".slide-card2").animate({ left: cardWidth }, function () {
+                $('#bucketfeed').prepend(lastChildPrepend);
+                $(".slide-card2").css({
+                    left: 0,
+                })
+            })
+        });
+    });
+
+
   // 페이지네이션
   // var page = 2;
   // var k = '';
@@ -241,7 +368,7 @@
   <!--네비게이션-->
   <%-include('./topNav')%>
   <!--바디-->
-  <div clsss="container-fluid" style="background-size: 100% 100%; margin-top: 130px;">
+  <div class="container-fluid" style="background-size: 100% 100%; margin-top: 130px;">
     <div class = "container" style="background-image: url('img/main1.png'); background-size: 100% 100%; padding-top: 50px; padding-right: 20px; padding-bottom: 10px;">
       <!--   달력 들어가야 하는부분-->
       <section style="height: 800px; border-radius: 5px;">
@@ -251,7 +378,7 @@
       </section>
     </div>
   </div>
-  <div clsss="container-fluid">
+  <div class="container-fluid">
     <div class = "container">
       <section>
         <div class="container-fluid">
@@ -286,6 +413,53 @@
       </section>
     </div>
   </div>
+  <!-- Slider -->
+  <section>
+    <h4 style="text-align: center;">추천 TODOLIST</h4>
+    <div class="container" style="position: relative;">
+      <!-- Cards Wrap -->
+      <div class="slider1 d-flex align-items-center justify-content-start overflow-hidden position-relative">
+        <div class="slider-wrap d-flex align-items-center position-absolute" id="todofeed">
+        </div>
+      </div>
+      <!-- Slider Arrows -->
+      <!-- Left Arrow -->
+      <a class="text-dark" id="todo-previous-arrow">
+        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 start-0">
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
+        </div>
+      </a>
+      <!-- Right Arrow -->
+      <a class="text-dark" id="todo-next-arrow">
+        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 end-0">
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </div>
+      </a>
+    </div>
+  </section>
+  <section>
+    <h4 style="text-align: center;">추천 BUCKETLIST</h4>
+    <div class="container" style="position: relative;">
+      <!-- Cards Wrap -->
+      <div class="slider2 d-flex align-items-center justify-content-start overflow-hidden position-relative">
+        <div class="slider-wrap d-flex align-items-center position-absolute" id="bucketfeed">
+        </div>
+      </div>
+      <!-- Slider Arrows -->
+      <!-- Left Arrow -->
+      <a class="text-dark" id="bucket-previous-arrow">
+        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 start-0">
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
+        </div>
+      </a>
+      <!-- Right Arrow -->
+      <a class="text-dark" id="bucket-next-arrow">
+        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 end-0">
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </div>
+      </a>
+    </div>
+  </section>
   <!--풋터-->
   <%-include('./footer')%>
 </body>
