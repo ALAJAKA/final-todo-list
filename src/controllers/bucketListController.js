@@ -5,9 +5,9 @@ class BucketListController {
 
   getBucketList = async (req, res) => {
     try {
-      const userId = 1;
+      const {access_token} = req.cookies;
       const {date} = req.query;
-      const BucketList = await this.bucketListService.getBucketList(userId,date);
+      const BucketList = await this.bucketListService.getBucketList(access_token,date);
       return res.status(200).json(BucketList);
     }
     catch (err) {
@@ -18,8 +18,8 @@ class BucketListController {
 
     getBucketListCard= async (req, res) => {
         try {
-            const userId = 1;
-            const BucketListCards = await this.bucketListService.getBucketListCards(userId);
+            const {access_token} = req.cookies;
+            const BucketListCards = await this.bucketListService.getBucketListCards(access_token);
             return res.status(200).json(BucketListCards);
         }
         catch (err) {
@@ -30,10 +30,10 @@ class BucketListController {
 
   createBucketList = async (req, res) => {
     try {
-      const userId = 1;
+      const {access_token} = req.cookies;
       const {date} = req.body;
       const {title} = req.body;
-      await this.bucketListService.createBucketList(userId,title,date);
+      await this.bucketListService.createBucketList(access_token,title,date);
       return res.status(200).json({msg:'등록완료'});
     }
     catch (err) {
@@ -44,9 +44,9 @@ class BucketListController {
 
     updateBucketList= async (req, res) => {
         try {
-            const userId = 1;
+            const {access_token} = req.cookies;
             const {date,title,before,beforeDay} = req.body;
-            await this.bucketListService.updateBucketList(userId, title, date,before,beforeDay);
+            await this.bucketListService.updateBucketList(access_token, title, date,before,beforeDay);
             return res.status(200).json({msg: '수정완료'});
         } catch (err) {
             //error는 나중에
@@ -56,12 +56,12 @@ class BucketListController {
 
     createBucketListCard = async (req, res) => {
         try {
-            const userId = 1;
+            const {access_token} = req.cookies;
             let image;
             if(req.file !== undefined) image = req.file.location;
             else image = '';
             const {title,content} = req.body;
-            await this.bucketListService.createBucketListCard(title,content,image,userId);
+            await this.bucketListService.createBucketListCard(title,content,image,access_token);
             return res.status(200);
         } catch (err) {
             //error는 나중에
@@ -70,26 +70,26 @@ class BucketListController {
     }
 
     deleteBucketList = async (req,res)=>{
-        const userId= 1;
+        const {access_token} = req.cookies;
         const {title,dayValue} = req.body;
-        const delBucket = await this.bucketListService.deleteBucketList(title,dayValue,userId);
+        const delBucket = await this.bucketListService.deleteBucketList(title,dayValue,access_token);
         return res.status(200).json({msg:delBucket});
     }
 
     deleteBucketListCard = async (req,res)=>{
+      const {access_token} = req.cookies;
       const {title,content,img} = req.body;
-      const userId = 1;
-      const delBucketCard = await this.bucketListService.deleteBucketListCard(title,content,img,userId);
+      const delBucketCard = await this.bucketListService.deleteBucketListCard(title,content,img,access_token);
       return res.status(200).json({msg:delBucketCard});
     }
 
     updateBucketListCard = async (req,res)=>{
-      const userId = 1;
+      const {access_token} = req.cookies;
       const {title1,content1,img1,title,content} =req.body;
       let {image} = req.body;
       if(req.file!==undefined) image = req.file.location;
       else image = img1;
-      const BucketListCard = await this.bucketListService.updateBucketListCard(title1,content1,img1,title,content,image,userId);
+      const BucketListCard = await this.bucketListService.updateBucketListCard(title1,content1,img1,title,content,image,access_token);
       return res.status(200).json({msg:BucketListCard});;
     }
 }

@@ -1,11 +1,18 @@
 const { Op } = require('sequelize');
+const {User} = require('../models')
 class UserRepository {
-  constructor(UserModel) {
-    this.UserModel = UserModel;
+  login =async (sub,name,email) =>{
+    const userId = await User.findOrCreate({
+      attributes:['id'],
+      where:{
+        sub:sub,
+        name:name,
+        email:email,
+      }
+    })
+    return userId[0].id;
   }
-  login =(req,res) =>{
-    return 0;
-  }
+
 }
 
 module.exports = UserRepository;
