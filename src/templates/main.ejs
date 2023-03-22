@@ -136,6 +136,7 @@
       data:{data},
       success:function (res){
         document.cookie = `access_token=${res['Atoken']}`;
+        localStorage.setItem("name",res['name']);
         location.href="/";
       }
     })
