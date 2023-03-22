@@ -62,7 +62,7 @@ class BucketListController {
             else image = '';
             const {title,content} = req.body;
             await this.bucketListService.createBucketListCard(title,content,image,access_token);
-            return res.status(200);
+            return res.status(200).json({msg:"카드생성완료"});
         } catch (err) {
             //error는 나중에
             console.log(err);
