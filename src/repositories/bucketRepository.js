@@ -44,9 +44,10 @@ class BucketListRepository {
     });
     return bucketList;
   }
-  createBucketListCard = async (title,content,image,userId) =>{
+  createBucketListCard = async (title,name,content,image,userId) =>{
     const bucketListCard = await BucketListCard.create({
       title,
+      name,
       content,
       image:image,
       userId
