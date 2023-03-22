@@ -11,11 +11,17 @@ router.get("/plan", bucketListController.getBucketList);
 router.put("/plan", bucketListController.updateBucketList);
 //하단 버킷리스트 데이터 생성
 router.post("/plan", bucketListController.createBucketList);
+// 하단 버킷리스트 데이터 삭제
+router.delete("/plan", bucketListController.deleteBucketList);
 
 //카드 생성
 router.post("/cards",S3upload.single('image'), bucketListController.createBucketListCard);
 //카드 데이터 받아오기
 router.get("/cards", bucketListController.getBucketListCard);
+//카드 삭제
+router.delete("/cards", bucketListController.deleteBucketListCard);
+//카드 수정
+router.put("/cards",S3upload.single('image'), bucketListController.updateBucketListCard);
 
 
 module.exports = router;

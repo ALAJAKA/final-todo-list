@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.282.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.294.0",
     "@aws-sdk/client-s3": "^3.279.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.282.0",
     "amazon-cognito-identity-js": "^6.1.2",
