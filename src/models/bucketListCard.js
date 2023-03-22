@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
             type:DataTypes.STRING,
             allowNull:false
         },
+        name: {
+            type:DataTypes.STRING,
+            allowNull:false
+        },
         image: {
             type:DataTypes.STRING,
             defaultValue : '/img/1296285.jpg'
