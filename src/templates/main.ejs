@@ -83,7 +83,7 @@
 
   /* slider */
 .slider1 {
-    height: 300px;
+    height: 400px;
 }
 
 /* slider-cards */
@@ -93,7 +93,7 @@
 }
   /* slider */
   .slider2 {
-    height: 300px;
+    height: 400px;
 }
 
 /* slider-cards */
@@ -252,17 +252,18 @@
     });
 
   // 추천 TodoList
-  fetch('/api/calendar/todo')
+  fetch('/api/card/alldaytodo')
     .then((response) => response.json())
     .then((data) => {
       const todoHtml = data.data.map(
         (todo) => `
           <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2">
             <div class="text-decoration-none">
-              <img src="https://i.postimg.cc/wv0j2bCB/slide-1.jpg" alt="slide" width="100%">
+              <img src="https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679488255051_7.jpeg" alt="slide" width="100%">
               <div class="p-3">
-                <p class="text-dark my-2 fs-5 fw-semibold">${todo.title}</p>
-                <p class="text-dark">${todo.today}</p>
+                <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${todo.title}</p>
+                <p class="text-dark" style="text-align: center;">${todo.name}</p>
+                <p class="text-dark" style="text-align: right;">${todo.updatedAt}</p>
               </div>
             </div>
           </div>
@@ -272,17 +273,18 @@
     });
 
   // 추천 BucketList
-  fetch('/api/calendar/bucket')
+  fetch('/api/card/bucket')
     .then((response) => response.json())
     .then((data) => {
       const bucketHtml = data.data.map(
         (bucket) => `
           <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2">
             <div class="text-decoration-none">
-              <img src="https://i.postimg.cc/PJ7rsvrs/slide-3.jpg" alt="slide" width="100%">
-              <div class="p-4">
-                <p class="text-dark my-2 fs-5 fw-semibold">${bucket.title}</p>
-                <p class="text-dark">${bucket.d_day}</p>
+              <img src="https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679488255051_7.jpeg" alt="slide" width="100%">
+              <div class="p-3">
+                <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${bucket.title}</p>
+                <p class="text-dark" style="text-align: center;">${bucket.name}</p>
+                <p class="text-dark" style="text-align: right;">${bucket.updatedAt}</p>
               </div>
             </div>
           </div>
@@ -440,7 +442,7 @@
     </div>
   </section>
   <section>
-    <h4 style="text-align: center;">추천 BUCKETLIST</h4>
+    <h4 style="margin-top: 30px; text-align: center;">추천 BUCKETLIST</h4>
     <div class="container" style="position: relative;">
       <!-- Cards Wrap -->
       <div class="slider2 d-flex align-items-center justify-content-start overflow-hidden position-relative">

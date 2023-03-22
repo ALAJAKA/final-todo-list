@@ -38,6 +38,24 @@ class CalendarController {
       console.log(err);
     }
   }
+
+  findAllDayTodoList = async (req, res) => {
+    try {
+      const alldaytodolist = await this.calendarService.findAllDayTodoList();
+      res.status(200).json({ data: alldaytodolist });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  findBucketListCard = async (req, res) => {
+    try {
+      const bucketlistcard = await this.calendarService.findBucketListCard();
+      res.status(200).json({ data: bucketlistcard });
+    } catch (err) {
+      console.log(err);
+    }
+  }
 };
 
 module.exports = CalendarController;
