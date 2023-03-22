@@ -12,7 +12,7 @@ router.get('/page/bucketList', userAuthToken,async (req,res) => {
 router.get('/page/todoListDetail', userAuthToken,async (req,res) => {
     return res.render('todoListDetail');
 });
-router.get('/logout',userAuthToken,async (req,res)=>{
+router.get('/logout',async (req,res)=>{
     return res.redirect('/');
 })
 router.get('/', async (req,res) => {
