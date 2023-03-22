@@ -211,18 +211,29 @@
             .then((response) => response.json())
             .then((data) => {
               const bucket = data.data;
+              let eventCounts = {}; // 각 날짜별 이벤트 수 계산을 위한 객체
               for (let i = 0; i < bucket.length; i++) {
-                events.push({
-                  title: bucket[i].title,
-                  start: bucket[i].d_day,
-                  color: '#FF7F50', // bucket 이벤트는 주황색으로 표시
-                });
+                let title = bucket[i].title;
+                let start = bucket[i].d_day;
+                let event = {
+                  title: title,
+                  start: start,
+                  color: '#FF7F50' // 주황색
+                };
+                // 각 날짜별 이벤트 수 계산
+                eventCounts[start] = eventCounts[start] ? eventCounts[start] + 1 : 1;
+                if (eventCounts[start] >= 3) {
+                  event['url'] = '/page/bucketList'; 
+                  event['title'] = title + ' ➕'; // +more 버튼 추가된 이벤트 타이틀
+                }
+                if (eventCounts[start] < 4) { events.push(event); }
               }
               success(events);
             })
-            .catch((error) => {
-              failure(error);
-            });
+
+          .catch((error) => {
+            failure(error);
+          });
         })
         .catch((error) => {
           failure(error);
@@ -280,7 +291,7 @@
               <div class="p-3">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${todo.title}</p>
                 <p class="text-dark" style="text-align: center;">${todo.name}</p>
-                <p class="text-dark" style="text-align: right;">${todo.updatedAt}</p>
+                <p class="text-dark" >${todo.updatedAt}</p>
               </div>
             </div>
           </div>
