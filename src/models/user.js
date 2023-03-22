@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
           type:DataTypes.STRING,
           allowNull:false
       },
+      sub: {
+          type:DataTypes.STRING,
+          allowNull:false
+      },
       name: {
           type:DataTypes.STRING
       },
@@ -29,6 +33,9 @@ module.exports = (sequelize, DataTypes) => {
       phone: {
           type:DataTypes.STRING
       },
+        salt: {
+          type:DataTypes.STRING,
+        },
         createdAt:{
             type:DataTypes.DATEONLY,
             defaultValue:new Date()

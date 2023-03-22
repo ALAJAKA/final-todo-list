@@ -8,8 +8,6 @@ const router = require('./src/routes');
 const {sequelize} = require("./src/models");
 const dbReset = require("./src/utills/dbReset");
 
-
-
 app.set('views', './src/templates');
 app.set('view engine', 'ejs');
 
@@ -33,10 +31,8 @@ sequelize
 app.listen(process.env.PORT, () => {
   console.log(process.env.PORT, '포트로 서버가 열렸어요!');
 
-    schedule.scheduleJob('0 0 0 * * *', ()=>{
-
+    schedule.scheduleJob('0 0 12 * * *', ()=>{
       dbReset.AllDayTodoReset();
-      
     });
 });
 
