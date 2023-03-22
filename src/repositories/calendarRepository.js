@@ -24,7 +24,6 @@ class CalendarRepository {
   findTodoList = async () => {
     const todolist = await this.todoListModel.findAll({
       order: [['today', 'asc']],
-      limit: 10
     });
     return todolist;
   };
