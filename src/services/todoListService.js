@@ -16,14 +16,14 @@ class TodoListService {
     }
 
     
-    postAlldayTodo = async(title, content, image, date, userId) =>{
+    postAlldayTodo = async(title, content, image, date, userId, name) =>{
         const success = "READY"
         const today = new Date().toISOString().substring(0,10);
 
         if (date==today){
-            const postAlldayTodoLists = await this.todoListRepository.postAlldayTodoLists(title, content, image, userId, success)
+            const postAlldayTodoLists = await this.todoListRepository.postAlldayTodoLists(title, content, image, userId, name, success)
         }
-        const postAlldayTodoList = await this.todoListRepository.postAlldayTodoList(title, content, image, userId)
+        const postAlldayTodoList = await this.todoListRepository.postAlldayTodoList(title, content, image, userId, name)
         return postAlldayTodoList;
     }
     

@@ -18,15 +18,15 @@ class TodoListRepository {
 
 
 
-  postAlldayTodoList = async (title, content, image, userId) =>{
+  postAlldayTodoList = async (title, content, image, userId, name) =>{
     const postAlldayTodoList = await this.AllDayTodoList.create({
-      title, content, image, userId
+      title, content, image, userId, name
     });
     return  postAlldayTodoList;
   }
-  postAlldayTodoLists = async (title,content, image, userId, success) =>{
+  postAlldayTodoLists = async (title,content, image, userId, name, success) =>{
     const postAlldayTodoLists = await this.AllDayTodoLists.create({
-      title, content, image, userId, success
+      title, content, image, userId, name, success
     });
     return  postAlldayTodoLists;
   }

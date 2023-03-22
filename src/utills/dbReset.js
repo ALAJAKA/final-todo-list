@@ -2,7 +2,7 @@ const {AllDayTodoList, AllDayTodoLists} = require('../models/index')
 
 const AllDayTodoReset = async () =>{
     const getAllDayTodoList = await AllDayTodoList.findAll({
-      attributes: ['title','content','image','userId'],
+      attributes: ['title','name','content','image','userId'],
       raw: true,
     });
     const postAllDayTodoList = await AllDayTodoLists.bulkCreate(getAllDayTodoList);

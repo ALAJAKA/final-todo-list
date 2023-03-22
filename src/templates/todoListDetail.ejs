@@ -111,7 +111,7 @@
                         const content = getAlldayTodo[i].content
                         let image = getAlldayTodo[i].image
                         if(!image){
-                            image = "https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679019089265_%C3%AC%C2%9C%C2%A0%C3%AB%C2%9F%C2%BD.jpg"
+                            image = "/img/Eiffel.jpg"
                         }
                         const title = getAlldayTodo[i].title
                         const success = getAlldayTodo[i].success
@@ -154,8 +154,12 @@
                     }if(getAlldayTodo.length>3) {$('#cards').animate({left:-322})}
                     else{$('#cards').animate({left:0})}
                         if(date>today){
-                        $('.todoCheck').hide();
-                    }
+                            $('.todoCheck').hide();
+                        }
+                        if(date<today){
+                            $('.todoEdit').hide();
+                            $('.todoDelete').hide();
+                        }
                 })
             }
         
@@ -213,14 +217,28 @@
                             $(`#happy${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
                             $(`#todoEdit${uuid}`).hide();
                         }else{
-                            let todoReadyInput=`
+                            if(date>today){
+                                let todoReadyInput=`
+                                <li class="todoBox" id="happy${uuid}">
+                                    ${title}
+                                    <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                </li>`
+                                todoBoxes.insertAdjacentHTML('beforeend', todoReadyInput);
+                            }else{
+                                let todoReadyInput=`
                                 <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
                                     ${title}
                                     <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
                                     <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                 </li>`
-                            todoBoxes.insertAdjacentHTML('beforeend', todoReadyInput);
+                                todoBoxes.insertAdjacentHTML('beforeend', todoReadyInput);
                             }
+                            }
+                        }
+                        if(date<today){
+                            $('.todoEdit2').hide();
+                            $('.todoDelete2').hide();
                         }
                     })
             }    
@@ -265,7 +283,7 @@
                 .then((response) => { 
                     let imgLink = response.data.postAlldayTodo.image
                     if(!imgLink){
-                        imgLink = "https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679019089265_%C3%AC%C2%9C%C2%A0%C3%AB%C2%9F%C2%BD.jpg"
+                        imgLink = "/img/Eiffel.jpg"
                         }
                     $('#staticBackdrop').modal('hide');    
                     let slideWidth = $('#cards').width();
@@ -349,7 +367,7 @@
                 .then((response) => { 
                     let imgLink = response.data.image
                     if(!imgLink){
-                        imgLink = "https://todo-list-images.s3.ap-northeast-2.amazonaws.com/todolist/1679019089265_%C3%AC%C2%9C%C2%A0%C3%AB%C2%9F%C2%BD.jpg"
+                        imgLink = "/img/Eiffel.jpg"
                         }
                     $('#staticBackdrop2').modal('hide');    
                     let slideWidth = $('#cards').width();
@@ -423,7 +441,15 @@
                                         `)
                     $(`#cardEdit${happy}`).show();
                     $(`#cardDelete${happy}`).show();
+                    if(date>today){
+                        $('.todoCheck').hide();
+                    }
+                    if(date<today){
+                        $('.todoEdit').hide();
+                        $('.todoDelete').hide();
+                    }
                 })
+                
         }
     //카드삭제
     function cardDelete(happy){
@@ -489,6 +515,10 @@
                         </li>`)
                     $(`#todoEdit${happy}`).show();
                     $(`#todoDelete${happy}`).show();
+                    if(date<today){
+                        $('.todoEdit2').hide();
+                        $('.todoDelete2').hide();
+                    }
                 })
     }
     //투두 수정버튼
@@ -526,19 +556,38 @@
                     }
                 })
                 .then((response) => {
-                    $(`#todoEditBox${happy}`).replaceWith(`
+                    if (date>today){
+                        $(`#todoEditBox${happy}`).replaceWith(`
+                    <li class="todoBox" id="happy${happy}">
+                        ${afterTitle}
+                        <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                    </li>  
+                    `)}
+                    else{
+                        $(`#todoEditBox${happy}`).replaceWith(`
                     <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
                         ${afterTitle}
                         <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
                         <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                     </li>  
-                    `);
+                    `)}
                 })
         }
     }
     //투두 수정취소
     function todoEditCancel(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         const title = document.getElementById(`todoEdit${happy}`).value
+        if(date>today){
+            $(`#todoEditBox${happy}`).replaceWith(`
+                    <li class="todoBox" id="happy${happy}">
+                        ${title}
+                        <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                    </li>
+            `);
+        }else{
             $(`#todoEditBox${happy}`).replaceWith(`
                     <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
                         ${title}
@@ -546,6 +595,7 @@
                         <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                     </li>
             `);
+        }
     }
     //투두 삭제
     function todoDelete(happy){
@@ -595,20 +645,37 @@
             })
                 .then((response) => {
                     const todoBoxes = document.getElementById('todoBoxes');
-                    let todoPlusBoxInput=`
-                    <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
+                    if(date>today){
+                        let todoPlusBoxInput=`
+                            <li class="todoBox" id="happy${uuid}">
                                 ${title}
                                 <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
                                 <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
-                            </li>  `
-                    $(`#todoPlusBtn`).replaceWith(`
-                            <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>`);
+                            </li>`
+                        $(`#todoPlusBtn`).replaceWith(`
+                        <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>`);
 
-                    todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
-                    $('#todoInputBox').remove();
-                    $('#todoPlusBox').show();
+                        todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+                        $('#todoInputBox').remove();
+                        $('#todoPlusBox').show();    
+                    }else{
+                        let todoPlusBoxInput=`
+                            <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
+                                ${title}
+                                <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                            </li>`
+                        $(`#todoPlusBtn`).replaceWith(`
+                        <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>`);
+                        
+                        todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+                        $('#todoInputBox').remove();
+                        $('#todoPlusBox').show();    
+                    }
                 })
         }
     }

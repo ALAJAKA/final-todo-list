@@ -16,7 +16,8 @@ class TodoListController {
     const {title, content, date} = req.body;
     console.log(title, content, image, date);
     let userId = 1
-    const postAlldayTodo = await this.todoListService.postAlldayTodo(title, content, image, date, userId)
+    let name = "minuk"
+    const postAlldayTodo = await this.todoListService.postAlldayTodo(title, content, image, date, userId, name)
     res.status(200).json({postAlldayTodo});
   }
 
