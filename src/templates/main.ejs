@@ -82,44 +82,49 @@
   }
 
   /* slider */
-.slider {
+.slider1 {
     height: 300px;
 }
 
 /* slider-cards */
-.slide-card {
+.slide-card1 {
+    width: 300px;
+    border-radius: 5px;
+}
+  /* slider */
+  .slider2 {
+    height: 300px;
+}
+
+/* slider-cards */
+.slide-card2 {
     width: 300px;
     border-radius: 5px;
 }
 
 /* slider-arrows */
 .arrow {
+    transition: 1s;
     width: 40px;
     height: 40px;
 }
+#todo-next-arrow{
+  transition: 1s;
+}
+#todo-previous-arrow{
+  transition: 1s;
+}
+#bucket-next-arrow{
+  transition: 1s;
+}
+#bucket-previous-arrow{
+  transition: 1s;
+}
 </style>
 <script>
-
   $(document).ready(function(){
-      login();
-
-  });
-
-  // 로그인 리다이렉트
-  function login(){
-    const data = window.location.href.split('#')[1];
-    if(data===undefined) return ;
-    $.ajax({
-      type:"POST",
-      url:"/api/user/login",
-      data:{data},
-      success:function (res){
-        document.cookie = `access_token=${res['Atoken']}`;
-        location.href="/";
-      }
-    })
-  }
-
+    console.log(document.location.hash);
+  })
   // main Calnedar 데이터 표시
   document.addEventListener('DOMContentLoaded', function () {
   var calendarEl = document.getElementById('calendar');
@@ -252,7 +257,7 @@
     .then((data) => {
       const todoHtml = data.data.map(
         (todo) => `
-          <div class="slide-card position-relative bg-white overflow-hidden shadow-sm mx-2">
+          <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2">
             <div class="text-decoration-none">
               <img src="https://i.postimg.cc/wv0j2bCB/slide-1.jpg" alt="slide" width="100%">
               <div class="p-3">
@@ -272,7 +277,7 @@
     .then((data) => {
       const bucketHtml = data.data.map(
         (bucket) => `
-          <div class="slide-card position-relative bg-white overflow-hidden shadow-sm mx-2">
+          <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2">
             <div class="text-decoration-none">
               <img src="https://i.postimg.cc/PJ7rsvrs/slide-3.jpg" alt="slide" width="100%">
               <div class="p-4">
@@ -288,23 +293,23 @@
 
     $(document).ready(function () {
         // get card width dynamically
-        cardWidth = $(".slide-card").width();
+        cardWidth = $(".slide-card1").width();
         // todo-next-arrow
         $('#todo-next-arrow').click(function () {
-            var firstChildAppend = $(".slide-card:first-child()");
-            $(".slide-card").animate({ left: -cardWidth }, function () {
+            var firstChildAppend = $(".slide-card1:first-child()");
+            $(".slide-card1").animate({ left: -cardWidth }, function () {
                 $('#todofeed').append(firstChildAppend);
-                $(".slide-card").css({
+                $(".slide-card1").css({
                     left: 0,
                 })
             })
         });
         // todo-previous-arrow
         $('#todo-previous-arrow').click(function () {
-            var lastChildPrepend = $(".slide-card:last-child()");
-            $(".slide-card").animate({ left: cardWidth }, function () {
+            var lastChildPrepend = $(".slide-card1:last-child()");
+            $(".slide-card1").animate({ left: cardWidth }, function () {
                 $('#todofeed').prepend(lastChildPrepend);
-                $(".slide-card").css({
+                $(".slide-card1").css({
                     left: 0,
                 })
             })
@@ -312,25 +317,26 @@
 
         // bucket-next-arrow
         $('#bucket-next-arrow').click(function () {
-            var firstChildAppend = $(".slide-card:first-child()");
-            $(".slide-card").animate({ left: -cardWidth }, function () {
+            var firstChildAppend = $(".slide-card2:first-child()");
+            $(".slide-card2").animate({ left: -cardWidth }, function () {
                 $('#bucketfeed').append(firstChildAppend);
-                $(".slide-card").css({
+                $(".slide-card2").css({
                     left: 0,
                 })
             })
         });
         // bucket-previous-arrow
         $('#bucket-previous-arrow').click(function () {
-            var lastChildPrepend = $(".slide-card:last-child()");
-            $(".slide-card").animate({ left: cardWidth }, function () {
+            var lastChildPrepend = $(".slide-card2:last-child()");
+            $(".slide-card2").animate({ left: cardWidth }, function () {
                 $('#bucketfeed').prepend(lastChildPrepend);
-                $(".slide-card").css({
+                $(".slide-card2").css({
                     left: 0,
                 })
             })
         });
     });
+
 
   // 페이지네이션
   // var page = 2;
@@ -384,7 +390,7 @@
                   <h3 style="text-align: center;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
                 </div>
                 <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
-                  <p style="text-align: left; padding-right:70px; margin:0;"><a href="/page/todoListDetail" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
+                  <p style="text-align: left; padding-right:70px; margin:0;"><a href="/page/todoListMonth" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
                 </div>
               </div>
               <div style="text-align: center; border-radius: 10px;" id="todoPreview">
@@ -412,8 +418,10 @@
     <h4 style="text-align: center;">추천 TODOLIST</h4>
     <div class="container" style="position: relative;">
       <!-- Cards Wrap -->
-      <div class="slider d-flex align-items-center justify-content-start overflow-hidden position-relative">
+      <div class="slider1 d-flex align-items-center justify-content-start overflow-hidden position-relative">
         <div class="slider-wrap d-flex align-items-center position-absolute" id="todofeed">
+          <div class="slide-card1">  
+          </div>
         </div>
       </div>
       <!-- Slider Arrows -->
@@ -435,8 +443,10 @@
     <h4 style="text-align: center;">추천 BUCKETLIST</h4>
     <div class="container" style="position: relative;">
       <!-- Cards Wrap -->
-      <div class="slider d-flex align-items-center justify-content-start overflow-hidden position-relative">
+      <div class="slider2 d-flex align-items-center justify-content-start overflow-hidden position-relative">
         <div class="slider-wrap d-flex align-items-center position-absolute" id="bucketfeed">
+          <div class="slide-card2">  
+          </div>
         </div>
       </div>
       <!-- Slider Arrows -->
