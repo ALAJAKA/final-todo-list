@@ -83,7 +83,7 @@
 
   /* slider */
 .slider1 {
-    height: 300px;
+    height: 400px;
 }
 
 /* slider-cards */
@@ -93,7 +93,7 @@
 }
   /* slider */
   .slider2 {
-    height: 300px;
+    height: 400px;
 }
 
 /* slider-cards */
@@ -122,21 +122,24 @@
 }
 </style>
 <script>
-
   $(document).ready(function(){
-      login();
+      loginCheck();
   });
 
   // 로그인 리다이렉트
-  function login(){
+  function loginCheck(){
+
     const data = window.location.href.split('#')[1];
-    if(data===undefined) return ;
+    const myName = localStorage.getItem('name');
+    if(document.cookie&& myName===null) logout();
+    if(data===undefined)return;
     $.ajax({
       type:"POST",
       url:"/api/user/login",
       data:{data},
       success:function (res){
         document.cookie = `access_token=${res['Atoken']}`;
+        localStorage.setItem("name",res['name']);
         location.href="/";
       }
     })
@@ -211,18 +214,29 @@
             .then((response) => response.json())
             .then((data) => {
               const bucket = data.data;
+              let eventCounts = {}; // 각 날짜별 이벤트 수 계산을 위한 객체
               for (let i = 0; i < bucket.length; i++) {
-                events.push({
-                  title: bucket[i].title,
-                  start: bucket[i].d_day,
-                  color: '#FF7F50', // bucket 이벤트는 주황색으로 표시
-                });
+                let title = bucket[i].title;
+                let start = bucket[i].d_day;
+                let event = {
+                  title: title,
+                  start: start,
+                  color: '#FF7F50' // 주황색
+                };
+                // 각 날짜별 이벤트 수 계산
+                eventCounts[start] = eventCounts[start] ? eventCounts[start] + 1 : 1;
+                if (eventCounts[start] >= 3) {
+                  event['url'] = '/page/bucketList'; 
+                  event['title'] = title + ' ➕'; // +more 버튼 추가된 이벤트 타이틀
+                }
+                if (eventCounts[start] < 4) { events.push(event); }
               }
               success(events);
             })
-            .catch((error) => {
-              failure(error);
-            });
+
+          .catch((error) => {
+            failure(error);
+          });
         })
         .catch((error) => {
           failure(error);
@@ -269,17 +283,18 @@
     });
 
   // 추천 TodoList
-  fetch('/api/calendar/todo')
+  fetch('/api/card/alldaytodo')
     .then((response) => response.json())
     .then((data) => {
       const todoHtml = data.data.map(
         (todo) => `
           <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2">
             <div class="text-decoration-none">
-              <img src="https://i.postimg.cc/wv0j2bCB/slide-1.jpg" alt="slide" width="100%">
+              <img src="${todo.image}" alt="slide" width="100%">
               <div class="p-3">
-                <p class="text-dark my-2 fs-5 fw-semibold">${todo.title}</p>
-                <p class="text-dark">${todo.today}</p>
+                <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${todo.title}</p>
+                <p class="text-dark" style="text-align: center;">${todo.name}</p>
+                <p class="text-dark" >${todo.updatedAt}</p>
               </div>
             </div>
           </div>
@@ -289,17 +304,18 @@
     });
 
   // 추천 BucketList
-  fetch('/api/calendar/bucket')
+  fetch('/api/card/bucket')
     .then((response) => response.json())
     .then((data) => {
       const bucketHtml = data.data.map(
         (bucket) => `
           <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2">
             <div class="text-decoration-none">
-              <img src="https://i.postimg.cc/PJ7rsvrs/slide-3.jpg" alt="slide" width="100%">
-              <div class="p-4">
-                <p class="text-dark my-2 fs-5 fw-semibold">${bucket.title}</p>
-                <p class="text-dark">${bucket.d_day}</p>
+              <img src="${bucket.image}" alt="slide" width="100%">
+              <div class="p-3">
+                <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${bucket.title}</p>
+                <p class="text-dark" style="text-align: center;">${bucket.name}</p>
+                <p class="text-dark" style="text-align: right;">${bucket.updatedAt}</p>
               </div>
             </div>
           </div>
@@ -437,6 +453,8 @@
       <!-- Cards Wrap -->
       <div class="slider1 d-flex align-items-center justify-content-start overflow-hidden position-relative">
         <div class="slider-wrap d-flex align-items-center position-absolute" id="todofeed">
+          <div class="slide-card1">  
+          </div>
         </div>
       </div>
       <!-- Slider Arrows -->
@@ -455,11 +473,13 @@
     </div>
   </section>
   <section>
-    <h4 style="text-align: center;">추천 BUCKETLIST</h4>
+    <h4 style="margin-top: 30px; text-align: center;">추천 BUCKETLIST</h4>
     <div class="container" style="position: relative;">
       <!-- Cards Wrap -->
       <div class="slider2 d-flex align-items-center justify-content-start overflow-hidden position-relative">
         <div class="slider-wrap d-flex align-items-center position-absolute" id="bucketfeed">
+          <div class="slide-card2">  
+          </div>
         </div>
       </div>
       <!-- Slider Arrows -->
