@@ -126,6 +126,7 @@
       loginCheck();
       a();
       b();
+      c();
     // get card width dynamically
     cardWidth = $(".slide-card1").width();
     // todo-next-arrow
@@ -188,133 +189,136 @@
       }
     })
   }
-
-  // main Calnedar 데이터 표시
-  document.addEventListener('DOMContentLoaded', function () {
-  var calendarEl = document.getElementById('calendar');
-  var calendar = new FullCalendar.Calendar(calendarEl, {
-    height: 750,
-    contentHeight: 180,
-    timeZone: 'UTC',
-    initialView: 'dayGridMonth',
-    eventOrder : 'displayOrder', 
-    // locale: 'ko',
-    titleFormat: function (date) {
-      year = date.date.year;
-      month = date.date.month + 1;
-      return year + "년 " + month + "월";
-    },
-    events: function (info, success, failure) {
-      // Calendar TodoList 데이터 가져오기
-      fetch('/api/calendar/todo' , {
-        credentials: "include"})
-        .then((response) => response.json())
-        .then((data) => {
-          const todo = data.data;
-          
-          // 캘린더의 날짜가 변경될 때마다 호출되는 함수
-          function updateTodoPreview() {
-            const currentDate = calendar.getDate(); // 현재 캘린더에 표시되는 날짜
-            const currentStr = currentDate.toISOString().substr(0, 10); // YYYY-MM-DD 형식의 문자열로 변환
-            fetch(`/api/preview/todo?date=${currentStr}`)
-              .then(response => response.json())
-              .then(data => {
-                const todo = data.data.filter(todoo => todoo.today.startsWith(currentStr))
-                                      .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
-                                      .join('');
-                todoPreview.innerHTML = todo;
-              });
-          }
-
-          // 페이지가 로드될 때 한 번 호출하여 현재 날짜 미리보기를 표시함
-          updateTodoPreview();
-
-          // 달성률 계산
-          const achievements = {}; // 빈 객체 생성
-          for (let i = 0; i < todo.length; i++) {
-            const date = todo[i].today;
-            const achieved = todo[i].success === 'SUCCESS' ? 1 : 0; // 'SUCCESS'일 경우 1을, 아닐 경우('READY') 0
-            if (!achievements[date]) {
-              achievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
-            }
-            achievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
-            achievements[date].total++; // 해당 날짜의 total 에 +1 함 
-          }
-
-          // 이벤트 생성
-          const events = [];
-          for (const date in achievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
-            const achievementRate = achievements[date].total > 0
-              ? Math.round((achievements[date].achieved / achievements[date].total) * 100)
-              : 0; // 삼항 연산자를 사용하여 값이 0보다 크면 달성률 계산, 0보다 작거나 같으면(해당 날짜에 할 일 없는 경우) 0
-            events.push({
-              title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
-              start: date, // 이벤트 시작 날짜
-              color: 'green', // todo 달성률 이벤트는 초록색으로 표시
-            });
-          }
-          
-          // Calendar BucketList 데이터 가져오기
-          fetch('/api/calendar/bucket', {
-            credentials: "include"})
-            .then((response) => response.json())
-            .then((data) => {
-              const bucket = data.data;
-              let eventCounts = {}; // 각 날짜별 이벤트 수 계산을 위한 객체
-              for (let i = 0; i < bucket.length; i++) {
-                let title = bucket[i].title;
-                let start = bucket[i].d_day;
-                let event = {
-                  title: title,
-                  start: start,
-                  color: '#FF7F50' // 주황색
-                };
-                // 각 날짜별 이벤트 수 계산
-                eventCounts[start] = eventCounts[start] ? eventCounts[start] + 1 : 1;
-                if (eventCounts[start]== 3) {
-                  event['url'] = '/page/bucketList'; 
-                  event['title'] ='➕'; // +more 버튼 추가된 이벤트 타이틀
-                }
-                if (eventCounts[start] < 4) { events.push(event); }
-              }
-              success(events);
-            })
-
-          .catch((error) => {
-            failure(error);
-          });
-        })
-        .catch((error) => {
-          failure(error);
-        });
-      },
-      
-      // 일자를 클릭할 때 실행되는 함수
-      dateClick: function(info) {
-        const selectedDate = info.date || new Date(); // info.date가 존재하지 않으면 현재 날짜로 초기화
-        const selectedDateCell = info.dayEl;
-        const todayCells = document.getElementsByClassName('fc-day-today');
-        for (let i = 0; i < todayCells.length; i++) {
-          todayCells[i].classList.remove('fc-day-today');
-        }
-        selectedDateCell.classList.add('fc-day-today');
-        calendar.gotoDate(selectedDate); // 클릭한 날짜로 이동
-
-        // 해당 일자에 맞는 TodoList 미리보기
-        const selectedDateStr = selectedDate.toISOString().substr(0, 10); // toISOString 메소드로 객체를 문자열 반환, YYYY-MM-DDTHH:mm:ss.sssZ 로 반환된 것을 subsrt 메소드로 첫 10자 추출
-        fetch(`/api/preview/todo?date=${selectedDateStr}`, {
-          credentials: "include"})
-          .then(response => response.json())
-          .then(data => {
-            const todo = data.data.filter(todoo => todoo.today.startsWith(selectedDateStr)) // todo 배열에서 선택한 날짜에 해당 항목만 필터링
-                                  .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`) // 각 항목을 html 문자열로 변환
-                                  .join(''); // html 문자열을 결합
-            todoPreview.innerHTML = todo;
-          });
+  function c(){
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        height: 750,
+        contentHeight: 180,
+        timeZone: 'UTC',
+        initialView: 'dayGridMonth',
+        eventOrder : 'displayOrder',
+        // locale: 'ko',
+        titleFormat: function (date) {
+          year = date.date.year;
+          month = date.date.month + 1;
+          return year + "년 " + month + "월";
         },
-    });
-    calendar.render();
-  });
+        events: function (info, success, failure) {
+          // Calendar TodoList 데이터 가져오기
+          function c(){
+
+          }
+          fetch('/api/calendar/todo' , {
+            credentials: "include"})
+                  .then((response) => response.json())
+                  .then((data) => {
+                    const todo = data.data;
+
+                    // 캘린더의 날짜가 변경될 때마다 호출되는 함수
+                    function updateTodoPreview() {
+                      const currentDate = calendar.getDate(); // 현재 캘린더에 표시되는 날짜
+                      const currentStr = currentDate.toISOString().substr(0, 10); // YYYY-MM-DD 형식의 문자열로 변환
+                      fetch(`/api/preview/todo?date=${currentStr}`)
+                              .then(response => response.json())
+                              .then(data => {
+                                const todo = data.data.filter(todoo => todoo.today.startsWith(currentStr))
+                                        .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
+                                        .join('');
+                                todoPreview.innerHTML = todo;
+                              });
+                    }
+
+                    // 페이지가 로드될 때 한 번 호출하여 현재 날짜 미리보기를 표시함
+                    updateTodoPreview();
+
+                    // 달성률 계산
+                    const achievements = {}; // 빈 객체 생성
+                    for (let i = 0; i < todo.length; i++) {
+                      const date = todo[i].today;
+                      const achieved = todo[i].success === 'SUCCESS' ? 1 : 0; // 'SUCCESS'일 경우 1을, 아닐 경우('READY') 0
+                      if (!achievements[date]) {
+                        achievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
+                      }
+                      achievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
+                      achievements[date].total++; // 해당 날짜의 total 에 +1 함
+                    }
+
+                    // 이벤트 생성
+                    const events = [];
+                    for (const date in achievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
+                      const achievementRate = achievements[date].total > 0
+                              ? Math.round((achievements[date].achieved / achievements[date].total) * 100)
+                              : 0; // 삼항 연산자를 사용하여 값이 0보다 크면 달성률 계산, 0보다 작거나 같으면(해당 날짜에 할 일 없는 경우) 0
+                      events.push({
+                        title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
+                        start: date, // 이벤트 시작 날짜
+                        color: 'green', // todo 달성률 이벤트는 초록색으로 표시
+                      });
+                    }
+
+                    // Calendar BucketList 데이터 가져오기
+                    fetch('/api/calendar/bucket', {
+                      credentials: "include"})
+                            .then((response) => response.json())
+                            .then((data) => {
+                              const bucket = data.data;
+                              let eventCounts = {}; // 각 날짜별 이벤트 수 계산을 위한 객체
+                              for (let i = 0; i < bucket.length; i++) {
+                                let title = bucket[i].title;
+                                let start = bucket[i].d_day;
+                                let event = {
+                                  title: title,
+                                  start: start,
+                                  color: '#FF7F50' // 주황색
+                                };
+                                // 각 날짜별 이벤트 수 계산
+                                eventCounts[start] = eventCounts[start] ? eventCounts[start] + 1 : 1;
+                                if (eventCounts[start]== 3) {
+                                  event['url'] = '/page/bucketList';
+                                  event['title'] ='➕'; // +more 버튼 추가된 이벤트 타이틀
+                                }
+                                if (eventCounts[start] < 4) { events.push(event); }
+                              }
+                              success(events);
+                            })
+
+                            .catch((error) => {
+                              failure(error);
+                            });
+                  })
+                  .catch((error) => {
+                    failure(error);
+                  });
+        },
+
+        // 일자를 클릭할 때 실행되는 함수
+        dateClick: function(info) {
+          const selectedDate = info.date || new Date(); // info.date가 존재하지 않으면 현재 날짜로 초기화
+          const selectedDateCell = info.dayEl;
+          const todayCells = document.getElementsByClassName('fc-day-today');
+          for (let i = 0; i < todayCells.length; i++) {
+            todayCells[i].classList.remove('fc-day-today');
+          }
+          selectedDateCell.classList.add('fc-day-today');
+          calendar.gotoDate(selectedDate); // 클릭한 날짜로 이동
+
+          // 해당 일자에 맞는 TodoList 미리보기
+          const selectedDateStr = selectedDate.toISOString().substr(0, 10); // toISOString 메소드로 객체를 문자열 반환, YYYY-MM-DDTHH:mm:ss.sssZ 로 반환된 것을 subsrt 메소드로 첫 10자 추출
+          fetch(`/api/preview/todo?date=${selectedDateStr}`, {
+            credentials: "include"})
+                  .then(response => response.json())
+                  .then(data => {
+                    const todo = data.data.filter(todoo => todoo.today.startsWith(selectedDateStr)) // todo 배열에서 선택한 날짜에 해당 항목만 필터링
+                            .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`) // 각 항목을 html 문자열로 변환
+                            .join(''); // html 문자열을 결합
+                    todoPreview.innerHTML = todo;
+                  });
+        },
+      });
+      calendar.render();
+  }
+  // main Calnedar 데이터 표시
+
 
   // BucketList 미리보기
   function a(){
