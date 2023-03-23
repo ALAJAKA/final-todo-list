@@ -124,11 +124,55 @@
 <script>
   $(document).ready(function(){
       loginCheck();
+      a();
+      b();
+    // get card width dynamically
+    cardWidth = $(".slide-card1").width();
+    // todo-next-arrow
+    $('#todo-next-arrow').click(function () {
+      var firstChildAppend = $(".slide-card1:first-child");
+      $(".slide-card1").animate({ left: -cardWidth }, function () {
+        $('#todofeed').append(firstChildAppend);
+        $(".slide-card1").css({
+          left: 0,
+        })
+      })
+    });
+    // todo-previous-arrow
+    $('#todo-previous-arrow').click(function () {
+      var lastChildPrepend = $(".slide-card1:last-child");
+      $(".slide-card1").animate({ left: cardWidth }, function () {
+        $('#todofeed').prepend(lastChildPrepend);
+        $(".slide-card1").css({
+          left: 0,
+        })
+      })
+    });
+
+    // bucket-next-arrow
+    $('#bucket-next-arrow').click(function () {
+      var firstChildAppend = $(".slide-card2:first-child");
+      $(".slide-card2").animate({ left: -cardWidth }, function () {
+        $('#bucketfeed').append(firstChildAppend);
+        $(".slide-card2").css({
+          left: 0,
+        })
+      })
+    });
+    // bucket-previous-arrow
+    $('#bucket-previous-arrow').click(function () {
+      var lastChildPrepend = $(".slide-card2:last-child");
+      $(".slide-card2").animate({ left: cardWidth }, function () {
+        $('#bucketfeed').prepend(lastChildPrepend);
+        $(".slide-card2").css({
+          left: 0,
+        })
+      })
+    });
   });
 
   // 로그인 리다이렉트
   function loginCheck(){
-
     const data = window.location.href.split('#')[1];
     const myName = localStorage.getItem('name');
     if(document.cookie&& myName===null) logout();
@@ -227,9 +271,9 @@
                 };
                 // 각 날짜별 이벤트 수 계산
                 eventCounts[start] = eventCounts[start] ? eventCounts[start] + 1 : 1;
-                if (eventCounts[start] >= 3) {
+                if (eventCounts[start]== 3) {
                   event['url'] = '/page/bucketList'; 
-                  event['title'] = title + ' ➕'; // +more 버튼 추가된 이벤트 타이틀
+                  event['title'] ='➕'; // +more 버튼 추가된 이벤트 타이틀
                 }
                 if (eventCounts[start] < 4) { events.push(event); }
               }
@@ -273,25 +317,27 @@
   });
 
   // BucketList 미리보기
-  fetch(`/api/preview/bucket`, {
-    credentials: "include"})
-    .then((response) => response.json())
-    .then((data) => {
-      const bucket = data.data;
-      for (let i = 0; i < bucket.length; i++){
-        const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
-        const p = document.createElement('p');
-        p.innerHTML = buckett;
-        document.getElementById('bucketPreview').appendChild(p);
-      }
-    });
-
-  // 추천 TodoList
-  fetch('/api/card/alldaytodo')
-    .then((response) => response.json())
-    .then((data) => {
-      const todoHtml = data.data.map(
-        (todo) => `
+  function a(){
+    fetch('/api/preview/bucket', {
+      credentials: "include"})
+            .then((response) => response.json())
+            .then((data) => {
+              const bucket = data.data;
+              for (let i = 0; i < bucket.length; i++){
+                const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
+                const p = document.createElement('p');
+                p.innerHTML = buckett;
+                document.getElementById('bucketPreview').appendChild(p);
+              }
+            });
+  }
+  function b(){
+    // 추천 TodoList
+    fetch('/api/card/alldaytodo')
+            .then((response) => response.json())
+            .then((data) => {
+              const todoHtml = data.data.map(
+                      (todo) => `
           <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal"onclick="modalDate('${todo.title}','${todo.content}','${todo.image}','${todo.name}','${todo.updatedAt}' )">
             <div class="text-decoration-none">
 <div style="height:300px;width:300px; background-image:url('${todo.image}'); background-position: center; background-size: contain; background-repeat: no-repeat;">
@@ -305,16 +351,16 @@
             </div>
           </div>
         `
-      );
-      document.getElementById('todofeed').innerHTML = todoHtml.join('');
-    });
+              );
+              document.getElementById('todofeed').innerHTML = todoHtml.join('');
+            });
 
-  // 추천 BucketList
-  fetch('/api/card/bucket')
-    .then((response) => response.json())
-    .then((data) => {
-      const bucketHtml = data.data.map(
-        (bucket) => `
+    // 추천 BucketList
+    fetch('/api/card/bucket')
+            .then((response) => response.json())
+            .then((data) => {
+              const bucketHtml = data.data.map(
+                      (bucket) => `
           <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="modalDate('${bucket.title}','${bucket.content}','${bucket.image}','${bucket.name}','${bucket.updatedAt}' )">
             <div class="text-decoration-none">
               <div style="height:300px;width:300px; background-image:url('${bucket.image}'); background-position: center; background-size: contain;  background-repeat: no-repeat"></div>
@@ -326,55 +372,11 @@
             </div>
           </div>
         `
-      );
-      document.getElementById('bucketfeed').innerHTML = bucketHtml.join('');
-    });
+              );
+              document.getElementById('bucketfeed').innerHTML = bucketHtml.join('');
+            });
+  }
 
-    $(document).ready(function () {
-        // get card width dynamically
-        cardWidth = $(".slide-card1").width();
-        // todo-next-arrow
-        $('#todo-next-arrow').click(function () {
-            var firstChildAppend = $(".slide-card1:first-child");
-            $(".slide-card1").animate({ left: -cardWidth }, function () {
-                $('#todofeed').append(firstChildAppend);
-                $(".slide-card1").css({
-                    left: 0,
-                })
-            })
-        });
-        // todo-previous-arrow
-        $('#todo-previous-arrow').click(function () {
-            var lastChildPrepend = $(".slide-card1:last-child");
-            $(".slide-card1").animate({ left: cardWidth }, function () {
-                $('#todofeed').prepend(lastChildPrepend);
-                $(".slide-card1").css({
-                    left: 0,
-                })
-            })
-        });
-
-        // bucket-next-arrow
-        $('#bucket-next-arrow').click(function () {
-            var firstChildAppend = $(".slide-card2:first-child");
-            $(".slide-card2").animate({ left: -cardWidth }, function () {
-                $('#bucketfeed').append(firstChildAppend);
-                $(".slide-card2").css({
-                    left: 0,
-                })
-            })
-        });
-        // bucket-previous-arrow
-        $('#bucket-previous-arrow').click(function () {
-            var lastChildPrepend = $(".slide-card2:last-child");
-            $(".slide-card2").animate({ left: cardWidth }, function () {
-                $('#bucketfeed').prepend(lastChildPrepend);
-                $(".slide-card2").css({
-                    left: 0,
-                })
-            })
-        });
-    });
   function modalDate(title,content,image,name,update){
     $('#modelImg').css("background-image","url("+image+")");
     $('#modelTitle').text(title);
