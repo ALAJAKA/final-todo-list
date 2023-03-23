@@ -14,7 +14,7 @@ router.use('/api', calendarRouter);
 //회원 관련 컨트롤러로
 router.use('/api/user', userRouter);
 //투두리스트 관련 컨트롤러로
-router.use('/api/todoLists', todoListRouter);
+router.use('/api/todoLists',userAuthToken, todoListRouter);
 //버킷리스트 관련 컨트롤러로
 router.use('/api/bucketLists',userAuthToken, bucketListRouter);
 //패아자 이동에 관한 라우터로

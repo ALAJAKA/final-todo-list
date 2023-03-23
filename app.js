@@ -31,7 +31,7 @@ sequelize
 app.listen(process.env.PORT, () => {
   console.log(process.env.PORT, '포트로 서버가 열렸어요!');
 
-    schedule.scheduleJob('0 0 12 * * *', ()=>{
+    schedule.scheduleJob('0 0 0 * * *', ()=>{
       dbReset.AllDayTodoReset();
     });
 });

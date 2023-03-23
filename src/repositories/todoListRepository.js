@@ -1,4 +1,5 @@
 const { Op } = require('sequelize');
+
 class TodoListRepository {
   constructor(TodoList, AllDayTodoList, AllDayTodoLists) {
     this.TodoList = TodoList;

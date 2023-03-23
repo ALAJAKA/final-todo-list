@@ -1,10 +1,13 @@
 const TodoListRepository = require('../repositories/todoListRepository')
 const {TodoList, AllDayTodoList, AllDayTodoLists} = require('../models/index')
+const jwtDecode = require("jwt-decode");
 
 class TodoListService {
     todoListRepository = new TodoListRepository(TodoList, AllDayTodoList, AllDayTodoLists);
 
-    getMonthTodo =async (date,date2,userId)=>{
+    getMonthTodo =async (date,date2,access_token)=>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const MonthTodo = await this.todoListRepository.getMonthTodo(date,date2,userId);
         return MonthTodo.map((TodoList) =>{
             return {
@@ -16,7 +19,10 @@ class TodoListService {
     }
 
     
-    postAlldayTodo = async(title, content, image, date, userId, name) =>{
+    postAlldayTodo = async(title, content, image, date, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
+        const name = token.name;
         const success = "READY"
         const today = new Date().toISOString().substring(0,10);
 
@@ -27,7 +33,9 @@ class TodoListService {
         return postAlldayTodoList;
     }
     
-    putAlldayTodo = async(date, beforeTitle, content, image, afterTitle, userId) =>{
+    putAlldayTodo = async(date, beforeTitle, content, image, afterTitle, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const today = new Date().toISOString().substring(0,10);
 
         if (date==today){
@@ -37,7 +45,9 @@ class TodoListService {
         return putAlldayTodoList;
     }
 
-    getAlldayTodo = async(date, userId) =>{
+    getAlldayTodo = async(date, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const today = new Date().toISOString().substring(0,10);
         if (date > today){
             const getAlldayTodoList = await this.todoListRepository.getAlldayTodoList(date, userId)
@@ -48,7 +58,9 @@ class TodoListService {
         }
     }
 
-    deleteAlldayTodo = async(date, title, userId) =>{
+    deleteAlldayTodo = async(date, title, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const today = new Date().toISOString().substring(0,10);
 
         if (date==today){
@@ -58,33 +70,45 @@ class TodoListService {
         return deleteAlldayTodoList;
     }
 
-    postTodayTodo = async(date, title, userId) =>{
+    postTodayTodo = async(date, title, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const success = "READY"
         const postTodayTodo = await this.todoListRepository.postTodayTodo(date, title, success, userId)
         return postTodayTodo;
     }
 
-    getTodayTodo = async(date, userId) =>{
+    getTodayTodo = async(date, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const getTodayTodo = await this.todoListRepository.getTodayTodo(date, userId)
         return getTodayTodo;
     }
 
-    putTodayTodo = async(date, beforeTitle, afterTitle, userId) =>{
+    putTodayTodo = async(date, beforeTitle, afterTitle, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const putTodayTodo = await this.todoListRepository.putTodayTodo(date, beforeTitle, afterTitle, userId)
         return putTodayTodo;
     }
 
-    deleteTodayTodo = async(date, title, userId) =>{
+    deleteTodayTodo = async(date, title, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const deleteTodayTodo = await this.todoListRepository.deleteTodayTodo(date, title, userId)
         return deleteTodayTodo;
     }
 
-    todoSuccess = async(date, title, success, userId) =>{
+    todoSuccess = async(date, title, success, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const todoSuccess = await this.todoListRepository.todoSuccess(date, title, success, userId)
         return todoSuccess;
     }
 
-    cardSuccess = async(date, title, success, userId) =>{
+    cardSuccess = async(date, title, success, access_token) =>{
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
         const cardSuccess = await this.todoListRepository.cardSuccess(date, title, success, userId)
         return cardSuccess;
     }
