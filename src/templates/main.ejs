@@ -292,9 +292,9 @@
     .then((data) => {
       const todoHtml = data.data.map(
         (todo) => `
-          <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2">
+          <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal"onclick="modalDate('${todo.title}','${todo.content}','${todo.image}','${todo.name}','${todo.updatedAt}' )">
             <div class="text-decoration-none">
-<div style="height:300px;width:300px; background-image:url('${todo.image}'); background-repeat: no-repeat; background-size: 300px 300px; ">
+<div style="height:300px;width:300px; background-image:url('${todo.image}'); background-position: center; background-size: contain; background-repeat: no-repeat;">
 
 </div>
               <div class="p-3" style="height:150px;">
@@ -315,12 +315,10 @@
     .then((data) => {
       const bucketHtml = data.data.map(
         (bucket) => `
-          <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2">
+          <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="modalDate('${bucket.title}','${bucket.content}','${bucket.image}','${bucket.name}','${bucket.updatedAt}' )">
             <div class="text-decoration-none">
-              <div style="height:300px;width:300px; background-image:url('${bucket.image}'); background-repeat: no-repeat; background-size: 300px 300px; ">
-
-</div>
-<div class="p-3"style="height:150px;">
+              <div style="height:300px;width:300px; background-image:url('${bucket.image}'); background-position: center; background-size: contain;  background-repeat: no-repeat"></div>
+                <div class="p-3"style="height:150px;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${bucket.title}</p>
                 <p class="text-dark" style="text-align: center;">${bucket.name}</p>
                 <p class="text-dark" style="text-align: right;">${bucket.updatedAt}</p>
@@ -337,7 +335,7 @@
         cardWidth = $(".slide-card1").width();
         // todo-next-arrow
         $('#todo-next-arrow').click(function () {
-            var firstChildAppend = $(".slide-card1:first-child()");
+            var firstChildAppend = $(".slide-card1:first-child");
             $(".slide-card1").animate({ left: -cardWidth }, function () {
                 $('#todofeed').append(firstChildAppend);
                 $(".slide-card1").css({
@@ -347,7 +345,7 @@
         });
         // todo-previous-arrow
         $('#todo-previous-arrow').click(function () {
-            var lastChildPrepend = $(".slide-card1:last-child()");
+            var lastChildPrepend = $(".slide-card1:last-child");
             $(".slide-card1").animate({ left: cardWidth }, function () {
                 $('#todofeed').prepend(lastChildPrepend);
                 $(".slide-card1").css({
@@ -358,7 +356,7 @@
 
         // bucket-next-arrow
         $('#bucket-next-arrow').click(function () {
-            var firstChildAppend = $(".slide-card2:first-child()");
+            var firstChildAppend = $(".slide-card2:first-child");
             $(".slide-card2").animate({ left: -cardWidth }, function () {
                 $('#bucketfeed').append(firstChildAppend);
                 $(".slide-card2").css({
@@ -368,7 +366,7 @@
         });
         // bucket-previous-arrow
         $('#bucket-previous-arrow').click(function () {
-            var lastChildPrepend = $(".slide-card2:last-child()");
+            var lastChildPrepend = $(".slide-card2:last-child");
             $(".slide-card2").animate({ left: cardWidth }, function () {
                 $('#bucketfeed').prepend(lastChildPrepend);
                 $(".slide-card2").css({
@@ -377,7 +375,16 @@
             })
         });
     });
-
+  function modalDate(title,content,image,name,update){
+    $('#modelImg').css("background-image","url("+image+")");
+    $('#modelTitle').text(title);
+    $('#modelName').text("작성자 : " + name);
+    $('#modelDate').text("작성일 : "+ update);
+    $('#modelContent').text(content);
+  }
+  function sorry(){
+    alert("죄송합니다. 아직 구현되지 않은 기능입니다.");
+  }
 
   // 페이지네이션
   // var page = 2;
@@ -393,16 +400,6 @@
   // });
   // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
 
-  // function imageChange(){
-  //   $(event.target).parents('.col-md-6').css({'background-image': 'url("img/ac2.png")', 'background-size': '100% 100%'});
-  //   $(event.target).parents('.col-md-3').css({'transition': '0.5s','background-size': '100% 100%', 'position': 'relative'}).animate({'top': '10px'});
-  // }
-
-  // function imageChange2(){
-  //   $(event.target).parents('.col-md-6').css({'background-image': 'url("img/abc.png")'});
-  //   $(event.target).parents('.col-md-3').animate({'transition': '0.5s','background-size': '100% 100%', 'transform': 'none', 'position': 'static'}).animate({'top': '0'});
-  // }
-  // onmouseover="imageChange()" onmouseleave="imageChange2()"
 
 </script>
 <body>
@@ -410,7 +407,7 @@
   <%-include('./topNav')%>
   <!--바디-->
   <div class="container-fluid" style="background-size: 100% 100%; margin-top: 130px;">
-    <div class = "container" style="background-image: url('img/main1.png'); background-size: 100% 100%; padding-top: 50px; padding-right: 20px; padding-bottom: 10px;">
+    <div class = "container" style="background-image: url('img/main1.png');background-size: 100% 100%; padding-top: 50px; padding-right: 20px; padding-bottom: 10px;">
       <!--   달력 들어가야 하는부분-->
       <section style="height: 800px; border-radius: 5px;">
         <div class="container-fluid" style="height:800px; text-align: center; padding-top: 20px; margin:0;" id="calendarBox" >
@@ -505,6 +502,27 @@
       </a>
     </div>
   </section>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" style="position: relative">
+          <div style="width:100%;height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg"></div>
+          <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h1 id="modelTitle">제목</h1>
+          <p id="modelName">작성자 : </p>
+          <p id="modelDate">작성일 : </p>
+          <p id="modelContent">내용</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="sorry()" class="btn btn-primary">댓글 작성하기</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <!--풋터-->
   <%-include('./footer')%>
 </body>
