@@ -65,7 +65,7 @@
                     if(res[i].success === "READY"){
                         $('#cards').append(`
                     <div class="card" id="card${i}">
-                    <div>
+                    <div style="height: 170px;">
                     <!--여기 src 다음에 이미지 경로 넣어줄-->
                         <img src="${res[i].image}" class="card-img-top" alt="...">
                         <button class="bucketEdit abs" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="fa-solid fa-pen" onclick="cardFix('${res[i].image}')"></i></button>
