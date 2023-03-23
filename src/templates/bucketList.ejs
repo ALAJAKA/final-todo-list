@@ -62,7 +62,8 @@
                 let slideWidth = $('#cards').width();
                 for(let i=0; i<res.length; i++){
                     if(i>2) slideWidth += 322;
-                    $('#cards').append(`
+                    if(res[i].success === "READY"){
+                        $('#cards').append(`
                     <div class="card" id="card${i}">
                     <div>
                     <!--여기 src 다음에 이미지 경로 넣어줄-->
@@ -73,10 +74,28 @@
                     <div class="card-body">
                         <h5 class="card-title">${res[i].title}</h5>
                         <p class="card-text">${res[i].content}</p>
-                        <button class="bucketCheck abs2"><img src="/img/check2.png" height="50px;" alt="이미지"></button>
+                        <button class="bucketCheck abs2" onclick="cardOk('${res[i].image}','${res[i].title}','${res[i].content}')"><img src="/img/check2.png" height="50px;" alt="이미지"></button>
                     </div>
                 </div>
                     `);
+                    }else{
+                        $('#cards').append(`
+                    <div class="card" id="card${i}">
+                    <div>
+                    <!--여기 src 다음에 이미지 경로 넣어줄-->
+                        <img src="${res[i].image}" class="card-img-top" alt="...">
+                        <button class="bucketEdit abs" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="fa-solid fa-pen" onclick="cardFix('${res[i].image}')"></i></button>
+                        <button class="bucketDelete abs" onclick="delCard()"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">${res[i].title}</h5>
+                        <p class="card-text">${res[i].content}</p>
+                        <button class="bucketCheck abs2" onclick="cardCancel('${res[i].image}','${res[i].title}','${res[i].content}')"><i class="fa-solid fa-rotate-left"></i></button>
+                    </div>
+                </div>
+                    `);
+                    }
+
                     $('#cards').css({width:`${slideWidth}`});
                 }
                 if(res.length>3) {$('#cards').animate({left:-322})};
@@ -171,6 +190,35 @@
             $('#cards').animate({left:`${scrollX}`});
         }
 
+    }
+    // 카드 완료
+    function cardOk(image,title,content){
+        $.ajax({
+            type:"PUT",
+            url: '/api/bucketLists/cards/ok',
+            data:{image:image,
+            title:title,
+            content:content},
+            success:function(res){
+                alert(res.msg);
+                location.reload();
+            }
+        })
+
+    }
+    // 카드 완료취소
+    function cardCancel(image,title,content){
+        $.ajax({
+            type:"PUT",
+            url: '/api/bucketLists/cards/cancel',
+            data:{image:image,
+                title:title,
+                content:content},
+            success:function(res){
+                alert(res.msg);
+                location.reload();
+            }
+        })
     }
     // 페이지 로딩시 데이터 가져오기 하단
     function getBucketList(){

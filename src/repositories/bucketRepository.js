@@ -3,7 +3,7 @@ const { BucketList } = require('../models')
 const {BucketListCard} = require('../models')
 
 class BucketListRepository {
-
+  //버킷리스트 하단 조회
   getBucketList = async (userId,date) => {
     const BucketLists = await BucketList.findAll({ where : {
       userId ,
@@ -13,16 +13,7 @@ class BucketListRepository {
     });
     return BucketLists;
   }
-
-  getBucketListCards= async (userId) => {
-    const BucketListCards = await BucketListCard.findAll({ where : {
-        userId
-      }
-    });
-    return BucketListCards;
-  }
-
-
+  //버킷리스트 하단 생성
   createBucketList = async (userId,title,date) => {
     const bucketList = await BucketList.create({
       userId,
@@ -31,6 +22,7 @@ class BucketListRepository {
     });
     return bucketList;
   }
+  //버킷리스트 하단 수정
   updateBucketList= async (userId,title,date,before,beforeDay) => {
     const bucketList = await BucketList.update({
       title:title,
@@ -44,6 +36,18 @@ class BucketListRepository {
     });
     return bucketList;
   }
+
+  // 버킷리스트 하단 삭제
+  deleteBucketList = async (title,dayValue,userId)=>{
+    await BucketList.destroy({
+      where:{
+        title:title,
+        d_day:dayValue,
+        userId:userId,
+      }
+    });
+  }
+  // 버킷리스트 카드 생성
   createBucketListCard = async (title,name,content,image,userId) =>{
     const bucketListCard = await BucketListCard.create({
       title,
@@ -54,16 +58,15 @@ class BucketListRepository {
     });
     return bucketListCard;
   }
-
-  deleteBucketList = async (title,dayValue,userId)=>{
-    await BucketList.destroy({
-      where:{
-        title:title,
-        d_day:dayValue,
-        userId:userId,
+  // 버킷리스트 카드 조회
+  getBucketListCards= async (userId) => {
+    const BucketListCards = await BucketListCard.findAll({ where : {
+        userId
       }
     });
+    return BucketListCards;
   }
+  // 카드 삭제
   deleteBucketListCard = async  (title,content,img,userId)=>{
     await BucketListCard.destroy({
       where:{
@@ -74,7 +77,7 @@ class BucketListRepository {
       }
     });
   }
-
+  // 카드 수정
   updateBucketListCard = async (title1,content1,img1,title,content,image,userId)=>{
     await BucketListCard.update({
       title:title,
@@ -88,6 +91,30 @@ class BucketListRepository {
       }
     });
   }
+  // 카드 완료
+  bucketListCardOk = async (title,content, image , userId)=>{
+    await BucketListCard.update({
+      success:1,
+    },{where:{
+      title:title,
+        content:content,
+        image:image,
+        userId:userId
+      }
+    });
+  }
+  bucketListCardCancel= async (title,content, image , userId)=>{
+    await BucketListCard.update({
+      success:2,
+    },{where:{
+        title:title,
+        content:content,
+        image:image,
+        userId:userId
+      }
+    });
+  }
+
 }
 
 module.exports = BucketListRepository;

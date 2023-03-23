@@ -22,6 +22,11 @@ router.get("/cards", bucketListController.getBucketListCard);
 router.delete("/cards", bucketListController.deleteBucketListCard);
 //카드 수정
 router.put("/cards",S3upload.single('image'), bucketListController.updateBucketListCard);
+//카드 완료
+router.put("/cards/ok",bucketListController.bucketListCardOk);
+//카드 완료 취소
+router.put("/cards/cancel",bucketListController.bucketListCardCancel);
+
 
 
 module.exports = router;
