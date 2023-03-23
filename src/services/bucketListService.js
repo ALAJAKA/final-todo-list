@@ -48,7 +48,7 @@ class BucketListService {
       const token = jwtDecode(access_token);
       const userId = token.userId;
       await this.bucketListRepository.deleteBucketListCard(title,content,img,userId);
-      return "삭제 완료;"
+      return "삭제 완료";
     }
 
     updateBucketListCard =async (title1,content1,img1,title,content,image,access_token)=>{
