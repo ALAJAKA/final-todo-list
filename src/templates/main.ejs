@@ -290,8 +290,10 @@
         (todo) => `
           <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2">
             <div class="text-decoration-none">
-              <img src="${todo.image}" alt="slide" width="100%">
-              <div class="p-3">
+<div style="height:300px;width:300px; background-image:url('${todo.image}'); background-repeat: no-repeat; background-size: 300px 300px; ">
+
+</div>
+              <div class="p-3" style="height:150px;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${todo.title}</p>
                 <p class="text-dark" style="text-align: center;">${todo.name}</p>
                 <p class="text-dark style="text-align: right;">${todo.updatedAt}</p>
@@ -311,8 +313,10 @@
         (bucket) => `
           <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2">
             <div class="text-decoration-none">
-              <img src="${bucket.image}" alt="slide" width="100%">
-              <div class="p-3">
+              <div style="height:300px;width:300px; background-image:url('${bucket.image}'); background-repeat: no-repeat; background-size: 300px 300px; ">
+
+</div>
+<div class="p-3"style="height:150px;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${bucket.title}</p>
                 <p class="text-dark" style="text-align: center;">${bucket.name}</p>
                 <p class="text-dark" style="text-align: right;">${bucket.updatedAt}</p>
