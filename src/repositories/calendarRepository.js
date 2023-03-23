@@ -1,5 +1,6 @@
 const { TodoList } = require('../models');
 const { BucketList } = require('../models');
+const { Op } = require('sequelize');
 
 class CalendarRepository {
   constructor(TodoListModel, BucketListModel, AllDayTodoListtModel, BucketListCardModel) {
@@ -9,33 +10,33 @@ class CalendarRepository {
     this.bucketListCardModel = BucketListCardModel;
   }
 
-  findBucketCalendar = async () => {
+  findBucketCalendar = async (userId) => {
     const bucketCalendar = await this.bucketListModel.findAll({
-      where: { userId: userId },
+      where: { userId },
       order: [['id', 'desc']],
     });
     return bucketCalendar;
   };
 
-  findTodoCalendar = async () => {
+  findTodoCalendar = async (userId) => {
     const todoCalendar = await this.todoListModel.findAll({
-      where: { userId: userId },
+      where: { userId },
       order: [['id', 'desc']],
     });
     return todoCalendar;
   };
 
-  findTodoList = async () => {
+  findTodoList = async (userId) => {
     const todolist = await this.todoListModel.findAll({
-      where: { userId: userId },
+      where: { userId },
       order: [['today', 'asc']],
     });
     return todolist;
   };
 
-  findBucketList = async () => {
+  findBucketList = async (userId) => {
     const bucketlist = await this.bucketListModel.findAll({
-      where: { userId: userId },
+      where: { userId },
       order: [['d_day', 'asc']],
       limit: 10
     });

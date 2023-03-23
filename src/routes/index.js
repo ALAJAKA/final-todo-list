@@ -17,7 +17,7 @@ router.use('/api/user', userRouter);
 router.use('/api/todoLists',userAuthToken, todoListRouter);
 //버킷리스트 관련 컨트롤러로
 router.use('/api/bucketLists',userAuthToken, bucketListRouter);
-//패아자 이동에 관한 라우터로
+//페이지 이동에 관한 라우터로
 router.use('/', pageRouter);
 
 // 메인페이지
