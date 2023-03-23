@@ -351,8 +351,8 @@
         Data.append('beforeTitle', beforeTitle)
         Data.append('afterTitle', afterTitle)
         Data.append('content', content)
-        Data.append('date', date)
         Data.append('image', image)
+        Data.append('date', date)
         if (afterTitle.trim() == ""){
             alert("내용이 없습니다.")
         }else{
@@ -367,23 +367,31 @@
                 .then((response) => { 
                     let imgLink = response.data.image
                     if(!imgLink){
-                        imgLink = "/img/Eiffel.jpg"
-                        }
-                    $('#staticBackdrop2').modal('hide');    
-                    let slideWidth = $('#cards').width();
-                    $(`#card${happy}`).replaceWith(`
-                                <div class="card cards" id="card${happy}">
-                                    <div>
-                                        <img src="${imgLink}" class="card-img-top" alt="...">
-                                        <button class="todoEdit abs" id="cardEdit${happy}" onclick="cardEditBefore('${happy}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
-                                        <button class="todoDelete abs" id="cardDelete${happy}" onclick="cardDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
-                                    </div>
-                                    <div class="card-body" id="cardBody${happy}">
-                                        <h5 class="card-title" id="cardTitle${happy}">${afterTitle}</h5>
-                                        <p class="card-text" id="cardText${happy}">${content}</p>
-                                        <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
-                                    </div>
-                                </div>`)
+                        $('#staticBackdrop2').modal('hide');    
+                        let slideWidth = $('#cards').width();
+                        $(`#cardBody${happy}`).replaceWith(`
+                            <div class="card-body" id="cardBody${happy}">
+                                <h5 class="card-title" id="cardTitle${happy}">${afterTitle}</h5>
+                                <p class="card-text" id="cardText${happy}">${content}</p>
+                                <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
+                            </div>`)
+                    }else{
+                        $('#staticBackdrop2').modal('hide');    
+                        let slideWidth = $('#cards').width();
+                        $(`#card${happy}`).replaceWith(`
+                            <div class="card cards" id="card${happy}">
+                                <div>
+                                    <img src="${imgLink}" class="card-img-top" alt="...">
+                                    <button class="todoEdit abs" id="cardEdit${happy}" onclick="cardEditBefore('${happy}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
+                                    <button class="todoDelete abs" id="cardDelete${happy}" onclick="cardDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                                <div class="card-body" id="cardBody${happy}">
+                                    <h5 class="card-title" id="cardTitle${happy}">${afterTitle}</h5>
+                                    <p class="card-text" id="cardText${happy}">${content}</p>
+                                    <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
+                                </div>
+                            </div>`)
+                    }
                     if(date>today){
                         $('.todoCheck').hide();
                     }

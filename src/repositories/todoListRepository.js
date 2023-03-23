@@ -32,24 +32,44 @@ class TodoListRepository {
     return  postAlldayTodoLists;
   }
   
-  putAlldayTodoList = async (date, beforeTitle, content, image, afterTitle, userId) =>{
-    const putAlldayTodoList = await this.AllDayTodoList.update(
-      {title:afterTitle, content, image},{
-      where: {
-        [Op.and]: [ {title:beforeTitle}, { userId }],
-      }
-    });
-    return putAlldayTodoList;
+  putAlldayTodoList = async ( beforeTitle, content, image, afterTitle, userId) =>{
+    if (image){
+      const putAlldayTodoList = await this.AllDayTodoList.update(
+        {title:afterTitle, content, image},{
+        where: {
+          [Op.and]: [ {title:beforeTitle}, { userId }],
+        }
+      });
+      return putAlldayTodoList;
+    }else{
+      const putAlldayTodoList = await this.AllDayTodoList.update(
+        {title:afterTitle, content},{
+        where: {
+          [Op.and]: [ {title:beforeTitle}, { userId }],
+        }
+      });
+      return putAlldayTodoList;
+    }
   }
 
   putAlldayTodoLists = async (date, beforeTitle, content, image, afterTitle, userId) =>{
-    const putAlldayTodoLists = await this.AllDayTodoLists.update(
-      {title:afterTitle, content, image},{
-      where: {
-        [Op.and]: [{ createdAt:date }, {title:beforeTitle}, { userId }],
-      }
-    });
-    return putAlldayTodoLists;
+    if(image){
+      const putAlldayTodoLists = await this.AllDayTodoLists.update(
+        {title:afterTitle, content, image},{
+        where: {
+          [Op.and]: [{ createdAt:date }, {title:beforeTitle}, { userId }],
+        }
+      });
+      return putAlldayTodoLists;
+    }else{
+      const putAlldayTodoLists = await this.AllDayTodoLists.update(
+        {title:afterTitle, content},{
+        where: {
+          [Op.and]: [{ createdAt:date }, {title:beforeTitle}, { userId }],
+        }
+      });
+      return putAlldayTodoLists;
+    }
   }
 
   getAlldayTodoList = async (date, userId) =>{
