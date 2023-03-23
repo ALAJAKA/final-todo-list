@@ -189,6 +189,7 @@
       }
     })
   }
+  // main Calnedar 데이터 표시
   function c(){
       var calendarEl = document.getElementById('calendar');
       var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -205,9 +206,6 @@
         },
         events: function (info, success, failure) {
           // Calendar TodoList 데이터 가져오기
-          function c(){
-
-          }
           fetch('/api/calendar/todo' , {
             credentials: "include"})
                   .then((response) => response.json())
@@ -317,9 +315,6 @@
       });
       calendar.render();
   }
-  // main Calnedar 데이터 표시
-
-
   // BucketList 미리보기
   function a(){
     fetch('/api/preview/bucket', {
@@ -380,6 +375,9 @@
               document.getElementById('bucketfeed').innerHTML = bucketHtml.join('');
             });
   }
+
+
+
 
   function modalDate(title,content,image,name,update){
     $('#modelImg').css("background-image","url("+image+")");
