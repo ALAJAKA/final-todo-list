@@ -24,7 +24,7 @@ class TodoListController {
       console.log(title, content, image, date);
       const {access_token} = req.cookies;
       const postAlldayTodo = await this.todoListService.postAlldayTodo(title, content, image, date, access_token)
-      return res.status(200).json({postAlldayTodo});
+      return res.status(200).json({msg: '등록되었습니다.'});
     }
     catch (err) {
       //error는 나중에
@@ -73,7 +73,7 @@ class TodoListController {
       const {access_token} = req.cookies;
       const deleteAlldayTodo = await this.todoListService.deleteAlldayTodo(date, title, access_token)
       return res.status(201).json({
-        deleteAlldayTodo
+        msg: '삭제되었습니다.'
       });
     }
     catch (err) {
@@ -88,7 +88,7 @@ class TodoListController {
       const {access_token} = req.cookies;
       const postTodayTodo = await this.todoListService.postTodayTodo(date, title, access_token)
       return res.status(201).json({
-        postTodayTodo
+        msg: '등록되었습니다.'
       });
     }
     catch (err) {
@@ -134,7 +134,7 @@ class TodoListController {
       const {access_token} = req.cookies;
       const deleteTodayTodo = await this.todoListService.deleteTodayTodo(date, title, access_token)
       return res.status(201).json({
-        deleteTodayTodo
+        msg: '삭제되었습니다'
       });
     }
     catch (err) {
