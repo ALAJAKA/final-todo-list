@@ -41,7 +41,7 @@ class TodoListService {
         if (date==today){
             const putAlldayTodoLists = await this.todoListRepository.putAlldayTodoLists(date, beforeTitle, content, image, afterTitle, userId)
         }
-        const putAlldayTodoList = await this.todoListRepository.putAlldayTodoList(date, beforeTitle, content, image, afterTitle, userId)
+        const putAlldayTodoList = await this.todoListRepository.putAlldayTodoList(beforeTitle, content, image, afterTitle, userId)
         return putAlldayTodoList;
     }
 
