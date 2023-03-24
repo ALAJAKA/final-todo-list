@@ -24,7 +24,11 @@ class TodoListController {
       console.log(title, content, image, date);
       const {access_token} = req.cookies;
       const postAlldayTodo = await this.todoListService.postAlldayTodo(title, content, image, date, access_token)
-      return res.status(200).json({msg: '등록되었습니다.'});
+      return res.status(200).json({
+        image,
+        msg: '등록되었습니다.'
+      }
+        );
     }
     catch (err) {
       //error는 나중에

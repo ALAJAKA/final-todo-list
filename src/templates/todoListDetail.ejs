@@ -100,7 +100,6 @@
                     $('.card').remove();
                     const getAlldayTodo = response.data.getAlldayTodo;
                     const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
-                    console.log(date, today);
                     if ((date==today)||(date>today)){
                         $('#cards').append(`<div class="card cardPlusBox">
                             <button type="button" class="btn cardPlus" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">
@@ -212,8 +211,10 @@
                         const todoBoxes = document.getElementById('todoBoxes');
                         if(success=="SUCCESS"){
                             let todoSuccessInput=`
-                                <li class="todoBox" id="happy${uuid}" onclick="todoSuccessCancel('${uuid}')">
+                                <li class="todoBox" id="happy${uuid}">
                                     ${title}
+                                    <div class="todoSuccess" id="todoSuccessText${uuid}">완료</div>
+                                    <button class="todoCancel3" id="todoSuccess${uuid}" onclick="todoSuccessCancel('${uuid}')"><i class="fa-solid fa-rotate-left"></i></button>
                                     <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
                                     <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                 </li>`
@@ -231,8 +232,9 @@
                                 todoBoxes.insertAdjacentHTML('beforeend', todoReadyInput);
                             }else{
                                 let todoReadyInput=`
-                                <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
+                                <li class="todoBox" id="happy${uuid}">
                                     ${title}
+                                    <button class="todoCheck3" id="todoSuccess${uuid}" onclick="todoSuccess('${uuid}')"><i class="fa-solid fa-check"></i></button>
                                     <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
                                     <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                 </li>`
@@ -285,13 +287,13 @@
                 
             })
                 .then((response) => {
-                    let imgLink = response.data.postAlldayTodo.image
+                    alert(response.data.msg)
+                    let imgLink = response.data.image
                     if(!imgLink){
                         imgLink = "/img/Eiffel.jpg"
                         }
                     $('#staticBackdrop').modal('hide');    
                     let slideWidth = $('#cards').width();
-                    console.log("기본 ", slideWidth);
                     let uuid = self.crypto.randomUUID();
                     $('#cards').append(`
                                 <div class="card cards" id="card${uuid}">
@@ -499,22 +501,26 @@
                 }
             })
                 .then((response) => {
-                    alert("일정이 완료가 되었습니다.")
+                    alert("일정이 완료되었습니다.")
                     $(`#happy${happy}`).replaceWith(`
-                        <li class="todoBox" id="happy${happy}" onclick="todoSuccessCancel('${happy}')">
+                        <li class="todoBox" id="happy${happy}">
                             ${title}
+                            <div class="todoSuccess" id="todoSuccessText${happy}">완료</div>
+                            <button class="todoCancel3" id="todoSuccess${happy}" onclick="todoSuccessCancel('${happy}')"><i class="fa-solid fa-rotate-left"></i></i></button>
                             <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
                             <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                         </li>`)
+                    $(`#todoSuccessText${happy}`).show();
                     $(`#happy${happy}`).css({"text-decoration":"line-through", "color":"#777"})
                     $(`#todoEdit${happy}`).hide();
-                    $(`#todoDelete${happy}`).hide();
+                    // $(`#todoDelete${happy}`).hide();
                 })
         }
     //투두 완료취소
     function todoSuccessCancel(happy){
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
-        let title = document.getElementById(`happy${happy}`).innerText
+        let title = document.getElementById(`happy${happy}`).innerText.split('\n')[0]
+        console.log(title);
         let success="READY"
         axios({
                 method: 'put',
@@ -525,9 +531,11 @@
             })
                 .then((response) => {
                     alert("일정 완료가 취소되었습니다.")
+                    $(`#todoSuccessText${happy}`).hide();
                     $(`#happy${happy}`).replaceWith(`
-                        <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
+                        <li class="todoBox" id="happy${happy}">
                         ${title}
+                        <button class="todoCheck3" id="todoSuccess${happy}" onclick="todoSuccess('${happy}')"><i class="fa-solid fa-check"></i></button>
                         <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
                         <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                         </li>`)
@@ -541,7 +549,6 @@
     }
     //투두 수정버튼
     function todoEdit(happy){
-        cp();
         let title = document.getElementById(`happy${happy}`).innerText
         $(`#happy${happy}`).replaceWith(`
             <li class="todoBoxLi" id="todoEditBox${happy}">                       
@@ -585,8 +592,9 @@
                     `)}
                     else{
                         $(`#todoEditBox${happy}`).replaceWith(`
-                    <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
+                    <li class="todoBox" id="happy${happy}">
                         ${afterTitle}
+                        <button class="todoCheck3" id="todoSuccess${happy}" onclick="todoSuccess('${happy}')"><i class="fa-solid fa-check"></i></button>
                         <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
                         <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                     </li>  
@@ -608,8 +616,9 @@
             `);
         }else{
             $(`#todoEditBox${happy}`).replaceWith(`
-                    <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
+                    <li class="todoBox" id="happy${happy}">
                         ${title}
+                        <button class="todoCheck3" id="todoSuccess${happy}" onclick="todoSuccess('${happy}')"><i class="fa-solid fa-check"></i></button>
                         <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
                         <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                     </li>
@@ -618,7 +627,6 @@
     }
     //투두 삭제
     function todoDelete(happy){
-        cp();
         let title = document.getElementById(`happy${happy}`).innerText
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         axios({
@@ -683,8 +691,9 @@
                         $('#todoPlusBox').show();    
                     }else{
                         let todoPlusBoxInput=`
-                            <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
+                            <li class="todoBox" id="happy${uuid}">
                                 ${title}
+                                <button class="todoCheck3" id="todoSuccess${uuid}" onclick="todoSuccess('${uuid}')"><i class="fa-solid fa-check"></i></button>
                                 <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
                                 <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                             </li>`
@@ -739,7 +748,7 @@
     .card-body {background-color: hsl(0, 0%, 80%, 0.3)}
     .cardPlus {background: none; width:100px; height:100px;  margin: 0 auto; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; padding:0; font-size: 45pt; border-radius: 45px; transition: 1s; }
     .cardPlus:hover{background-color: rgba(255,255,255,0.7);}
-    .cardPlusBox{background-image: url(/img/winter.jpg);text-align: center; justify-content: center; }
+    .cardPlusBox{background-color: hsl(0, 0%, 80%, 0.3);text-align: center; justify-content: center; }
     /*카드 좌우 이동버튼*/
     .cardBtn{position: absolute;width:50px; height:50px; border-radius: 25px; top:50%; border:0; background: none; transition: 1s;}
     .cardBtn:hover {background: #eee;}
@@ -766,8 +775,8 @@
     .form-check {height: 70px; padding:10px; margin-top: 15px; border: 0.1px solid rgb(163, 156, 156); border-radius: 35px; background-color:rgba(204, 204, 204, 0.302);  display: flex;  text-align: center; justify-content: center; align-content: center;}
     .form-check-input{height:30px; width:30px;  font-size: 22pt; }
     .form-check-label{width:750px; font-size: 22pt;}
-    .todoBox{ cursor : pointer; position: relative; background: none;  width:100%; height: 70px; line-height: 65px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
-    .todoBox:hover{background-color: rgb(163, 156, 156);}
+    .todoBox{ position: relative; background: none;  width:100%; height: 70px; line-height: 65px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
+    /* .todoBox:hover{background-color: rgb(163, 156, 156);} */
     .todoBox2{ position: relative; background: none;  width:100%; height: 70px;  line-height: 65px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
     .todoEdit2 { width:40px; top:20%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
                 position: absolute; right:7%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
@@ -778,13 +787,21 @@
     .todoCheck2 {width:40px; top:20%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
                 position: absolute; right:7%; border: 0; font-size: 19pt; border-radius: 25px; transition: 1s;}
     .todoCheck2:hover{background-color: rgba(0,0,0,0.7);}
+    .todoCheck3 {width:40px; top:20%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
+                position: absolute; right:15%; border: 0; font-size: 19pt; border-radius: 25px; transition: 1s;}
+    .todoCheck3:hover{background-color: rgba(0,0,0,0.7);}
     .todoCancel2 {width:40px; top:20%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
                 position: absolute; right:2%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
     .todoCancel2:hover{background-color: rgba(0,0,0,0.7);}
+    .todoSuccess {width:60px; top:20%; height: 40px; line-height: 40px; text-align: center; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
+                position: absolute; right:14%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
+    .todoCancel3 {width:40px; top:20%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
+                position: absolute; right:7%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
+    .todoCancel3:hover{background-color: rgba(0,0,0,0.7);}
     .todoPlus {background: none; width:50px; height:50px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; border-radius: 25px; padding:0; font-size: 25pt;  transition: 1s; 
                 position: absolute; transform: translate(-50%); margin-top: 10px;}
     .todoPlus:hover{background-color: rgba(0,0,0,0.7);}
-    .todoInput { width:600px;  background:none; border: 5px solid; margin: 0 auto; height: 63px;  text-align: center; justify-content: center; align-content: center;}
+    .todoInput { width:600px;  background:none; border: 0px solid; margin: 0 auto; height: 63px;  text-align: center; justify-content: center; align-content: center;}
     
 </style>
 <body>
@@ -793,7 +810,7 @@
 <!--바디-->
 
 <!--헤더-->
-<section id="headerImg">
+<section id="headerImg"  style="margin-top: 80px;">
     <div class="container-fluid" style="height:400px; text-align: center;" >
         <h1 style="padding-top: 100px; color:#000; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;">일간 TODO 리스트</h1>
         <div>
@@ -811,7 +828,7 @@
 <!--카드섹션-->
 <section style="background-color: rgba(255,255,255); height: 550px; position: relative"><!-- 가로 풀사이즈-->
     <div class="container" style="position: relative">
-        <h2 style="text-align: center; margin-top: 50px;">투두리스트 카드</h2>
+        <h2 style="text-align: center; margin-top: 50px;">매일하는 투두리스트</h2>
         <div id="slide">
             <div id="cards">
             </div>
@@ -825,7 +842,7 @@
 
 </section>
 <!--투두리스트 섹션-->
-<h2>Today</h2>
+<h2>오늘만 하는 투두리스트</h2>
 <div class="container" style="padding: 0;">
     <div class="row" style="padding: 0;">
         <div class="col-md-2" style="margin: 0;"></div>
