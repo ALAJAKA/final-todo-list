@@ -45,14 +45,6 @@
 	background-color: #ffe0ef;
   }
 
-  /* .fc-daygrid-day-frame {
-    background: #fff;
-  } */
-
-  /* .fc-day-today {
-    background-color: #ffe0ef !important;
-  } */
-
   .fc-day a {
     color: black;
     text-decoration: none;
@@ -68,59 +60,337 @@
     text-decoration: none;
   }
   .fc-header-toolbar{
-
     margin-bottom: 0 !important;
     height: 120px;
   }
+
+  .more {
+    display: inline-block;
+    transform: rotate(15deg);
+    position: relative;
+    top: -12px;
+  }
+  
+  .fc-daygrid-day-events> .fc-daygrid-event-harness:nth-of-type(1){
+  position: absolute;
+  height: 30px;
+  top:-30px;
+  }
+
+  .fc-event {
+  text-align: center;
+  }
+
+  /* slider */
+.slider1 {
+    height: 500px;
+}
+
+/* slider-cards */
+.slide-card1 {
+    width: 300px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+  /* slider */
+  .slider2 {
+    height: 500px;
+}
+
+/* slider-cards */
+.slide-card2 {
+    width: 300px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* slider-arrows */
+.arrow {
+    transition: 1s;
+    width: 40px;
+    height: 40px;
+}
+#todo-next-arrow{
+  transition: 1s;
+}
+#todo-previous-arrow{
+  transition: 1s;
+}
+#bucket-next-arrow{
+  transition: 1s;
+}
+#bucket-previous-arrow{
+  transition: 1s;
+}
 </style>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      height:750,
-      contentHeight:180,
-      timeZone: 'UTC',
-      initialView: 'dayGridMonth',
-      // locale: 'ko',
-      titleFormat: function (date) {
-      year = date.date.year;
-      month = date.date.month + 1;
-      return year + "년 " + month + "월";
-      },
-      events: [
-        {
-          title: 'all',
-          color: 'blue',
-          start: '2023-03-10',
-        },
-      ]
+  $(document).ready(function(){
+      loginCheck();
+      a();
+      b();
+      c();
+    // get card width dynamically
+    cardWidth = $(".slide-card1").width();
+    // todo-next-arrow
+    $('#todo-next-arrow').click(function () {
+      var firstChildAppend = $(".slide-card1:first-child");
+      $(".slide-card1").animate({ left: -cardWidth }, function () {
+        $('#todofeed').append(firstChildAppend);
+        $(".slide-card1").css({
+          left: 0,
+        })
+      })
     });
-    calendar.render();
+    // todo-previous-arrow
+    $('#todo-previous-arrow').click(function () {
+      var lastChildPrepend = $(".slide-card1:last-child");
+      $(".slide-card1").animate({ left: cardWidth }, function () {
+        $('#todofeed').prepend(lastChildPrepend);
+        $(".slide-card1").css({
+          left: 0,
+        })
+      })
+    });
+
+    // bucket-next-arrow
+    $('#bucket-next-arrow').click(function () {
+      var firstChildAppend = $(".slide-card2:first-child");
+      $(".slide-card2").animate({ left: -cardWidth }, function () {
+        $('#bucketfeed').append(firstChildAppend);
+        $(".slide-card2").css({
+          left: 0,
+        })
+      })
+    });
+    // bucket-previous-arrow
+    $('#bucket-previous-arrow').click(function () {
+      var lastChildPrepend = $(".slide-card2:last-child");
+      $(".slide-card2").animate({ left: cardWidth }, function () {
+        $('#bucketfeed').prepend(lastChildPrepend);
+        $(".slide-card2").css({
+          left: 0,
+        })
+      })
+    });
   });
 
-  fetch(`http://localhost:3000/calendar/preview/todo`)
-    .then((response) => response.json())
-    .then((data) => {
-      const todo = data.data;
-      for (let i = 0; i < todo.length; i++){
-        const todoo = `<p style="line-height:5px">${todo[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
-        const p = document.createElement('p');
-        p.innerHTML = todoo;
-        document.getElementById('todoPreview').appendChild(p);
+  // 로그인 리다이렉트
+  function loginCheck(){
+    const data = window.location.href.split('#')[1];
+    const myName = localStorage.getItem('name');
+    if(document.cookie&& myName===null) logout();
+    if(data===undefined)return;
+    $.ajax({
+      type:"POST",
+      url:"/api/user/login",
+      data:{data},
+      success:function (res){
+        document.cookie = `access_token=${res['Atoken']}`;
+        localStorage.setItem("name",res['name']);
+        location.href="/";
       }
-    });
+    })
+  }
+  // main Calnedar 데이터 표시
+  function c(){
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        height: 750,
+        contentHeight: 180,
+        timeZone: 'UTC',
+        initialView: 'dayGridMonth',
+        eventOrder : 'displayOrder',
+        // locale: 'ko',
+        titleFormat: function (date) {
+          year = date.date.year;
+          month = date.date.month + 1;
+          return year + "년 " + month + "월";
+        },
+        events: function (info, success, failure) {
+          // Calendar TodoList 데이터 가져오기
+          fetch('/api/calendar/todo' , {
+            credentials: "include"})
+                  .then((response) => response.json())
+                  .then((data) => {
+                    const todo = data.data;
 
-  fetch(`http://localhost:3000/calendar/preview/bucket`)
-    .then((response) => response.json())
-    .then((data) => {
-      const bucket = data.data;
-      for (let i = 0; i < bucket.length; i++){
-        const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
-        const p = document.createElement('p');
-        p.innerHTML = buckett;
-        document.getElementById('bucketPreview').appendChild(p);
-      }
-    });
+                    // 캘린더의 날짜가 변경될 때마다 호출되는 함수
+                    function updateTodoPreview() {
+                      const currentDate = calendar.getDate(); // 현재 캘린더에 표시되는 날짜
+                      const currentStr = currentDate.toISOString().substr(0, 10); // YYYY-MM-DD 형식의 문자열로 변환
+                      fetch(`/api/preview/todo?date=${currentStr}`)
+                              .then(response => response.json())
+                              .then(data => {
+                                const todo = data.data.filter(todoo => todoo.today.startsWith(currentStr))
+                                        .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
+                                        .join('');
+                                todoPreview.innerHTML = todo;
+                              });
+                    }
+
+                    // 페이지가 로드될 때 한 번 호출하여 현재 날짜 미리보기를 표시함
+                    updateTodoPreview();
+
+                    // 달성률 계산
+                    const achievements = {}; // 빈 객체 생성
+                    for (let i = 0; i < todo.length; i++) {
+                      const date = todo[i].today;
+                      const achieved = todo[i].success === 'SUCCESS' ? 1 : 0; // 'SUCCESS'일 경우 1을, 아닐 경우('READY') 0
+                      if (!achievements[date]) {
+                        achievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
+                      }
+                      achievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
+                      achievements[date].total++; // 해당 날짜의 total 에 +1 함
+                    }
+
+                    // 이벤트 생성
+                    const events = [];
+                    for (const date in achievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
+                      const achievementRate = achievements[date].total > 0
+                              ? Math.round((achievements[date].achieved / achievements[date].total) * 100)
+                              : 0; // 삼항 연산자를 사용하여 값이 0보다 크면 달성률 계산, 0보다 작거나 같으면(해당 날짜에 할 일 없는 경우) 0
+                      events.push({
+                        title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
+                        start: date, // 이벤트 시작 날짜
+                        color: 'green', // todo 달성률 이벤트는 초록색으로 표시
+                      });
+                    }
+
+                    // Calendar BucketList 데이터 가져오기
+                    fetch('/api/calendar/bucket', {
+                      credentials: "include"})
+                            .then((response) => response.json())
+                            .then((data) => {
+                              const bucket = data.data;
+                              let eventCounts = {}; // 각 날짜별 이벤트 수 계산을 위한 객체
+                              for (let i = 0; i < bucket.length; i++) {
+                                let title = bucket[i].title;
+                                let start = bucket[i].d_day;
+                                let event = {
+                                  title: title,
+                                  start: start,
+                                  color: '#FF7F50' // 주황색
+                                };
+                                // 각 날짜별 이벤트 수 계산
+                                eventCounts[start] = eventCounts[start] ? eventCounts[start] + 1 : 1;
+                                if (eventCounts[start]== 3) {
+                                  event['url'] = '/page/bucketList';
+                                  event['title'] ='➕'; // +more 버튼 추가된 이벤트 타이틀
+                                }
+                                if (eventCounts[start] < 4) { events.push(event); }
+                              }
+                              success(events);
+                            })
+
+                            .catch((error) => {
+                              failure(error);
+                            });
+                  })
+                  .catch((error) => {
+                    failure(error);
+                  });
+        },
+
+        // 일자를 클릭할 때 실행되는 함수
+        dateClick: function(info) {
+          const selectedDate = info.date || new Date(); // info.date가 존재하지 않으면 현재 날짜로 초기화
+          const selectedDateCell = info.dayEl;
+          const todayCells = document.getElementsByClassName('fc-day-today');
+          for (let i = 0; i < todayCells.length; i++) {
+            todayCells[i].classList.remove('fc-day-today');
+          }
+          selectedDateCell.classList.add('fc-day-today');
+          calendar.gotoDate(selectedDate); // 클릭한 날짜로 이동
+
+          // 해당 일자에 맞는 TodoList 미리보기
+          const selectedDateStr = selectedDate.toISOString().substr(0, 10); // toISOString 메소드로 객체를 문자열 반환, YYYY-MM-DDTHH:mm:ss.sssZ 로 반환된 것을 subsrt 메소드로 첫 10자 추출
+          fetch(`/api/preview/todo?date=${selectedDateStr}`, {
+            credentials: "include"})
+                  .then(response => response.json())
+                  .then(data => {
+                    const todo = data.data.filter(todoo => todoo.today.startsWith(selectedDateStr)) // todo 배열에서 선택한 날짜에 해당 항목만 필터링
+                            .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`) // 각 항목을 html 문자열로 변환
+                            .join(''); // html 문자열을 결합
+                    todoPreview.innerHTML = todo;
+                  });
+        },
+      });
+      calendar.render();
+  }
+  // BucketList 미리보기
+  function a(){
+    fetch('/api/preview/bucket', {
+      credentials: "include"})
+            .then((response) => response.json())
+            .then((data) => {
+              const bucket = data.data;
+              for (let i = 0; i < bucket.length; i++){
+                const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
+                const p = document.createElement('p');
+                p.innerHTML = buckett;
+                document.getElementById('bucketPreview').appendChild(p);
+              }
+            });
+  }
+  function b(){
+    // 추천 TodoList
+    fetch('/api/card/alldaytodo')
+            .then((response) => response.json())
+            .then((data) => {
+              const todoHtml = data.data.map(
+                      (todo) => `
+          <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal"onclick="modalDate('${todo.title}','${todo.content}','${todo.image}','${todo.name}','${todo.updatedAt}' )">
+            <div class="text-decoration-none">
+<div style="height:300px;width:300px; background-image:url('${todo.image}'); background-position: center; background-size: contain; background-repeat: no-repeat;">
+
+</div>
+              <div class="p-3" style="height:150px;">
+                <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${todo.title}</p>
+                <p class="text-dark" style="text-align: center;">${todo.name}</p>
+                <p class="text-dark" style="text-align: right;">${todo.updatedAt}</p>
+              </div>
+            </div>
+          </div>
+        `
+              );
+              document.getElementById('todofeed').innerHTML = todoHtml.join('');
+            });
+
+    // 추천 BucketList
+    fetch('/api/card/bucket')
+            .then((response) => response.json())
+            .then((data) => {
+              const bucketHtml = data.data.map(
+                      (bucket) => `
+          <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="modalDate('${bucket.title}','${bucket.content}','${bucket.image}','${bucket.name}','${bucket.updatedAt}' )">
+            <div class="text-decoration-none">
+              <div style="height:300px;width:300px; background-image:url('${bucket.image}'); background-position: center; background-size: contain;  background-repeat: no-repeat"></div>
+                <div class="p-3"style="height:150px;">
+                <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${bucket.title}</p>
+                <p class="text-dark" style="text-align: center;">${bucket.name}</p>
+                <p class="text-dark" style="text-align: right;">${bucket.updatedAt}</p>
+              </div>
+            </div>
+          </div>
+        `
+              );
+              document.getElementById('bucketfeed').innerHTML = bucketHtml.join('');
+            });
+  }
+
+
+
+
+  function modalDate(title,content,image,name,update){
+    $('#modelImg').css("background-image","url("+image+")");
+    $('#modelTitle').text(title);
+    $('#modelName').text("작성자 : " + name);
+    $('#modelDate').text("작성일 : "+ update);
+    $('#modelContent').text(content);
+  }
+  function sorry(){
+    alert("죄송합니다. 아직 구현되지 않은 기능입니다.");
+  }
 
   // 페이지네이션
   // var page = 2;
@@ -135,73 +405,131 @@
   //   }
   // });
   // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
-  function imageChange(){
-    $(event.target).parents('.col-md-6').css('background-image','url("img/ac2.png")','transition', '0.5s','background-size','100% 100%');
-  }
-  function imageChange2(){
-    $(event.target).parents('.col-md-6').css('background-image','url("img/abc.png" )','transition', '0.5s');
-  }
+
+
 </script>
 <body>
   <!--네비게이션-->
   <%-include('./topNav')%>
   <!--바디-->
-  <div clsss="container-fluid" style="margin-top: 80px;">
-  <div clsss="container-fluid" style="background-size: 100% 100%; margin-top: 80px;">
-    <div class = "container" style="background-image: url('img/main1.png'); background-size: 100% 100%; padding-top: 50px; padding-right: 20px; padding-bottom: 10px;">
+  <div class="container-fluid" style="background-size: 100% 100%; margin-top: 130px;">
+    <div class = "container" style="background-image: url('img/main1.png');background-size: 100% 100%; padding-top: 50px; padding-right: 20px; padding-bottom: 10px;">
       <!--   달력 들어가야 하는부분-->
       <section style="height: 800px; border-radius: 5px;">
         <div class="container-fluid" style="height:800px; text-align: center; padding-top: 20px; margin:0;" id="calendarBox" >
           <div id="calendar" style="width: 100%;"></div>
         </div>
       </section>
+    </div>
   </div>
-  </div>
-  <div clsss="container-fluid">
+  <div class="container-fluid">
     <div class = "container">
-      <section style="height:650px;">
+      <section>
         <div class="container-fluid">
           <div class = "row" style="margin-top:20px;">
-            <div class = "col-md-6" style="min-height: 650px; background-image: url('img/abc.png'); background-size: 100% 100%; border-radius: 10px; width: 48%; padding-top: 60px;">
-              <div class="row" style="margin-top: 80px; margin-bottom: 30px;">
+            <div class = "col-md-6" style="min-height: 720px; background-image: url('img/abc.png'); background-size: 100% 100%; width: 48%; padding-top: 60px;">
+              <div class="row" style="margin-top: 60px; margin-bottom: 30px;">
                 <div class="col-md-3"></div>
                 <div class="col-md-6" style="padding: 0">
-                  <h3 style="text-align: center; border-radius: 10px;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
+                  <h3 style="text-align: center;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
                 </div>
-                <div class="col-md-3" style="padding-left:20px;line-height: 58px; ">
-                  <p style="text-align: left; padding-right: 70px; margin:0;"><a href="/page/todoListMonth" style="color: blue; text-decoration-line: none;" class="more" onmouseover="imageChange()" onmouseleave="imageChange2()">+More</a></p>
+                <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
+                  <p style="text-align: left; padding-right:70px; margin:0;"><a href="/page/todoListDetail" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
                 </div>
               </div>
               <div style="text-align: center; border-radius: 10px;" id="todoPreview">
-<!--              <p style="text-align: right"><a href="/page/todoListMonth" style="color: #888; text-decoration-line: none;" >+More</a></p>-->
-<!--              <div style="text-align: center;  border-radius: 10px;" id="todoPreview">-->
-<!--                <p style="vertical-align: bottom; padding:0; margin:0;">asd-->
-<!--                <hr style="width:80%; margin: 0 auto">-->
-<!--                </p>-->
-<!--              </div>-->
             </div>
             </div>
-            <div class = "col-md-6" style=" min-height: 650px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 50px; border-radius: 10px; width: 48%; padding-top: 60px;">
-              <p style="text-align: right; padding-top: 45px; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; text-decoration-line: none;">+More</a></p>
-              <h3 style="text-align: center; border-radius: 10px;"><img src="/img/bucket-list.png" style="width:50px; height:50px;">버킷 리스트</h3>
-              <div style="text-align: center; border-radius: 10px;" id="bucketPreview">
-              </div>
+            <div class = "col-md-6" style=" min-height: 720px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 50px; width: 48%; padding-top: 60px;">
+              <div class="row" style="margin-top: 60px; margin-bottom: 30px;">
+                <div class="col-md-3"></div>
+                <div class="col-md-6" style="padding: 0">
+                  <h3 style="text-align: center;"><img src="/img/bucket-list.png" style="width:50px; height:50px;">버킷 리스트</h3>
+                </div>
+                <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
+                  <p style="text-align: right; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
+                </div>
+              </div>  
+              <div style="text-align: center;" id="bucketPreview"></div>
             </div>
           </div>
         </div>
       </section>
     </div>
   </div>
-  <!--    추후 업데이트 예정-->
-  <!-- <section>
-    <div class="container-fluid" style="background: aqua; text-align: center; height:400px; margin-top: 50px;">
-      <h1 style="line-height: 400px;">추후 업데이트 예정입니다.</h1>
+  <!-- Slider -->
+  <section>
+    <h4 style="text-align: center;">추천 TODOLIST</h4>
+    <div class="container" style="position: relative;">
+      <!-- Cards Wrap -->
+      <div class="slider1 d-flex align-items-center justify-content-start overflow-hidden position-relative">
+        <div class="slider-wrap d-flex align-items-center position-absolute" id="todofeed">
+          <div class="slide-card1">  
+          </div>
+        </div>
+      </div>
+      <!-- Slider Arrows -->
+      <!-- Left Arrow -->
+      <a class="text-dark" id="todo-previous-arrow">
+        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 start-0" style="cursor: pointer">
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
+        </div>
+      </a>
+      <!-- Right Arrow -->
+      <a class="text-dark" id="todo-next-arrow">
+        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 end-0"style="cursor: pointer">
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </div>
+      </a>
     </div>
-  </section> -->
-  <!-- <footer>
-    <div class="container-fluid" style="background: #333; text-align: center; height:100px; ">
-        <h6 style="line-height: 100px; color:#ccc;">Copyright <i class="fa-regular fa-copyright"></i>  2023. 투두리 All rights reserved.</h6>
+  </section>
+  <section style="margin-top: 30px;">
+    <h4 style="margin-bottom: 30px; text-align: center;">추천 BUCKETLIST</h4>
+    <div class="container" style="position: relative;">
+      <!-- Cards Wrap -->
+      <div class="slider2 d-flex align-items-center justify-content-start overflow-hidden position-relative">
+        <div class="slider-wrap d-flex align-items-center position-absolute" id="bucketfeed">
+          <div class="slide-card2">  
+          </div>
+        </div>
+      </div>
+      <!-- Slider Arrows -->
+      <!-- Left Arrow -->
+      <a class="text-dark" id="bucket-previous-arrow">
+        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 start-0"style="cursor: pointer">
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
+        </div>
+      </a>
+      <!-- Right Arrow -->
+      <a class="text-dark" id="bucket-next-arrow">
+        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 end-0"style="cursor: pointer">
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </div>
+      </a>
     </div>
-  </footer> -->
+  </section>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" style="position: relative">
+          <div style="width:100%;height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg"></div>
+          <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h1 id="modelTitle">제목</h1>
+          <p id="modelName">작성자 : </p>
+          <p id="modelDate">작성일 : </p>
+          <p id="modelContent">내용</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="sorry()" class="btn btn-primary">댓글 작성하기</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--풋터-->
+  <%-include('./footer')%>
 </body>
 </html>

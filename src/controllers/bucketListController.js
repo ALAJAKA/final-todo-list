@@ -3,67 +3,84 @@ const BucketListService = require('../services/bucketListService');
 class BucketListController {
   bucketListService = new BucketListService();
 
-  // C -------------------------------------------------------------------------------------------------------------------
-  createBucketList = async (req, res) =>{
-    try {
-      // const userId = req.user.id;
-      const id = 1;
-      const { title, image, content, success, d_day } = req.body
-      console.log({ title, image, content, success, d_day });
-      const createBucketList = await this.bucketListService.createBucketList(title, image, content, success, d_day, id);
-      res.status(200).json({ msg : "버킷리스트 정상 작성되었습니다.", data : createBucketList });
-    } 
-    catch (err) {
-      console.error(err)
-      res.status(400).json({ errorMessage: "버킷리스트 작성 요청이 잘못되었습니다" });
-    };
-  }
-
-  // R -------------------------------------------------------------------------------------------------------------------
-  getBucketList = async (req, res) => {
-    try {
-      // const userId = req.user.id;
-      const id = 1
-      const userBucketList = await this.bucketListService.getBucketList(id);
-      res.status(200).json({ msg : userBucketList });
+    //버킷리스트 생성
+    createBucketList = async (req, res) => {
+        const {access_token} = req.cookies;
+        const {date} = req.body;
+        const {title} = req.body;
+        await this.bucketListService.createBucketList(access_token,title,date);
+        return res.status(200).json({msg:'등록완료'});
     }
-    catch (err) {
-      console.error(err)
-      res.status(400).json({ errorMessage: "버킷리스트 목록 요청이 잘못되었습니다" });
-    };
-  }
 
-  // U -------------------------------------------------------------------------------------------------------------------
-  editBucketList = async (req, res) => {
-    try {
-      const { title, image, content, success, d_day } = req.body;
-      const { id } = req.params;
-      console.log({title, image, content, success, d_day})
-      console.log(id)
-      // const userId = req.user.id;
-      // const imgPath = req.file.path;
-      // const image   = imgPath.split("\\")[3];
-      const editBucketList = await this.bucketListService.editBucketList(id, title, image, content, success, d_day);
-      res.status(200).json({ msg : "버킷리스트가 정상적으로 수정 되었습니다.", data : editBucketList});
+  //버킷리스트 조회
+    getBucketList = async (req, res) => {
+      const {access_token} = req.cookies;
+      const {date} = req.query;
+      const BucketList = await this.bucketListService.getBucketList(access_token,date);
+      return res.status(200).json(BucketList);
     }
-    catch (err) {
-      console.error(err)
-      res.status(400).json({ errorMessage: "버킷리스트 수정 요청이 잘못되었습니다" });
-    };
-  }
+    //버킷리스트 수정
+    updateBucketList= async (req, res) => {
+        const {access_token} = req.cookies;
+        const {date,title,before,beforeDay} = req.body;
+        await this.bucketListService.updateBucketList(access_token, title, date,before,beforeDay);
+        return res.status(200).json({msg: '수정완료'});
+    }
 
-  // D -------------------------------------------------------------------------------------------------------------------
-  deleteBucketList = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const deleteBucketList = await this.bucketListService.deleteBucketList(id);
-      res.status(200).json({ msg : "버킷리스트가 정상적으로 삭제 되었습니다.", data : id});
+    //버킷리스트 삭제
+    deleteBucketList = async (req,res)=>{
+        const {access_token} = req.cookies;
+        const {title,dayValue} = req.body;
+        const delBucket = await this.bucketListService.deleteBucketList(title,dayValue,access_token);
+        return res.status(200).json({msg:delBucket});
     }
-    catch (err) {
-      console.error(err)
-      res.status(400).json({ errorMessage: "버킷리스트 삭제 요청이 잘못되었습니다" });
-    };
-  };
+    //버킷리스트 카드 생성
+    createBucketListCard = async (req, res) => {
+        const {access_token} = req.cookies;
+        let image;
+        if(req.file !== undefined) image = req.file.location;
+        else image = '';
+        const {title,content} = req.body;
+        await this.bucketListService.createBucketListCard(title,content,image,access_token);
+        return res.status(200).json({msg:"카드생성완료"});
+    }
+    //버킷리스트 카드 조회
+    getBucketListCard= async (req, res) => {
+      const {access_token} = req.cookies;
+      const BucketListCards = await this.bucketListService.getBucketListCards(access_token);
+      return res.status(200).json(BucketListCards);
+    }
+    //버킷리스트 카드 삭제
+    deleteBucketListCard = async (req,res)=>{
+      const {access_token} = req.cookies;
+      const {title,content,img} = req.body;
+      const delBucketCard = await this.bucketListService.deleteBucketListCard(title,content,img,access_token);
+      return res.status(200).json({msg:delBucketCard});
+    }
+    //버킷리스트 카드 수정
+    updateBucketListCard = async (req,res)=>{
+      const {access_token} = req.cookies;
+      const {title1,content1,img1,title,content} =req.body;
+      let {image} = req.body;
+      if(req.file!==undefined) image = req.file.location;
+      else image = img1;
+      const BucketListCard = await this.bucketListService.updateBucketListCard(title1,content1,img1,title,content,image,access_token);
+      return res.status(200).json({msg:BucketListCard});;
+    }
+    //버킷리스트 카드 완료
+    bucketListCardOk = async (req,res)=>{
+        const {access_token} = req.cookies;
+      const {image,title,content} = req.body;
+      const BucketListCardOk = await this.bucketListService.bucketListCardOk(title,content,image,access_token);
+      return res.status(200).json({msg:BucketListCardOk})
+    }
+//버킷리스트 완료취소
+    bucketListCardCancel =async (req,res)=>{
+        const {access_token} = req.cookies;
+        const {image,title,content} = req.body;
+        const BucketListCardCancel = await this.bucketListService.bucketListCardCancel(title,content,image,access_token);
+        return res.status(200).json({msg:BucketListCardCancel})
+    }
 }
 
 module.exports = BucketListController;

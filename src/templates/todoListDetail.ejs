@@ -17,11 +17,13 @@
         const thisYear = new Date().getFullYear(); // 오늘 날짜의 년
         const thisMonth = new Date().getMonth()+1; // 오늘 날짜의 월
         const thisDate = new Date().getDate();//      오늘 날짜의 일
+        const today = new Date(thisYear, thisMonth-1, thisDate, 9).toISOString().substring(0,10);
         var year = new Date().getFullYear();// 현재 날짜의 년
         var month =new Date().getMonth()+1;// 현재 날짜의 월
         var day =new Date().getDate();// 현재 날짜
         $(document).ready(function() {
             calender();
+            cardGet();
             todoGet();
         });
         // 달력만들기
@@ -49,58 +51,100 @@
     
         // 다음일로 이동
         function nextDay(){
+            day +=1;
             const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
-            
-            if(day == days[month]){
-                document.getElementsById("btnRight").style.display = "none";
-            }else{
-                day +=1;
+            if(day > days[month]){
+                if (month==12){
+                    day = days[month]
+                }else{
+                    month +=1;
+                    day = 1;
+                }
             }
             $('#month *').remove();
             $('#day *').remove();
             calender()
+            cardGet();
             todoGet();
         }
         // 이전일로 이동
         function lastDay(){
-            if(day == 1){
-                document.getElementsById("btnLeft").style.display = "none";
-            }else{
-                day -=1;
+            day -=1;
+            const days = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+            if(day < 1){
+                if (month==1){
+                    day = 1
+                }else{
+                    month -=1;
+                    day = days[month];
+                }
             }
             $('#month *').remove();
             $('#day *').remove();
             calender()
+            cardGet();
             todoGet();
         }
 
-        //투두get
-        function todoGet(){
+        //카드get
+        function cardGet(){
+            const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
             axios({
                 method: 'get',
-                url: '/todoList/1234',
+                url: '/api/todoLists/alldayTodo',
                 params: {
-                    year, month, day
+                    date
                 }
             })
                 .then((response) => {
-                    const always = response.data.always;
-                    const oneDay = response.data.oneDay;
-                    console.log(always);
-                    console.log(oneDay);
-                    for (let i = 0; i < always.length; i++){
-                        const content = always[i].content
-                        const image = always[i].image
-                        const title = always[i].title
-                        const success = always[i].success
-
+                    $('.card').remove();
+                    const getAlldayTodo = response.data.getAlldayTodo;
+                    const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+                    console.log(date, today);
+                    if ((date==today)||(date>today)){
+                        $('#cards').append(`<div class="card cardPlusBox">
+                            <button type="button" class="btn cardPlus" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>`)
+                    }    
+                    let slideWidth = $('#cards').width();
+                    slideWidth = 1298
+                    for (let i = 0; i < getAlldayTodo.length; i++){
+                        if(i>2) slideWidth += 322;
+                        const content = getAlldayTodo[i].content
+                        let image = getAlldayTodo[i].image
+                        if(!image){
+                            image = "/img/Eiffel.jpg"
+                        }
+                        const title = getAlldayTodo[i].title
+                        const success = getAlldayTodo[i].success
                         let uuid = self.crypto.randomUUID();
-                        const slider = document.getElementById('slider');
-                        let sliderInput=`
-                                <div class="card" id="card${uuid}">
+                        if(success=="SUCCESS"){
+                            $('#cards').append(`
+                                            <div class="card cards" id="card${uuid}">
+                                                <div>
+                                                    <img src="${image}" class="card-img-top" alt="...">
+                                                    <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
+                                                    <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                                </div>
+                                                <div class="card-body" id="cardBody${uuid}">
+                                                    <h5 class="card-title" id="cardTitle${uuid}">${title}</h5>
+                                                    <p class="card-text" id="cardText${uuid}">${content}</p>
+                                                    <button class="todoBack abs3" id="cardSuccessCancel${uuid}" onclick="cardSuccessCancel('${uuid}')"><i class="fa-solid fa-rotate-left"></i></button>
+                                                </div>
+                                            </div>
+                                            `);
+                            $(`#cardTitle${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
+                            $(`#cardText${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
+                            $(`#cardEdit${uuid}`).hide();
+                            $('#cards').css({width:`${slideWidth}`});     
+                        }else{
+                            $('#cards').append(`
+                                <div class="card cards" id="card${uuid}">
                                     <div>
-                                        <img src="/img/1296285.jpg" class="card-img-top" alt="...">
-                                        <button class="todoEdit abs" id="cardEdit${uuid}"><i class="fa-solid fa-pen"></i></button>
+                                        <img src="${image}" class="card-img-top" alt="...">
+                                        <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
                                         <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                     </div>
                                     <div class="card-body" id="cardBody${uuid}">
@@ -108,30 +152,100 @@
                                         <p class="card-text" id="cardText${uuid}">${content}</p>
                                         <button class="todoCheck abs2" id="cardSuccess${uuid}" onclick="cardSuccess('${uuid}')"><img src="/img/check2.png" height="50px;"></button>
                                     </div>
-                                </div>`
-                        slider.insertAdjacentHTML('beforeend', sliderInput);
-                    }
-                    card()
-                    for (let i = 0; i < oneDay.length; i++){
-                        const image = oneDay[i].image
-                        const title = oneDay[i].title
-                        const success = oneDay[i].success
+                                </div>`)
+                            $('#cards').css({width:`${slideWidth}`});
+                        }
+                    }if(getAlldayTodo.length>3) {$('#cards').animate({left:-322})}
+                    else{$('#cards').animate({left:0})}
+                        if(date>today){
+                            $('.todoCheck').hide();
+                        }
+                        if(date<today){
+                            $('.todoEdit').hide();
+                            $('.todoDelete').hide();
+                        }
+                })
+            }
+        
+        //카드 오른쪽으로 이동
+            function cardMoveLeft(){
+                const w = $('#cards').width();
+                let scrollX =document.getElementById('cards').offsetLeft;
+                if(w<=1298 || scrollX >=0) {
+                    scrollX = 0;
+                    $('#cards').animate({left:`${scrollX}`});
+                }else{
+                    scrollX += 322;
+                    $('#cards').animate({left:`${scrollX}`});
+                }
+            }
+        //카드 왼쪽으로 이동
+            function cardMoveRight(){
+                const w = $('#cards').width();
+                let scrollX =document.getElementById('cards').offsetLeft;
+                if(w<=1298 || w+scrollX<=1298){
+                    scrollX = 1298-w;
+                    $('#cards').animate({left:`${scrollX}`});
+                }else{
+                    scrollX -= 322;
+                    $('#cards').animate({left:`${scrollX}`});
+                }
+
+            }    
+        //투두get
+        function todoGet(){
+            const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+            axios({
+                method: 'get',
+                url: '/api/todoLists/todayTodo',
+                params: {
+                    date
+                }
+            })
+                .then((response) => {
+                    const getTodayTodo = response.data.getTodayTodo;
+                    $('.todoBox').remove();
+                    for (let i = 0; i < getTodayTodo.length; i++){
+                        const title = getTodayTodo[i].title
+                        const success = getTodayTodo[i].success
                         let uuid = self.crypto.randomUUID();
                         const todoBoxes = document.getElementById('todoBoxes');
-                        let todoPlusBoxInput=`
+                        if(success=="SUCCESS"){
+                            let todoSuccessInput=`
+                                <li class="todoBox" id="happy${uuid}" onclick="todoSuccessCancel('${uuid}')">
+                                    ${title}
+                                    <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                </li>`
+                            todoBoxes.insertAdjacentHTML('beforeend', todoSuccessInput);    
+                            $(`#happy${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
+                            $(`#todoEdit${uuid}`).hide();
+                        }else{
+                            if(date>today){
+                                let todoReadyInput=`
+                                <li class="todoBox" id="happy${uuid}">
+                                    ${title}
+                                    <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                </li>`
+                                todoBoxes.insertAdjacentHTML('beforeend', todoReadyInput);
+                            }else{
+                                let todoReadyInput=`
                                 <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
                                     ${title}
                                     <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
                                     <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
                                 </li>`
-                        todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
-                    }
-                })
-                .catch((response) => {
-                    const data = response.response.data;
-                    console.log(data.errorMessage);
-                });
-            }
+                                todoBoxes.insertAdjacentHTML('beforeend', todoReadyInput);
+                            }
+                            }
+                        }
+                        if(date<today){
+                            $('.todoEdit2').hide();
+                            $('.todoDelete2').hide();
+                        }
+                    })
+            }    
         
 </script>
 <script>
@@ -146,108 +260,353 @@
     //UUID 랜덤ID값
     function uuid() {
         let uuid = self.crypto.randomUUID();
-        console.log(uuid);
     };
+    //카드추가d
+    function cardSave(){
+        const title = document.getElementById('inputTitle').value;
+        const content = document.getElementById('inputContent').value;
+        const image = document.getElementsByName('inputImage')[0].files[0];
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        let Data = new FormData();
+        Data.append('title', title)
+        Data.append('content', content)
+        Data.append('date', date)
+        Data.append('image', image)
+        if (title.trim() == ""){
+            alert("내용이 없습니다.")
+        }else{
+            axios({
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                method: 'post',
+                url: '/api/todoLists/alldayTodo',
+                data: Data,
+                
+            })
+                .then((response) => {
+                    let imgLink = response.data.postAlldayTodo.image
+                    if(!imgLink){
+                        imgLink = "/img/Eiffel.jpg"
+                        }
+                    $('#staticBackdrop').modal('hide');    
+                    let slideWidth = $('#cards').width();
+                    console.log("기본 ", slideWidth);
+                    let uuid = self.crypto.randomUUID();
+                    $('#cards').append(`
+                                <div class="card cards" id="card${uuid}">
+                                    <div>
+                                        <img src="${imgLink}" class="card-img-top" alt="...">
+                                        <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
+                                        <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                                    </div>
+                                    <div class="card-body" id="cardBody${uuid}">
+                                        <h5 class="card-title" id="cardTitle${uuid}">${title}</h5>
+                                        <p class="card-text" id="cardText${uuid}">${content}</p>
+                                        <button class="todoCheck abs2" id="cardSuccess${uuid}" onclick="cardSuccess('${uuid}')"><img src="/img/check2.png" height="50px;"></button>
+                                    </div>
+                                </div>`)
+                    slideWidth += 322;
+                    $('#cards').css({width:`${slideWidth}`});
+                    if(slideWidth>1298) {$('#cards').animate({left:-322})}
+                    else{$('#cards').animate({left:0})}
+                        if(date>today){
+                        $('.todoCheck').hide();
+                    }
+                    // alert(response.data.msg)
+                })
+        }
+    }
+    //카드 편집전
+    function cardEditBefore(happy){
+        let title = document.getElementById(`cardTitle${happy}`).innerText
+        let content = document.getElementById(`cardText${happy}`).innerText
+        $(`#modal2`).replaceWith(`
+                                <div class="modal-body" id="modal2">
+                                        <div class="mb-3">
+                                            <input type="text" name="${title}" class="form-control" id="editTitle" maxlength="13" value="${title}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+                                            <textarea class="form-control" name="${happy}" id="editContent" rows="3" maxlength="40" >${content}</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="formFileSm" class="form-label">Image</label>
+                                            <input class="form-control form-control-sm" name="editImage" id="editImage" type="file">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                                            <button type="button" onclick="cardEdit()" data-bs-dismiss="modal" class="btn btn-primary">수정</button>
+                                        </div>
+                                </div>
+                                `)
+                        
+    }
+    //카드편집
+    function cardEdit(){
+        const beforeTitle = document.getElementById('editTitle').name;
+        const afterTitle = document.getElementById('editTitle').value;
+        const happy = document.getElementById('editContent').name;
+        const content = document.getElementById('editContent').value;
+        const image = document.getElementsByName('editImage')[0].files[0];
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        
+        let Data = new FormData();
+        
+        Data.append('beforeTitle', beforeTitle)
+        Data.append('afterTitle', afterTitle)
+        Data.append('content', content)
+        Data.append('image', image)
+        Data.append('date', date)
+        if (afterTitle.trim() == ""){
+            alert("내용이 없습니다.")
+        }else{
+            axios({
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                method: 'put',
+                url: '/api/todoLists/alldayTodo',
+                data: Data,
+            })
+                .then((response) => { 
+                    alert("수정되었습니다.")
+                    let imgLink = response.data.image
+                    if(!imgLink){
+                        $('#staticBackdrop2').modal('hide');    
+                        let slideWidth = $('#cards').width();
+                        $(`#cardBody${happy}`).replaceWith(`
+                            <div class="card-body" id="cardBody${happy}">
+                                <h5 class="card-title" id="cardTitle${happy}">${afterTitle}</h5>
+                                <p class="card-text" id="cardText${happy}">${content}</p>
+                                <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
+                            </div>`)
+                    }else{
+                        $('#staticBackdrop2').modal('hide');    
+                        let slideWidth = $('#cards').width();
+                        $(`#card${happy}`).replaceWith(`
+                            <div class="card cards" id="card${happy}">
+                                <div>
+                                    <img src="${imgLink}" class="card-img-top" alt="...">
+                                    <button class="todoEdit abs" id="cardEdit${happy}" onclick="cardEditBefore('${happy}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
+                                    <button class="todoDelete abs" id="cardDelete${happy}" onclick="cardDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                                <div class="card-body" id="cardBody${happy}">
+                                    <h5 class="card-title" id="cardTitle${happy}">${afterTitle}</h5>
+                                    <p class="card-text" id="cardText${happy}">${content}</p>
+                                    <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
+                                </div>
+                            </div>`)
+                    }
+                    if(date>today){
+                        $('.todoCheck').hide();
+                    }
 
-    //카드저장
-    function cardSave(happy){
-        card()
+                })
+        }
     }
     //카드완료d
     function cardSuccess(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
         let title = document.getElementById(`cardTitle${happy}`).innerText
         let content = document.getElementById(`cardText${happy}`).innerText
-        $(`#cardBody${happy}`).replaceWith(`
-                            <div class="card-body" id="cardBody${happy}">
-                                <h5 class="card-title" id="cardTitle${happy}">${title}</h5>
-                                <p class="card-text" id="cardText${happy}">${content}</p>
-                                <button class="todoBack abs3" id="cardSuccessCancel${happy}" onclick="cardSuccessCancel('${happy}')"><i class="fa-solid fa-rotate-left"></i></button>
-                            </div>
-                            `)
-        $(`#cardTitle${happy}`).css({"text-decoration":"line-through", "color":"#777"})
-        $(`#cardText${happy}`).css({"text-decoration":"line-through", "color":"#777"})
-        $(`#cardEdit${happy}`).hide();
+        let success="SUCCESS"
+        axios({
+                method: 'put',
+                url: '/api/todoLists/cardSuccess',
+                data: {
+                    date, title, success
+                }
+            })
+                .then((response) => {
+                    alert("일정이 완료되었습니다.")
+                    $(`#cardBody${happy}`).replaceWith(`
+                                        <div class="card-body" id="cardBody${happy}">
+                                            <h5 class="card-title" id="cardTitle${happy}">${title}</h5>
+                                            <p class="card-text" id="cardText${happy}">${content}</p>
+                                            <button class="todoBack abs3" id="cardSuccessCancel${happy}" onclick="cardSuccessCancel('${happy}')"><i class="fa-solid fa-rotate-left"></i></button>
+                                        </div>
+                                        `)
+                    $(`#cardTitle${happy}`).css({"text-decoration":"line-through", "color":"#777"})
+                    $(`#cardText${happy}`).css({"text-decoration":"line-through", "color":"#777"})
+                    $(`#cardEdit${happy}`).hide();
+                    $(`#cardDelete${happy}`).hide();
+                })
         }
-    //카드취소
+    //카드완료취소
     function cardSuccessCancel(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
         let title = document.getElementById(`cardTitle${happy}`).innerText
         let content = document.getElementById(`cardText${happy}`).innerText
-        $(`#cardBody${happy}`).replaceWith(`
-                            <div class="card-body" id="cardBody${happy}">
-                                <h5 class="card-title" id="cardTitle${happy}">${title}</h5>
-                                <p class="card-text" id="cardText${happy}">${content}</p>
-                                <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
-                            </div>
-                            `)
-        $(`#cardEdit${happy}`).show();
-        $(`#cardDelete${happy}`).show();
+        let success="READY"
+        axios({
+                method: 'put',
+                url: '/api/todoLists/cardSuccess',
+                data: {
+                    date, title, success
+                }
+            })
+                .then((response) => {
+                    alert("일정 완료가 취소되었습니다.")
+                    $(`#cardBody${happy}`).replaceWith(`
+                                        <div class="card-body" id="cardBody${happy}">
+                                            <h5 class="card-title" id="cardTitle${happy}">${title}</h5>
+                                            <p class="card-text" id="cardText${happy}">${content}</p>
+                                            <button class="todoCheck abs2" id="cardSuccess${happy}" onclick="cardSuccess('${happy}')"><img src="/img/check2.png" height="50px;"></button>
+                                        </div>
+                                        `)
+                    $(`#cardEdit${happy}`).show();
+                    $(`#cardDelete${happy}`).show();
+                    if(date>today){
+                        $('.todoCheck').hide();
+                    }
+                    if(date<today){
+                        $('.todoEdit').hide();
+                        $('.todoDelete').hide();
+                    }
+                })
+                
         }
     //카드삭제
     function cardDelete(happy){
-            $(`#card${happy}`).remove();
-            card()
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0,10);
+        let title = document.getElementById(`cardTitle${happy}`).innerText
+        // let content = document.getElementById(`cardText${happy}`).innerText
+        axios({
+                method: 'delete',
+                url: '/api/todoLists/alldayTodo',
+                data: {
+                    date, title
+                }
+            })
+                .then((response) => {
+                    alert(response.data.msg)
+                    $(`#card${happy}`).remove();
+                })
         }
 
 
-    //투두 완료 d
+    //투두 완료
     function todoSuccess(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         let title = document.getElementById(`happy${happy}`).innerText
-        $(`#happy${happy}`).replaceWith(`
-            <li class="todoBox" id="happy${happy}" onclick="todoSuccessCancel('${happy}')">
-                ${title}
-                <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
-            </li>`)
-        $(`#happy${happy}`).css({"text-decoration":"line-through", "color":"#777"})
-        $(`#todoEdit${happy}`).hide();
+        let success="SUCCESS"
+        axios({
+                method: 'put',
+                url: '/api/todoLists/todoSuccess',
+                data: {
+                    date, title, success
+                }
+            })
+                .then((response) => {
+                    alert("일정이 완료가 되었습니다.")
+                    $(`#happy${happy}`).replaceWith(`
+                        <li class="todoBox" id="happy${happy}" onclick="todoSuccessCancel('${happy}')">
+                            ${title}
+                            <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
+                            <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                        </li>`)
+                    $(`#happy${happy}`).css({"text-decoration":"line-through", "color":"#777"})
+                    $(`#todoEdit${happy}`).hide();
+                    $(`#todoDelete${happy}`).hide();
+                })
         }
-    //투두 완료취소 d
+    //투두 완료취소
     function todoSuccessCancel(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         let title = document.getElementById(`happy${happy}`).innerText
-        $(`#happy${happy}`).replaceWith(`
-            <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
-            ${title}
-            <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
-            <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
-            </li>`)
-        $(`#todoEdit${happy}`).show();
+        let success="READY"
+        axios({
+                method: 'put',
+                url: '/api/todoLists/todoSuccess',
+                data: {
+                    date, title, success
+                }
+            })
+                .then((response) => {
+                    alert("일정 완료가 취소되었습니다.")
+                    $(`#happy${happy}`).replaceWith(`
+                        <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
+                        ${title}
+                        <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                        </li>`)
+                    $(`#todoEdit${happy}`).show();
+                    $(`#todoDelete${happy}`).show();
+                    if(date<today){
+                        $('.todoEdit2').hide();
+                        $('.todoDelete2').hide();
+                    }
+                })
     }
     //투두 수정버튼
     function todoEdit(happy){
         cp();
-        console.log("CHECK");
         let title = document.getElementById(`happy${happy}`).innerText
         $(`#happy${happy}`).replaceWith(`
             <li class="todoBoxLi" id="todoEditBox${happy}">                       
                 <div class="todoBox">
-                    <input class="todoInput" id="todoEdit${happy}" type="text" value="${title}" maxlength="24">
+                    <input class="todoInput" id="todoEdit${happy}" type="text" name="${title}" value="${title}" maxlength="24">
                     <button class="todoCheck2" onclick="todoEditSave('${happy}')"><i class="fa-solid fa-check"></i></button>
                     <button class="todoCancel2" onclick="todoEditCancel('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </li>
             `);
     }
-    //투두 수정저장 d
-    function todoEditSave(happy){   
-        const title = document.getElementById(`todoEdit${happy}`).value;
-        // console.log(title);
-        // console.log(happy);
-        if (title.trim() == ""){
+    //투두 수정저장
+    function todoEditSave(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        const beforeTitle = document.getElementById(`todoEdit${happy}`).name;
+        const afterTitle = document.getElementById(`todoEdit${happy}`).value;
+        if (afterTitle.trim() == ""){
             alert("내용이 없습니다.")
         }else{
-            $(`#todoEditBox${happy}`).replaceWith(`
-                    <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
-                        ${title}
+            if(beforeTitle==afterTitle){
+                todoEditCancel(happy)
+                return;
+            }
+            let success="READY"
+            axios({
+                    method: 'put',
+                    url: '/api/todoLists/todayTodo',
+                    data: {
+                        date, beforeTitle, afterTitle
+                    }
+                })
+                .then((response) => {
+                    alert("수정되었습니다.")
+                    if (date>today){
+                        $(`#todoEditBox${happy}`).replaceWith(`
+                    <li class="todoBox" id="happy${happy}">
+                        ${afterTitle}
                         <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
                         <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                     </li>  
-                    `);
+                    `)}
+                    else{
+                        $(`#todoEditBox${happy}`).replaceWith(`
+                    <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
+                        ${afterTitle}
+                        <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                    </li>  
+                    `)}
+                })
         }
     }
     //투두 수정취소
     function todoEditCancel(happy){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         const title = document.getElementById(`todoEdit${happy}`).value
-        console.log(title);
+        if(date>today){
+            $(`#todoEditBox${happy}`).replaceWith(`
+                    <li class="todoBox" id="happy${happy}">
+                        ${title}
+                        <button class="todoEdit2" id="todoEdit${happy}" onclick="todoEdit('${happy}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
+                    </li>
+            `);
+        }else{
             $(`#todoEditBox${happy}`).replaceWith(`
                     <li class="todoBox" id="happy${happy}" onclick="todoSuccess('${happy}')">
                         ${title}
@@ -255,15 +614,27 @@
                         <button class="todoDelete2" id="todoDelete${happy}" onclick="todoDelete('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                     </li>
             `);
+        }
     }
-    //투두 삭제 d
+    //투두 삭제
     function todoDelete(happy){
         cp();
-        $(`#happy${happy}`).remove();
+        let title = document.getElementById(`happy${happy}`).innerText
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        axios({
+                method: 'delete',
+                url: '/api/todoLists/todayTodo',
+                data: {
+                    date, title
+                }
+            })
+                .then((response) => {
+                    alert(response.data.msg)
+                    $(`#happy${happy}`).remove();
+                })
     }
     //투두추가버튼
     function todoPlus() {
-        console.log();
         $('#todoPlusBox').hide();
         const listBox = document.getElementById('listBox');
         let todoInput=`
@@ -279,26 +650,54 @@
     }
     //투두추가저장
     function todoPlusSave(){
+        const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
         let uuid = self.crypto.randomUUID();
         const title = document.getElementById('todayTodo').value;
         if (title.trim() == ""){
             alert("내용이 없습니다.")
         }else{
-            const todoBoxes = document.getElementById('todoBoxes');
-            let todoPlusBoxInput=`
-                    <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
-                        ${title}
-                        <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
-                        <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
-                    </li>  `
-            $(`#todoPlusBtn`).replaceWith(`
-                    <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>`);
+            axios({
+                method: 'post',
+                url: '/api/todoLists/todayTodo',
+                data: {
+                    date, title
+                }
+            })
+                .then((response) => {
+                    alert(response.data.msg)
+                    const todoBoxes = document.getElementById('todoBoxes');
+                    if(date>today){
+                        let todoPlusBoxInput=`
+                            <li class="todoBox" id="happy${uuid}">
+                                ${title}
+                                <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                            </li>`
+                        $(`#todoPlusBtn`).replaceWith(`
+                        <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>`);
 
-            todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
-            $('#todoInputBox').remove();
-            $('#todoPlusBox').show();
+                        todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+                        $('#todoInputBox').remove();
+                        $('#todoPlusBox').show();    
+                    }else{
+                        let todoPlusBoxInput=`
+                            <li class="todoBox" id="happy${uuid}" onclick="todoSuccess('${uuid}')">
+                                ${title}
+                                <button class="todoEdit2" id="todoEdit${uuid}" onclick="todoEdit('${uuid}')"><i class="fa-solid fa-pen"></i></button>
+                                <button class="todoDelete2" id="todoDelete${uuid}" onclick="todoDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
+                            </li>`
+                        $(`#todoPlusBtn`).replaceWith(`
+                        <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>`);
+                        
+                        todoBoxes.insertAdjacentHTML('beforeend', todoPlusBoxInput);
+                        $('#todoInputBox').remove();
+                        $('#todoPlusBox').show();    
+                    }
+                })
         }
     }
     //투두추가취소
@@ -309,66 +708,6 @@
     
 
 </script>
-<script>
-    function card(){
-        let leftBtn = [...document.getElementsByClassName("slider-leftBtn")]
-    let rightBtn = [...document.getElementsByClassName("slider-rightBtn")]
-    let slider = [...document.querySelectorAll(".card-container")]
-    let sliderDimension = document.querySelector(".card-container")
-
-
-    slider.forEach((item, i) => {
-        // let containerDimension = item.getBoundingClientRect().width;
-        let containerDimension = 300;
-        if ((item.childElementCount * 300) < 1300){
-            rightBtn[i].style.display = 'none';
-            leftBtn[i].style.display = 'none';
-            item.style.justifyContent = 'space-around';
-        }else{
-            item.scrollLeft +=300;
-        }
-        if ((item.childElementCount * 300) < (containerDimension + 100)) {
-            rightBtn[i].style.display = 'none';
-            leftBtn[i].style.display = 'none';
-            item.style.justifyContent = 'space-around';
-        }
-        leftBtn[i].style.display = "none"
-        rightBtn[i].addEventListener('click', () => {
-            item.scrollLeft += containerDimension;
-            leftBtn[i].style.display = 'block';
-        })
-        leftBtn[i].addEventListener('click', () => {
-            item.scrollLeft -= containerDimension;
-            rightBtn[i].style.display = 'block';
-        })
-        item.addEventListener('scroll', () => {
-            if (item.offsetWidth + item.scrollLeft >= (item.scrollWidth - 100)) {
-                rightBtn[i].style.display = 'none';
-                leftBtn[i].style.display = 'block';
-            } else if (item.scrollLeft == 0) {
-                leftBtn[i].style.display = 'none';
-                rightBtn[i].style.display = 'block';
-            } else if (item.scrollLeft > 0) {
-                leftBtn[i].style.display = 'block';
-            }
-            if (item.offsetWidth + item.scrollLeft < (item.scrollWidth - 50)) {
-                rightBtn[i].style.display = 'block';
-            }
-        })
-
-        const slidingFunction = () => {
-            if (item.offsetWidth + item.scrollLeft >= (item.scrollWidth - 100)) {
-                // item.style.scrollBehavior = "auto";
-                item.scrollLeft = 0;
-            }
-            if (item.offsetWidth + item.scrollLeft < (item.scrollWidth - 50)) {
-                // item.style.scrollBehavior = "smooth";
-                item.scrollLeft += containerDimension;
-            }
-        }
-    })
-    }
-</script>
 <style>
     input:focus {outline: none;}
     /* 헤드 */
@@ -378,99 +717,33 @@
     }
     ul,li,ol{list-style: none; margin:0; padding:0;}
     .fo{background: red; border-radius: 5px;}
+    /* 헤더 네비게이션 */
     #leftNav {transition: 0.5s}
     .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 80%; padding: 10px; transition: 0.5s; border-radius: 5px;}
     .leftMenu:hover {background: #777}
     .btntt{width:50px; height:50px; line-height: 50px; border:0; border-radius: 5px; background: rgba(255,255,255,0.3);; font-size: 20px; transition: 1s; }
     .btntt:hover{background-color: rgba(255,255,255,0.7);}
+    .spring{background-image:url('https://blog.kakaocdn.net/dn/8ees0/btq33bjZoFY/6SSEPleWKXNwMHlW3p5mvk/img.jpg') ; background-size: 100.2%; background-repeat: no-repeat;}
+    .summer{background-image:url('https://www.icelandtours.is/wp-content/uploads/2019/10/Colorful-summer-sunset-with-kirkjufell-mountain-in-grundarfjordur.jpg.webp') ; background-size: 100% 700px; background-repeat: no-repeat;}
+    .fall{background-image: url('/img/fall.jpg'); background-size: cover; background-position: bottom;}
+    .winter{background-image: url('/img/winter.jpg'); background-size: cover;}
     h2{text-align:center; margin-top: 50px;}
 
-    /* 카드섹션 */
-    /* .container {background-color: rgba(255,255,255);}
-    .cardBox {display: flex;  text-align: center;} */
-    /* .card { width: 19rem; height: 400px; margin: 80px 25px 20px 25px; position: relative} */
-    /* .card-img-top {height: 170px;} */
-        
-    .FlipCardcontainer {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    /*카드슬라이드 전체사이즈*/
-    .slider-container {
-        width: 1400px;
-        height: 450px;
-        margin: 0 auto;
-        position: relative;
-        justify-content: center;
-        padding: 10px;
-        overflow: hidden;
-    }
-    /*scroll속성모음*/
-    .card-container {
-        width:1200px;
-        overflow-x: auto;
-        margin:0 auto;
-        display: grid;
-        grid-auto-flow: column;
-        overscroll-behavior-inline: contain;
-        scroll-behavior: smooth;
-        height: 450px;
-        scroll-snap-type: inline mandatory;
-        scroll-padding-inline: 1rem;
-        align-items: center;
-    }
-
-    .card {
-        /* .card { width: 19rem; height: 400px; margin: 80px 25px 20px 25px; position: relative} */
-        position: relative;
-        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
-        width: 280px;
-        height: 400px;
-        background-color: #fff;
-        border-radius: 10px;
-        margin: 10px;
-        letter-spacing: 1px;
-        display: flex;
-        /* flex-direction: column; */
-        align-items: center;
-        justify-content: center;
-        /* scroll-snap-align: start; */
-        transition: all 0.2s;
-    }
-    /*scrollbar숨기기 */
-    ::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* 화살표 속성 */
-    .sliderBtn {
-        width: 40px;
-        height: 40px;
-        border-top: 10px solid black;
-        border-left: 10px solid black;
-        position: absolute;
-        cursor: pointer;
-        top: 50%;
-    }
-    /* border모양을 돌려서 화살표모양만들기 */
-    .slider-leftBtn  {
-        transform: rotate(-45deg);
-        left: 1rem;
-    }
-    .slider-rightBtn {
-        transform: rotate(135deg);
-        right: 1rem;
-    }
-
-    .card-body {width: 280px;   background-color: hsl(0, 0%, 80%, 0.3); text-align: center; justify-content: center; align-content: center;}
-    .card-img-top {width: 280px; height: 170px;}
-    .card-text {font-size:15pt;}
-    .cardPlus { background: none; width:100px; height:100px;  margin: 0 auto; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; padding:0; font-size: 45pt; border-radius: 45px; transition: 1s; }
+    /* 카드 영역*/
+    #slide {position: relative; text-align: center;overflow-x: hidden; height:550px; margin: 0; padding:0 !important;}
+    #cards{position: absolute; width:1298px; height:500px; margin: 0; padding:50px 0 0 0; left:0; }
+    /*개별 카드*/
+    .card { width: 300px; height: 400px; margin:0 10px 0 11px; float: left; box-sizing: border-box;}
+    .card:nth-of-type(1){margin-left:20px;}
+    .card-img-top {height: 170px;}
+    .card-body {background-color: hsl(0, 0%, 80%, 0.3)}
+    .cardPlus {background: none; width:100px; height:100px;  margin: 0 auto; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; padding:0; font-size: 45pt; border-radius: 45px; transition: 1s; }
     .cardPlus:hover{background-color: rgba(255,255,255,0.7);}
-    .cardPlusBox{background-image: url(/img/winter.jpg); display: flex;  text-align: center; justify-content: center; align-content: center;}
+    .cardPlusBox{background-image: url(/img/winter.jpg);text-align: center; justify-content: center; }
+    /*카드 좌우 이동버튼*/
+    .cardBtn{position: absolute;width:50px; height:50px; border-radius: 25px; top:50%; border:0; background: none; transition: 1s;}
+    .cardBtn:hover {background: #eee;}
+
     .todoEdit {background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0;
                 border-radius: 10px; transition: 1s;
                 position: absolute; padding: 0px; line-height: 25px; width:25px; height:25px; top:5px; right:35px;}
@@ -495,7 +768,7 @@
     .form-check-label{width:750px; font-size: 22pt;}
     .todoBox{ cursor : pointer; position: relative; background: none;  width:100%; height: 70px; line-height: 65px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
     .todoBox:hover{background-color: rgb(163, 156, 156);}
-    .todoBox2{ position: relative; background: none;  width:100%; height: 70px; line-height: 65px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
+    .todoBox2{ position: relative; background: none;  width:100%; height: 70px;  line-height: 65px; border: 1px solid rgb(163, 156, 156);border-radius: 35px; font-size: 22pt; margin-top:15px;}
     .todoEdit2 { width:40px; top:20%; height: 40px; line-height: 40px; background: none; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
                 position: absolute; right:7%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
     .todoEdit2:hover{background-color: rgba(0,0,0,0.7);}
@@ -509,7 +782,7 @@
                 position: absolute; right:2%; border: 0; font-size: 17pt; border-radius: 25px; transition: 1s;}
     .todoCancel2:hover{background-color: rgba(0,0,0,0.7);}
     .todoPlus {background: none; width:50px; height:50px; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; border-radius: 25px; padding:0; font-size: 25pt;  transition: 1s; 
-                position: absolute; margin-top: 10px;}
+                position: absolute; transform: translate(-50%); margin-top: 10px;}
     .todoPlus:hover{background-color: rgba(0,0,0,0.7);}
     .todoInput { width:600px;  background:none; border: 5px solid; margin: 0 auto; height: 63px;  text-align: center; justify-content: center; align-content: center;}
     
@@ -520,7 +793,7 @@
 <!--바디-->
 
 <!--헤더-->
-<section style="background-image: url('/img/winter.jpg'); background-size: cover; margin-top: 80px;">
+<section id="headerImg">
     <div class="container-fluid" style="height:400px; text-align: center;" >
         <h1 style="padding-top: 100px; color:#000; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;">일간 TODO 리스트</h1>
         <div>
@@ -536,34 +809,20 @@
     </div>
 </section>
 <!--카드섹션-->
-<section style="background-color: rgba(255,255,255); height: 550px;">
-    <h2>Every Day</h2>
-    <div class="FlipCardcontainer">
-        <div class="slider-container">
-            <span class="slider-leftBtn sliderBtn"></span>
-            <div class="card-container" id="slider">
-                <div class="card cardPlusBox">
-                    <!-- 모달 버튼-->
-                    <button type="button" class="btn cardPlus" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </div>
-                <!-- <div class="card" id="card1">
-                    <div>
-                        <img src="/img/1296285.jpg" class="card-img-top" alt="...">
-                        <button class="todoEdit abs" id="cardEdit1"><i class="fa-solid fa-pen"></i></button>
-                        <button class="todoDelete abs" id="cardDelete1" onclick="cardDelete(1)"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div class="card-body" id="cardBody1">
-                        <h5 class="card-title" id="cardTitle1">매일운동하기운동하기운동하기</h5>
-                        <p class="card-text" id="cardText1">아침 7시에 일어나서 바깥 산책하기</p>
-                        <button class="todoCheck abs2" id="cardSuccess1" onclick="cardSuccess(1)"><img src="/img/check2.png" height="50px;"></button>
-                    </div>
-                </div> -->
+<section style="background-color: rgba(255,255,255); height: 550px; position: relative"><!-- 가로 풀사이즈-->
+    <div class="container" style="position: relative">
+        <h2 style="text-align: center; margin-top: 50px;">투두리스트 카드</h2>
+        <div id="slide">
+            <div id="cards">
             </div>
-            <span class="slider-rightBtn sliderBtn"></span>
         </div>
+        <div>
+            <button id="cbl" class="cardBtn" onclick="cardMoveLeft()"style="left:-50px;"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="cbr" class="cardBtn" style="right:-50px;" onclick="cardMoveRight()"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <!--   카드 이동 버튼-->
     </div>
+
 </section>
 <!--투두리스트 섹션-->
 <h2>Today</h2>
@@ -574,19 +833,9 @@
         <div class="col-md-8" style="padding: 0; margin: 0;">
             <section id="listBox" style="text-align: center;">
                 <ul class="todoBoxes" id="todoBoxes">
-                    <!-- <li class="todoBox" id="happy1" onclick="todoSuccess(1)">
-                        8시에 축구보기   
-                        <button class="todoEdit2" id="todoEdit1" onclick="todoEdit(1)"><i class="fa-solid fa-pen"></i></button>
-                        <button class="todoDelete2" id="todoDelete1" onclick="todoDelete(1)"><i class="fa-solid fa-xmark"></i></button>
-                    </li>  
-                    <li class="todoBox" id="happy2" onclick="todoSuccess(2)">
-                        공부하기
-                        <button class="todoEdit2" id="todoEdit2" onclick="todoEdit(2)"><i class="fa-solid fa-pen"></i></button>
-                        <button class="todoDelete2" id="todoDelete2" onclick="todoDelete(2)"><i class="fa-solid fa-xmark"></i></button>
-                    </li>   -->
                 </ul>
                 <li class="todoBox2" id="todoPlusBox">                       
-                    <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus(0)">
+                    <button type="button" class="btn todoPlus" id="todoPlusBtn" onclick="todoPlus()">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </li>
@@ -597,8 +846,8 @@
     </div>
 </div>
 <!--모달-->
-<!-- 모달창 -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<!-- 모달창1 -->
+<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -606,54 +855,55 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/user/login" enctype="multipart/form-data" method="POST">
-                    <div class="mb-3">
-                        
-                        <input type="text" name="title" class="form-control" id="exampleFormControlInput1" maxlength="13">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleFormControlTextarea1" class="form-label">Content</label>
-                        <textarea class="form-control" name="content" id="exampleFormControlTextarea1" rows="3" maxlength="40"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="formFileSm" class="form-label">Image</label>
-                        <input class="form-control form-control-sm" name="image" id="formFileSm" type="file">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                        <button type="submit" class="btn btn-primary">등록</button>
-                    </div>
-                </form>
+                <div class="mb-3">
+                    <input type="text" name="title" class="form-control" id="inputTitle" maxlength="13">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+                    <textarea class="form-control" name="content" id="inputContent" rows="3" maxlength="40"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="formFileSm" class="form-label">Image</label>
+                    <input class="form-control form-control-sm" accept="image/*" name="inputImage" id="inputImage" type="file">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" onclick="cardSave()" data-bs-dismiss="modal" class="btn btn-primary">등록</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<footer style="margin-top: 50px;">
-    <div class="container-fluid" style="background: #333; text-align: center; height:200px; ">
-        <h6 style="line-height: 200px; color:#ccc;">Copyright <i class="fa-regular fa-copyright"></i>  2023. 투두리 All rights reserved.</h6>
+<!-- 모달창2 -->
+<div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel2">TODO 리스트 수정</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal2">
+                <div class="mb-3">
+                    <input type="text" name="title" class="form-control" id="editTitle" maxlength="13">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+                    <textarea class="form-control" name="content" id="editContent" rows="3" maxlength="40" ></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="formFileSm" class="form-label">Image</label>
+                    <input class="form-control form-control-sm" accept="image/*" name="editImage" id="editImage" type="file">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" onclick="cardEdit()" data-bs-dismiss="modal" class="btn btn-primary">수정</button>
+                </div>
+            </div>
+        </div>
     </div>
-</footer>
+</div>
+<!--풋터-->
+<%-include('./footer')%>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </body>
 </html>
-
-<!-- <div class="carousel-item">
-    <div class="cardBox w-100" style="margin:0 auto;" >
-        <div class="card" style="width: 18rem;" data-bs-slide-to="2">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-        <div class="card" style=" width: 18rem;"data-bs-slide-to="3">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-    </div>
-</div>두번째 카드 뭉치 -->

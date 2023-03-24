@@ -1,48 +1,54 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class BucketList extends Model {
+  class BucketListCard extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(db) {
-        db.BucketList.belongsTo(db.User,{
+        db.BucketListCard.belongsTo(db.User,{
             foreignKey:{name:'userId'},
             targetKey:'id'
         });
     }
   }
-  BucketList.init(
+    BucketListCard.init(
     {
         title: {
             type:DataTypes.STRING,
             allowNull:false
         },
+        name: {
+            type:DataTypes.STRING,
+            allowNull:false
+        },
+        image: {
+            type:DataTypes.STRING,
+            defaultValue : '/img/1296285.jpg'
+        },
+        content: {
+            type:DataTypes.STRING,
+        },
         success: {
             type:DataTypes.ENUM('SUCCESS','READY'),
             defaultValue: 'READY'
         },
-        d_day: {
-            type:DataTypes.DATEONLY,
-            defaultValue: null,
-            allowNull:true
-        },
         createdAt:{
             type:DataTypes.DATEONLY,
-            defaultValue:new Date()
+            defaultValue:new Date().toISOString()
         },
         updatedAt:{
             type:DataTypes.DATEONLY,
-            defaultValue:new Date()
+            defaultValue:new Date().toISOString()
         }
     },
     {
       sequelize,
-        tableName:'bucketLists',
-      modelName: 'BucketList',
+        tableName:'bucketListCard',
+      modelName: 'BucketListCard',
     }
   );
-  return BucketList;
+  return BucketListCard;
 };
