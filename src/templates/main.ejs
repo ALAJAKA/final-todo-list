@@ -42,7 +42,7 @@
   }
 
   .fc-col-header-cell {
-	background-color: #ffe0ef;
+	background-color: #FFFFCC;
   }
 
   .fc-day a {
@@ -59,6 +59,7 @@
     color: blue;
     text-decoration: none;
   }
+
   .fc-header-toolbar{
     margin-bottom: 0 !important;
     height: 120px;
@@ -71,7 +72,7 @@
     top: -12px;
   }
   
-  .fc-daygrid-day-events> .fc-daygrid-event-harness:nth-of-type(1){
+  .fc-daygrid-day-events > .fc-daygrid-event-harness:nth-of-type(1){
   position: absolute;
   height: 30px;
   top:-30px;
@@ -80,6 +81,12 @@
   .fc-event {
   text-align: center;
   }
+
+  /* 달력 +more 창*/
+  /* .fc-more-popover {
+    left: auto !important;
+    right: 0 !important;
+  } */
 
   /* slider */
 .slider1 {
@@ -191,7 +198,7 @@
       }
     })
   }
-  // main Calnedar 데이터 표시
+  // 메인 캘린터 데이터 표시
   function c(){
       var calendarEl = document.getElementById('calendar');
       var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -200,19 +207,230 @@
         timeZone: 'UTC',
         initialView: 'dayGridMonth',
         eventOrder : 'displayOrder',
-        // locale: 'ko',
+        locale: 'ko',
+        dayCellContent: function(e) {
+          var dayNumberText = e.dayNumberText.replace('일', ''); // '일'을 제거
+          return dayNumberText;
+        },
         titleFormat: function (date) {
           year = date.date.year;
           month = date.date.month + 1;
           return year + "년 " + month + "월";
         },
-        events: function (info, success, failure) {
-          // Calendar TodoList 데이터 가져오기
+        dayMaxEventRows: true,
+        views: {
+          timeGrid: {
+            dayMaxEventRows: 4
+          }
+        },
+        events: 
+        // [
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-02-26',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-02-27',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-02-28',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-02',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-03',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-05',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-06',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-07',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-09',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-11',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-13',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-16',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-18',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-20',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-23',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-25',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-27',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-30',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-01',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-03',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-06',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-07',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-02-26',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-02-27',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-02-28',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-02',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-03',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-05',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-06',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-07',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-09',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-11',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-13',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-16',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-18',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-20',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-23',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-25',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-27',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-03-30',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-01',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-03',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-06',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-07',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-03',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-06',
+        //   },
+        //   {
+        //     title: 'TodoList',
+        //     start: '2023-04-07',
+        //   },
+        // ],
+                
+        function (info, success, failure) {
+          // 캘린더 투두리스트 데이터 가져오기
           fetch('/api/calendar/todo' , {
             credentials: "include"})
                   .then((response) => response.json())
                   .then((data) => {
                     const todo = data.data;
+                    for (let i = 0; i < todo.length; i++) {
+                      let title = todo[i].title;
+                      let start = todo[i].today;
+                      let event = {
+                        title: title,
+                        start: start,
+                      };
+                      
+                    }
 
                     // 캘린더의 날짜가 변경될 때마다 호출되는 함수
                     function updateTodoPreview() {
@@ -231,7 +449,7 @@
                     // 페이지가 로드될 때 한 번 호출하여 현재 날짜 미리보기를 표시함
                     updateTodoPreview();
 
-                    // 달성률 계산
+                    // 투두리스트 달성률 계산
                     const achievements = {}; // 빈 객체 생성
                     for (let i = 0; i < todo.length; i++) {
                       const date = todo[i].today;
@@ -243,55 +461,47 @@
                       achievements[date].total++; // 해당 날짜의 total 에 +1 함
                     }
 
-                    // 이벤트 생성
+                    // 투드리스트 이벤트 생성
                     const events = [];
                     for (const date in achievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
                       const achievementRate = achievements[date].total > 0
                               ? Math.round((achievements[date].achieved / achievements[date].total) * 100)
                               : 0; // 삼항 연산자를 사용하여 값이 0보다 크면 달성률 계산, 0보다 작거나 같으면(해당 날짜에 할 일 없는 경우) 0
                       events.push({
-                        title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
+                        title: `Todo달성률 : ${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
                         start: date, // 이벤트 시작 날짜
-                        color: 'green', // todo 달성률 이벤트는 초록색으로 표시
+                        color: '#6666FF', // todo 달성률 이벤트 색
                       });
                     }
 
-                    // Calendar BucketList 데이터 가져오기
-                    fetch('/api/calendar/bucket', {
-                      credentials: "include"})
-                            .then((response) => response.json())
-                            .then((data) => {
-                              const bucket = data.data;
-                              let eventCounts = {}; // 각 날짜별 이벤트 수 계산을 위한 객체
-                              for (let i = 0; i < bucket.length; i++) {
-                                let title = bucket[i].title;
-                                let start = bucket[i].d_day;
-                                let event = {
-                                  title: title,
-                                  start: start,
-                                  color: '#FF7F50' // 주황색
-                                };
-                                // 각 날짜별 이벤트 수 계산
-                                eventCounts[start] = eventCounts[start] ? eventCounts[start] + 1 : 1;
-                                if (eventCounts[start]== 3) {
-                                  event['url'] = '/page/bucketList';
-                                  event['title'] ='➕'; // +more 버튼 추가된 이벤트 타이틀
-                                }
-                                if (eventCounts[start] < 4) { events.push(event); }
-                              }
+                    // // 캘린더 투두리스트 데이터 가져오기
+                    // fetch('/api/calendar/todo', {
+                    //   credentials: "include"})
+                    //         .then((response) => response.json())
+                    //         .then((data) => {
+                    //           const todo = data.data;
+                    //           for (let i = 0; i < todo.length; i++) {
+                    //             let title = todo[i].title;
+                    //             let start = todo[i].today;
+                    //             let event = {
+                    //               title: title,
+                    //               start: start,
+                    //             };
+                                
+                    //           }
                               success(events);
-                            })
+                            // })
 
-                            .catch((error) => {
-                              failure(error);
-                            });
+                            // .catch((error) => {
+                            //   failure(error);
+                            // });
                   })
                   .catch((error) => {
                     failure(error);
                   });
         },
 
-        // 일자를 클릭할 때 실행되는 함수
+        // 캘린더 일자를 클릭할 때 실행되는 함수
         dateClick: function(info) {
           const selectedDate = info.date || new Date(); // info.date가 존재하지 않으면 현재 날짜로 초기화
           const selectedDateCell = info.dayEl;
@@ -302,13 +512,14 @@
           selectedDateCell.classList.add('fc-day-today');
           calendar.gotoDate(selectedDate); // 클릭한 날짜로 이동
 
-          // 해당 일자에 맞는 TodoList 미리보기
+          // 캘린더 해당 일자에 맞는 TodoList 미리보기
           const selectedDateStr = selectedDate.toISOString().substr(0, 10); // toISOString 메소드로 객체를 문자열 반환, YYYY-MM-DDTHH:mm:ss.sssZ 로 반환된 것을 subsrt 메소드로 첫 10자 추출
           fetch(`/api/preview/todo?date=${selectedDateStr}`, {
             credentials: "include"})
                   .then(response => response.json())
                   .then(data => {
                     const todo = data.data.filter(todoo => todoo.today.startsWith(selectedDateStr)) // todo 배열에서 선택한 날짜에 해당 항목만 필터링
+                            .slice(0,10)
                             .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`) // 각 항목을 html 문자열로 변환
                             .join(''); // html 문자열을 결합
                     todoPreview.innerHTML = todo;
@@ -317,7 +528,7 @@
       });
       calendar.render();
   }
-  // BucketList 미리보기
+  // 포스트잇 버킷리스트 미리보기
   function a(){
     fetch('/api/preview/bucket', {
       credentials: "include"})
@@ -333,7 +544,7 @@
             });
   }
   function b(){
-    // 추천 TodoList
+    // 추천 투두리스트 카드
     fetch('/api/card/alldaytodo')
             .then((response) => response.json())
             .then((data) => {
@@ -341,9 +552,7 @@
                       (todo) => `
           <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal"onclick="modalDate('${todo.title}','${todo.content}','${todo.image}','${todo.name}','${todo.updatedAt}' )">
             <div class="text-decoration-none">
-<div style="height:300px;width:300px; background-image:url('${todo.image}'); background-position: center; background-size: contain; background-repeat: no-repeat;">
-
-</div>
+            <div style="height:300px;width:300px; background-image:url('${todo.image}'); background-position: center; background-size: contain; background-repeat: no-repeat;"></div>
               <div class="p-3" style="height:150px;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${todo.title}</p>
                 <p class="text-dark" style="text-align: center;">${todo.name}</p>
@@ -356,7 +565,7 @@
               document.getElementById('todofeed').innerHTML = todoHtml.join('');
             });
 
-    // 추천 BucketList
+    // 추천 버킷리스트 카드
     fetch('/api/card/bucket')
             .then((response) => response.json())
             .then((data) => {
@@ -377,9 +586,6 @@
               document.getElementById('bucketfeed').innerHTML = bucketHtml.join('');
             });
   }
-
-
-
 
   function modalDate(title,content,image,name,update){
     $('#modelImg').css("background-image","url("+image+")");
@@ -405,7 +611,6 @@
   //   }
   // });
   // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
-
 
 </script>
 <body>
@@ -438,6 +643,13 @@
                 </div>
               </div>
               <div style="text-align: center; border-radius: 10px;" id="todoPreview">
+                <!-- <p style="line-height:5px">오늘 할일에<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">대한 내용이<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">나오는 곳입니다!<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">달력에서 선택한<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">날짜의 할일도<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">나오는 곳입니다!<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">좋은 하루되세요!!💖<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p> -->
             </div>
             </div>
             <div class = "col-md-6" style=" min-height: 720px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 50px; width: 48%; padding-top: 60px;">
@@ -450,7 +662,16 @@
                   <p style="text-align: right; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
                 </div>
               </div>  
-              <div style="text-align: center;" id="bucketPreview"></div>
+              <div style="text-align: center;" id="bucketPreview">
+                <!-- <p style="line-height:5px">저희<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">버킷리스트는<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">2가지로<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">나누었습니다.<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">D-day가 정해진<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">버킷리스트도 <hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">작성할 수 있으니 <hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>
+                <p style="line-height:5px">확인해주세요!!🎁<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p> -->
+              </div>
             </div>
           </div>
         </div>
