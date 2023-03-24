@@ -65,9 +65,9 @@
                     if(res[i].success === "READY"){
                         $('#cards').append(`
                     <div class="card" id="card${i}">
-                    <div style="height: 170px;">
+                    <div class="card-top-img">
                     <!--여기 src 다음에 이미지 경로 넣어줄-->
-                        <img src="${res[i].image}" class="card-img-top" alt="...">
+                        <img src="${res[i].image}" class="card-img-top" alt="">
                         <button class="bucketEdit abs" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="fa-solid fa-pen" onclick="cardFix('${res[i].image}')"></i></button>
                         <button class="bucketDelete abs" onclick="delCard()"><i class="fa-solid fa-xmark"></i></button>
                     </div>
@@ -81,9 +81,9 @@
                     }else{
                         $('#cards').append(`
                     <div class="card" id="card${i}">
-                    <div>
+                    <div class='card-top-img'>
                     <!--여기 src 다음에 이미지 경로 넣어줄-->
-                        <img src="${res[i].image}" class="card-img-top" alt="...">
+                        <img src="${res[i].image}" class="card-img-top" alt="">
                         <button class="bucketEdit abs" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="fa-solid fa-pen" onclick="cardFix('${res[i].image}')"></i></button>
                         <button class="bucketDelete abs" onclick="delCard()"><i class="fa-solid fa-xmark"></i></button>
                     </div>
@@ -265,7 +265,7 @@
             <li class="bucketBoxLi" id="bucketInputBox" >
                         <div class="row" style="margin:0;">
                             <div class="col-md-3 bucketDay">
-                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" value="${dayValue}" maxlength="10">
+                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" min="2023-01-01" max="3000-12-31"value="${dayValue}" maxlength="10">
                             </div>
                             <div class="col-md-9 bucketDay">
                                     <input class="bucketInput" id="bucketRe" type="text" placeholder="Bucket-List를 입력해주세요" maxlength="24" style="text-align: left"value="${title}">
@@ -346,7 +346,7 @@
                     <li class="bucketBoxLi" id="bucketInputBox" >
                         <div class="row" style="margin:0;">
                             <div class="col-md-3 bucketDay">
-                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" value="${date}" maxlength="10">
+                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" min="2023-01-01" max="3000-12-31"value="${date}" maxlength="10">
                             </div>
                             <div class="col-md-9 bucketDay">
                                     <input class="bucketInput" id="bucketCr" type="text" placeholder="Bucket-List를 입력해주세요" maxlength="24" style="text-align: left">
@@ -432,7 +432,7 @@
     .card-body {background-color: hsl(0, 0%, 80%, 0.3)}
     .cardPlus {background: none; width:100px; height:100px;  margin: 0 auto; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; padding:0; font-size: 45pt; border-radius: 45px; transition: 1s; }
     .cardPlus:hover{background-color: rgba(255,255,255,0.7);}
-    .cardPlusBox{background-image: url(/img/winter.jpg);text-align: center; justify-content: center; }
+    .cardPlusBox{background-color: hsl(0, 0%, 80%, 0.3);text-align: center; justify-content: center; }
     /*카드 좌우 이동버튼*/
     .cardBtn{position: absolute;width:50px; height:50px; border-radius: 25px; top:50%; border:0; background: none; transition: 1s;}
     .cardBtn:hover {background: #eee;}
@@ -447,7 +447,7 @@
     .bucketDelete:hover{background-color: rgba(255,255,255,0.7);}
     .bucketCheck {background: none; border: 0;}
     .fa-solid{color: rgb(61, 59, 59);}
-
+    .card-top-img{height:170px;}
     .abs2 {position: absolute; height: 70px; box-sizing: border-box; padding: 10px; border-radius: 35px; bottom:15px; transform: translate(-50%); transition: 0.2s;}
     .abs2:hover{background-color:  rgba(255,255,255,0.7); box-sizing: border-box; }
     .modal-body {text-align: left;}
