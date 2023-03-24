@@ -238,7 +238,6 @@
                               .then(response => response.json())
                               .then(data => {
                                 const todo = data.data.filter(todoo => todoo.today.startsWith(currentStr))
-                                        .slice(0,6)
                                         .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
                                         .join('');
                                 todoPreview.innerHTML = todo;
@@ -247,29 +246,65 @@
                     // 페이지가 로드될 때 한 번 호출하여 현재 날짜 미리보기를 표시함
                     updateTodoPreview();
                     // 달성률 계산
-                    const achievements = {}; // 빈 객체 생성
+                    const todoAchievements = {}; // 빈 객체 생성
                     for (let i = 0; i < todo.length; i++) {
                       const date = todo[i].today;
                       const achieved = todo[i].success === 'SUCCESS' ? 1 : 0; // 'SUCCESS'일 경우 1을, 아닐 경우('READY') 0
-                      if (!achievements[date]) {
-                        achievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
+                      if (!todoAchievements[date]) {
+                        todoAchievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
                       }
-                      achievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
-                      achievements[date].total++; // 해당 날짜의 total 에 +1 함
+                      todoAchievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
+                      todoAchievements[date].total++; // 해당 날짜의 total 에 +1 함
                     }
                     // 이벤트 생성
-                    const events = [];
-                    for (const date in achievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
-                      const achievementRate = achievements[date].total > 0
-                              ? Math.round((achievements[date].achieved / achievements[date].total) * 100)
+                    const todoEvents = [];
+                    for (const date in todoAchievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
+                      const achievementRate = todoAchievements[date].total > 0
+                              ? Math.round((todoAchievements[date].achieved / todoAchievements[date].total) * 100)
                               : 0; // 삼항 연산자를 사용하여 값이 0보다 크면 달성률 계산, 0보다 작거나 같으면(해당 날짜에 할 일 없는 경우) 0
-                      events.push({
+                      todoEvents.push({
                         title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
                         start: date, // 이벤트 시작 날짜
                         color: 'green', // todo 달성률 이벤트는 초록색으로 표시
                       });
                     }
-                    success(events);
+
+                    // Calendar alldayTodoList 데이터 가져오기
+                    fetch('/api/card/alldaytodo', {
+                      credentials: "include"})
+                            .then((response) => response.json())
+                            .then((data) => {
+                              const alldaytodo = data.data;
+
+                              // 달성률 계산
+                              const alldayAchievements = {}; // 빈 객체 생성
+                              for (let i = 0; i < alldaytodo.length; i++) {
+                                const date = alldaytodo[i].today;
+                                const achieved = alldaytodo[i].success === 'SUCCESS' ? 1 : 0; // 'SUCCESS'일 경우 1을, 아닐 경우('READY') 0
+                                if (!alldayAchievements[date]) {
+                                  alldayAchievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
+                                }
+                                alldayAchievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
+                                alldayAchievements[date].total++; // 해당 날짜의 total 에 +1 함
+                              }
+                              // 이벤트 생성
+                              const alldayEvents = [];
+                              for (const date in alldayAchievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
+                                const achievementRate = alldayAchievements[date].total > 0
+                                        ? Math.round((alldayAchievements[date].achieved / alldayAchievements[date].total) * 100)
+                                        : 0; // 삼항 연산자를 사용하여 값이 0보다 크면 달성률 계산, 0보다 작거나 같으면(해당 날짜에 할 일 없는 경우) 0
+                                alldayEvents.push({
+                                  title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
+                                  color: 'red', // todo 달성률 이벤트는 초록색으로 표시
+                                });
+                              
+                              }
+                              const events = [...todoEvents, ...alldayEvents];
+                              success(events);
+                            })
+                            .catch((error) => {
+                              failure(error);
+                            });
                   })
                   .catch((error) => {
                     failure(error);
@@ -295,7 +330,7 @@
             .then(data => {
               const todo = data.data
                 .filter(todoo => todoo.today.startsWith(selectedDateStr))
-                .slice(0, 6)
+                .slice(0,6)
                 .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
                 .join('');
               todoPreview.innerHTML = todo;
@@ -410,15 +445,20 @@
               <div class="row" style="margin-top: 92px;">
                 <div class="col-md-3"></div>
                 <div class="col-md-6" style="min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 60px; width: 80%;">
-                  <h3 style="text-align: center;">TODO리스트</h3><p style="text-align: right; padding-right: 48px; margin-top: 38px;"><a href="/page/todoListDetail" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a></p>
+                  <h3 style="text-align: center;">TODO리스트</h3>
+                  <p style="text-align: right; padding-right: 48px; margin-top: 38px;">
+                    <a href="/page/todoListDetail" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
+                  </p>
                   <div style="text-align: center;" id="todoPreview"></div>
-                </div>
-                <div class="col-md-3" style="padding-left:20px;"></div>
+                </div>                
               </div>  
               <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-6" style="min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 60px; width: 80%;">
-                  <h3 style="text-align: center;">BUCKET리스트</h3><p style="text-align: right; padding-right: 48px; margin-top: 38px;"><a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a></p>
+                  <h3 style="text-align: center;">BUCKET리스트</h3>
+                  <p style="text-align: right; padding-right: 48px; margin-top: 38px;">
+                    <a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
+                  </p>
                   <div style="text-align: center;" id="bucketPreview"></div>
                 </div>
                 <div class="col-md-3" style="padding-left:20px;"></div>
