@@ -38,7 +38,7 @@ class CalendarRepository {
     const bucketlist = await this.bucketListModel.findAll({
       where: { userId },
       order: [['d_day', 'asc']],
-      limit: 10
+      limit: 6
     });
     return bucketlist;
   };
