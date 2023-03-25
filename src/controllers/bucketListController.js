@@ -81,6 +81,23 @@ class BucketListController {
         const BucketListCardCancel = await this.bucketListService.bucketListCardCancel(title,content,image,access_token);
         return res.status(200).json({msg:BucketListCardCancel})
     }
+
+    postBucketShare = async(req, res) =>{
+      try{
+        const {shareTitle, shareName, shareCount} = req.body;
+        console.log(shareTitle, shareName);
+        const {access_token} = req.cookies;
+        const postBucketShare = await this.bucketListService.postBucketShare(shareTitle, shareName, shareCount, access_token)
+        return res.status(201).json({
+          msg: '등록되었습니다.'
+        }
+          );
+      }
+      catch (err) {
+        //error는 나중에
+        console.log(err);
+      };
+    }
 }
 
 module.exports = BucketListController;

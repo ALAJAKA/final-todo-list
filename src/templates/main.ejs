@@ -87,7 +87,9 @@
   .fc-event {
   text-align: center;
   }
-
+.text-dark {
+  margin: 5px;
+}
   /* slider */
 .slider1 {
     height: 500px;
@@ -346,7 +348,7 @@
             .then((data) => {
               const todoHtml = data.data.map(
                       (todo) => `
-          <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal"onclick="modalDate('${todo.title}','${todo.content}','${todo.image}','${todo.name}','${todo.updatedAt}' )">
+          <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal1"onclick="modalDate1('${todo.title}','${todo.content}','${todo.image}','${todo.name}','${todo.updatedAt}','${todo.shareCount}')">
             <div class="text-decoration-none">
 <div style="height:300px;width:300px; background-image:url('${todo.image}'); background-position: center; background-size: contain; background-repeat: no-repeat;">
 
@@ -354,6 +356,7 @@
               <div class="p-3" style="height:150px;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${todo.title}</p>
                 <p class="text-dark" style="text-align: center;">${todo.name}</p>
+                <p class="text-dark" style="text-align: right;">공유 횟수 : ${todo.shareCount} </p>
                 <p class="text-dark" style="text-align: right;">${todo.updatedAt}</p>
               </div>
             </div>
@@ -369,12 +372,13 @@
             .then((data) => {
               const bucketHtml = data.data.map(
                       (bucket) => `
-          <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="modalDate('${bucket.title}','${bucket.content}','${bucket.image}','${bucket.name}','${bucket.updatedAt}' )">
+          <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal2" onclick="modalDate2('${bucket.title}','${bucket.content}','${bucket.image}','${bucket.name}','${bucket.updatedAt}','${bucket.shareCount}' )">
             <div class="text-decoration-none">
               <div style="height:300px;width:300px; background-image:url('${bucket.image}'); background-position: center; background-size: contain;  background-repeat: no-repeat"></div>
                 <div class="p-3"style="height:150px;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${bucket.title}</p>
                 <p class="text-dark" style="text-align: center;">${bucket.name}</p>
+                <p class="text-dark" style="text-align: right;">공유 횟수 : ${bucket.shareCount} </p>
                 <p class="text-dark" style="text-align: right;">${bucket.updatedAt}</p>
               </div>
             </div>
@@ -387,14 +391,62 @@
 
 
 
-
-  function modalDate(title,content,image,name,update){
-    $('#modelImg').css("background-image","url("+image+")");
-    $('#modelTitle').text(title);
-    $('#modelName').text("작성자 : " + name);
-    $('#modelDate').text("작성일 : "+ update);
-    $('#modelContent').text(content);
+  
+  function modalDate1(title,content,image,name,update,shareCount){
+    $('#modelImg1').css("background-image","url("+image+")");
+    $('#modelTitle1').text(title);
+    $('#modelName1').text("작성자 : " + name);
+    $('#modelDate1').text("작성일 : "+ update);
+    $('#modelContent1').text(content);
+    $('#modelShareCount1').text("공유 횟수 : "+shareCount);
   }
+  function modalDate2(title,content,image,name,update,shareCount){
+    $('#modelImg2').css("background-image","url("+image+")");
+    $('#modelTitle2').text(title);
+    $('#modelName2').text("작성자 : " + name);
+    $('#modelDate2').text("작성일 : "+ update);
+    $('#modelContent2').text(content);
+    $('#modelShareCount2').text("공유 횟수 : "+shareCount);
+  }
+  function todoShare(){
+    const todoShareTitle = $('#modelTitle1').text();
+    const todoShareName = $('#modelName1').text().split(" : ")[1];
+    const todoShareCount = $('#modelShareCount1').text().split(" : ")[1];
+    console.log(todoShareTitle, todoShareName, todoShareCount);
+    $.ajax({
+      type:"POST",
+      url:"/api/todoLists/todoShare",
+      data:{
+        shareTitle:todoShareTitle,
+        shareName:todoShareName,
+        shareCount:todoShareCount
+      },
+      success:function (res){
+        alert(res.msg)
+      }
+    })
+  }
+
+  function bucketShare(){
+    const bucketShareTitle = $('#modelTitle2').text();
+    const bucketShareName = $('#modelName2').text().split(" : ")[1];
+    const bucketShareCount = $('#modelShareCount2').text().split(" : ")[1];
+    console.log(bucketShareTitle, bucketShareName, bucketShareCount);
+    $.ajax({
+      type:"POST",
+      url:"/api/bucketLists/bucketShare",
+      data:{
+        shareTitle:bucketShareTitle,
+        shareName:bucketShareName,
+        shareCount:bucketShareCount
+      },
+      success:function (res){
+        alert(res.msg)
+      }
+    })
+  }
+
+
   function sorry(){
     alert("죄송합니다. 아직 구현되지 않은 기능입니다.");
   }
@@ -516,7 +568,7 @@
     </div>
   </section>
   <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header" style="position: relative">
@@ -524,12 +576,37 @@
           <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <h1 id="modelTitle">제목</h1>
-          <p id="modelName">작성자 : </p>
-          <p id="modelDate">작성일 : </p>
-          <p id="modelContent">내용</p>
+          <h1 id="modelTitle1">제목</h1>
+          <p id="modelName1">작성자 : </p>
+          <p id="modelDate1">작성일 : </p>
+          <p id="modelContent1">내용</p>
+          <p id="modelShareCount1">공유횟수</p>
         </div>
         <div class="modal-footer">
+          <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
+          <button type="button" onclick="sorry()" class="btn btn-primary">댓글 작성하기</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" style="position: relative">
+          <div style="width:100%;height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg"></div>
+          <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h1 id="modelTitle2">제목</h1>
+          <p id="modelName2">작성자 : </p>
+          <p id="modelDate2">작성일 : </p>
+          <p id="modelContent2">내용</p>
+          <p id="modelShareCount2">공유횟수</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
           <button type="button" onclick="sorry()" class="btn btn-primary">댓글 작성하기</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>

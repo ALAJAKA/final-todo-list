@@ -28,6 +28,8 @@ router.delete("/todayTodo", todoListController.deleteTodayTodo);
 //완료
 router.put("/todoSuccess", todoListController.todoSuccess);
 
+//투두쉐어
+router.post("/todoShare", todoListController.postTodoShare);
 
 router.get("/monthTodo", todoListController.getMonthTodo);
 module.exports = router;

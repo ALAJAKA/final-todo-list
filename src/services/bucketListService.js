@@ -76,6 +76,24 @@ class BucketListService {
         await this.bucketListRepository.bucketListCardCancel(title,content,image,userId);
         return "버킷 완료가 취소되었습니다.";
     }
+
+    postBucketShare = async(shareTitle, shareName, shareCount, access_token) =>{
+      const getBucketShare = await this.bucketListRepository.getBucketShare(shareTitle, shareName)
+      console.log(getBucketShare);
+      await this.bucketListRepository.updateBucketShareCount(shareTitle, shareName, shareCount)
+      const title = getBucketShare.title
+      const content = getBucketShare.content
+      const image = getBucketShare.image
+      const share = "NO"
+      shareCount = 0
+      const token = jwtDecode(access_token);
+      const userId = token.userId;
+      const name = token.name;
+      const success = "READY"
+
+      const postAlldayBucketList = await this.bucketListRepository.createBucketListCard(title, name, content, image, userId, share)
+      return postAlldayBucketList;
+  }
 }
 
 module.exports = BucketListService;

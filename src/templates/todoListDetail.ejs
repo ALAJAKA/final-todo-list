@@ -553,7 +553,7 @@
         $(`#happy${happy}`).replaceWith(`
             <li class="todoBoxLi" id="todoEditBox${happy}">                       
                 <div class="todoBox">
-                    <input class="todoInput" id="todoEdit${happy}" type="text" name="${title}" value="${title}" maxlength="24">
+                    <input class="todoInput" id="todoEdit${happy}" type="text" name="${title}" value="${title}" maxlength="21">
                     <button class="todoCheck2" onclick="todoEditSave('${happy}')"><i class="fa-solid fa-check"></i></button>
                     <button class="todoCancel2" onclick="todoEditCancel('${happy}')"><i class="fa-solid fa-xmark"></i></button>
                 </div>
@@ -648,7 +648,7 @@
         let todoInput=`
             <li class="todoBoxes" id="todoInputBox">                       
                 <div class="todoBox2">
-                    <input class="todoInput" id="todayTodo" type="text" placeholder="To Do를 입력해주세요" maxlength="24">
+                    <input class="todoInput" id="todayTodo" type="text" placeholder="To Do를 입력해주세요" maxlength="21">
                     <button class="todoCheck2" onclick="todoPlusSave()"><i class="fa-solid fa-check"></i></button>
                     <button class="todoCancel2" onclick="todoPlusCancel()"><i class="fa-solid fa-xmark"></i></button>
                 </div>

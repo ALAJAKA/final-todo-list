@@ -20,10 +20,10 @@ class TodoListController {
       let image;
       if(req.file !== undefined) image = req.file.location;
       else image = '';
-      const {title, content, date} = req.body;
-      console.log(title, content, image, date);
+      const {title, content, date, share} = req.body;
+      console.log(title, content, image, date, share);
       const {access_token} = req.cookies;
-      const postAlldayTodo = await this.todoListService.postAlldayTodo(title, content, image, date, access_token)
+      const postAlldayTodo = await this.todoListService.postAlldayTodo(title, content, image, date, share, access_token)
       return res.status(200).json({
         image,
         msg: '등록되었습니다.'
@@ -174,6 +174,23 @@ class TodoListController {
       return res.status(201).json({
         cardSuccess
       });
+    }
+    catch (err) {
+      //error는 나중에
+      console.log(err);
+    };
+  }
+
+  postTodoShare = async(req, res) =>{
+    try{
+      const {shareTitle, shareName, shareCount} = req.body;
+      console.log(shareTitle, shareName);
+      const {access_token} = req.cookies;
+      const postTodoShare = await this.todoListService.postTodoShare(shareTitle, shareName, shareCount, access_token)
+      return res.status(201).json({
+        msg: '등록되었습니다.'
+      }
+        );
     }
     catch (err) {
       //error는 나중에
