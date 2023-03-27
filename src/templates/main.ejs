@@ -24,6 +24,13 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <style>
+  /*전체 옵션*/
+  *{margin:0;padding:0;}
+  input:focus {outline: none;}
+  ::-webkit-scrollbar {
+    width: 0;
+  }
+  ul,li,ol{list-style: none; margin:0; padding:0;}
   #leftNav {transition: 0.5s}
   .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 90%; padding: 10px; transition: 0.5s; border-radius: 5px;}
   .leftMenu:hover {background: #777}
@@ -138,6 +145,9 @@
 }
 .modal-content{
   width: 500px;
+}
+.modal-hide{
+  display: none;
 }
 </style>
 <script>
@@ -415,10 +425,7 @@
               document.getElementById('bucketfeed').innerHTML = bucketHtml.join('');
             });
   }
-
-
-
-  
+  //모달 투두 데이터 가쟈오기
   function modalDate1(title,content,image,name,update,shareCount){
     $('#modelImg1').css("background-image","url("+image+")");
     $('#modelTitle1').text(title);
@@ -427,6 +434,7 @@
     $('#modelContent1').text(content);
     $('#modelShareCount1').text("공유 횟수 : "+shareCount);
   }
+  //모달 버킷 데이터 가져오기
   function modalDate2(title,content,image,name,update,shareCount){
     $('#modelImg2').css("background-image","url("+image+")");
     $('#modelTitle2').text(title);
@@ -435,12 +443,11 @@
     $('#modelContent2').text(content);
     $('#modelShareCount2').text("공유 횟수 : "+shareCount);
   }
-
+// 투두 공유 횟수
   function todoShare(){
     const todoShareTitle = $('#modelTitle1').text();
     const todoShareName = $('#modelName1').text().split(" : ")[1];
     const todoShareCount = $('#modelShareCount1').text().split(" : ")[1];
-    console.log(todoShareTitle, todoShareName, todoShareCount);
     $.ajax({
       type:"POST",
       url:"/api/todoLists/todoShare",
@@ -454,7 +461,7 @@
       }
     })
   }
-
+// 버킷 공유 횟수
   function bucketShare(){
     const bucketShareTitle = $('#modelTitle2').text();
     const bucketShareName = $('#modelName2').text().split(" : ")[1];
@@ -473,30 +480,121 @@
       }
     })
   }
-
-
-  function comment1(){
-    const modalBox1 = document.getElementById('modalBox1');
-    const commentHtml = `
-    <div class="modalBox2">
-      <div class="modal-content">
-        <div class="modal-header" style="position: relative">
-          <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-footer">
-          <input type="text">
-          <button type="button" onclick="commentSave1()" class="btn btn-primary">댓글 작성하기</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>`
-    modalBox1.insertAdjacentHTML('beforeend', commentHtml);
+  //모달 버튼 작동
+  function commentOpen(){
+    $('.modal-content').animate({left:-248})
+    $('#comment').animate({left:498});
+    $('.modal-footer').animate({width:1000});
+    $('#sorry').addClass('modal-hide');
+    $('#commentAdd').removeClass('modal-hide');
+    $('#btn-X').addClass('modal-hide');
+    getComments();
   }
-
-  function sorry(){
-    alert("죄송합니다. 아직 구현되지 않은 기능입니다.");
+  // 모달 창 닫기
+  function modalX(){
+    $('.modal-content').animate({left:0});
+    $('#comment').animate({left:0});
+    $('.modal-footer').animate({width:500});
+    $('#commentAdd').addClass('modal-hide');
+    $('#sorry').removeClass('modal-hide');
   }
+  // 모달
+  function modalCX(){
+    $('.modal-content').animate({left:0});
+    $('#comment').animate({left:0});
+    $('.modal-footer').animate({width:500});
+    $('#sorry').removeClass('modal-hide');
+    $('#commentAdd').addClass('modal-hide');
+    $('#btn-X').removeClass('modal-hide');
+  }
+  //댓글 작성완료
+  function createComments(){
+    const title = $('#modelTitle2').text();
+    const name = $('#modelName2').text().split(":")[1].trim();
+    const date = $('#modelDate2').text().split(":")[1].trim();
+    const myComment = $('#myComment').val();
+    if(myComment===""){
+      alert("댓글을 입력해주세요");
+      return;
+    }
+    $.ajax({
+      type:"POST",
+      url:'/api/reviews/bucket',
+      data:{title:title,
+      name:name,
+      date:date,
+      myComment:myComment},
+      success:function(res){
+        alert(res.msg);
+        getComments();
+        $('#myComment').val('');
+      }
+    });
 
+  }
+  //댓글 가져오기
+  function getComments(){
+    const title = $('#modelTitle2').text();
+    const name = $('#modelName2').text().split(":")[1].trim();
+    const date = $('#modelDate2').text().split(":")[1].trim();
+    $.ajax({
+      type:"GET",
+      url:'/api/reviews/bucket',
+      data:{title:title,
+        name:name,
+        date:date},
+      success:function(res){
+        const reviews = res;
+        $('#bucketComment *').remove();
+        for(let i=0; i<reviews.length; i++){
+          const name = reviews[i].name;
+          const content = reviews[i].content;
+          if(name === localStorage.getItem('name')){
+            $('#bucketComment').append(`
+            <p style="position:relative; padding:0; margin: 0;">
+                <span>작성자 : ${name}</span>
+                <button style="right:10px; position: absolute; border: 0; background: none;" onclick="delComment()"><i class="fa-solid fa-xmark"></i></button>
+<br/>
+<span class='contents'>${content}</span>
+            </p>
+
+          `)
+          }else{
+            $('#bucketComment').append(`
+            <p style="position:relative; padding:0; margin: 0;">
+                <span>작성자 : ${name}</span>
+<br/>
+<span class='contents'>${content}</span>
+            </p>
+
+          `)
+          }
+
+        }
+      }
+    });
+  }
+  //댓글 삭제
+  function delComment(){
+    const title = $('#modelTitle2').text();
+    const name = $('#modelName2').text().split(":")[1].trim();
+    const date = $('#modelDate2').text().split(":")[1].trim();
+    const content = $(event.target).parents('p').find('.contents').text();
+    $.ajax({
+      type:"delete",
+      url:'/api/reviews/bucket',
+      data:{
+        title:title,
+        name:name,
+        date:date,
+        content:content
+      },
+      success:function(res){
+        alert(res.msg);
+        getComments();
+      }
+    })
+  }
 
 </script>
 <body>
@@ -602,7 +700,7 @@
       <div class="modalBox1" id="modalBox1">
         <div class="modal-content">
           <div class="modal-header" style="position: relative">
-            <div style="width:100%;height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg"></div>
+            <div style="width:100%; height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg"></div>
             <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -614,46 +712,54 @@
           </div>
           <div class="modal-footer">
             <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
-            <button type="button" onclick="comment1()" class="btn btn-primary">댓글 작성하기</button>
+            <button type="button" class="btn btn-primary">댓글 작성하기</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
-      <!-- <div class="modalBox">
-        <div class="modal-content">
-          <div class="modal-header" style="position: relative">
-            <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-footer">
-            <input type="text">
-            <button type="button" onclick="commentSave1()" class="btn btn-primary">댓글 작성하기</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div> -->
     </div>  
   </div>
   
   <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header" style="position: relative">
-          <div style="width:100%;height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg"></div>
-          <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content" style="position: relative">
+          <div class="row">
+            <div class="col-md-12" id="comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
+              <h3 style="margin-top: 10px;">댓글</h3>
+              <button type="button" style="position: absolute; top:20px; right:20px;" onclick="modalCX()" class="btn-close"aria-label="Close"></button>
+              <div style="height: 570px; padding-top:10px; padding-bottom: 10px; overflow-y: scroll" id="bucketComment">
+
+              </div>
+              <div style="border-top:1px solid #eee; margin-top: 30px;">
+                <textarea name="comment" id="myComment" style="width: 100%;"></textarea>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="modal-header" style="position: relative">
+            <div style="width:100%;height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg2"></div>
+            <button type="button" onclick="modalX()" style="position: absolute; top:20px; right:20px;" class="btn-close" id="btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+              <div class="modal-body">
+            <h1 id="modelTitle2"></h1>
+            <p id="modelName2"></p>
+            <p id="modelDate2"></p>
+            <p id="modelContent2"></p>
+            <p id="modelShareCount2"></p>
+            <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
+          </div>
+              <div class="modal-footer" style="border: 0" >
+                <button type="button" onclick="commentOpen()" id="sorry" class="btn btn-primary">댓글 보기</button>
+                <button type="button" onclick="createComments()" id="commentAdd"  class="btn btn-primary modal-hide">댓글 작성</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
+              </div>
+          </div>
+
+          </div>
+
         </div>
-        <div class="modal-body">
-          <h1 id="modelTitle2">제목</h1>
-          <p id="modelName2">작성자 : </p>
-          <p id="modelDate2">작성일 : </p>
-          <p id="modelContent2">내용</p>
-          <p id="modelShareCount2">공유횟수</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
-          <button type="button" onclick="sorry()" class="btn btn-primary">댓글 작성하기</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
+
+
+
     </div>
   </div>
   <!--풋터-->
