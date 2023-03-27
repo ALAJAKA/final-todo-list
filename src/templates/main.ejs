@@ -24,6 +24,13 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <style>
+  /*전체 옵션*/
+  *{margin:0;padding:0;}
+  input:focus {outline: none;}
+  ::-webkit-scrollbar {
+    width: 0;
+  }
+  ul,li,ol{list-style: none; margin:0; padding:0;}
   #leftNav {transition: 0.5s}
   .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 90%; padding: 10px; transition: 0.5s; border-radius: 5px;}
   .leftMenu:hover {background: #777}
@@ -135,7 +142,7 @@
 }
 .fc-toolbar-title::before {
   position: absolute;
-  font-size: 12px;
+  font-size: 15px;
   content: "🟩: To-Do List달성률";
   left: 0;
   top: 50%;
@@ -144,7 +151,7 @@
 
 .fc-toolbar-title::after {
   position: absolute;
-  font-size: 12px;
+  font-size: 15px;
   content: "🟥: Allday To-Do List달성률";
   left: 0;
   top: 70%;
@@ -158,8 +165,9 @@
 .fc-daygrid-day-number {
   font-weight: bold;
 }
-
-
+.modal-hide{
+  display: none;
+}
 </style>
 <script>
   $(document).ready(function(){
@@ -167,6 +175,7 @@
       a();
       b();
       c();
+    calColor();
     // get card width dynamically
     cardWidth = $(".slide-card1").width();
     // todo-next-arrow
@@ -235,7 +244,7 @@
       var calendar = new FullCalendar.Calendar(calendarEl, {
         height: 780,
         contentHeight: 180,
-        timeZone: 'UTC',
+        timeZone: 'UTC+9',
         initialView: 'dayGridMonth',
         eventOrder : 'displayOrder',
         locale: 'ko',
@@ -375,7 +384,15 @@
       });
       calendar.render();
   }
-
+//   function calColor(){
+//     const toolbarLeft = $('.fc-toolbar-title').parents('.fc-toolbar-chunk');
+//     toolbarLeft.prepend(`
+// <div style="text-align: left;position: absolute;top:180px;">
+//     <div><i style="color:red;" class="fa-solid fa-square">&nbsp</i>매일하는 투두 달성률</div>
+//     <div><i style="color:green;" class="fa-solid fa-square">&nbsp</i>오늘만 하는 투두 달성률</div>
+// </div>
+// `);
+//   }
   // 포스트잇 버킷리스트 미리보기
   function a(){
     fetch('/api/preview/bucket', {
@@ -435,30 +452,87 @@
             });
   }
 
-  function modalDate(title,content,image,name,update){
-    $('#modelImg').css("background-image","url("+image+")");
-    $('#modelTitle').text(title);
-    $('#modelName').text("작성자 : " + name);
-    $('#modelDate').text("작성일 : "+ update);
-    $('#modelContent').text(content);
+
+
+  
+  function modalDate1(title,content,image,name,update,shareCount){
+    $('#modelImg1').css("background-image","url("+image+")");
+    $('#modelTitle1').text(title);
+    $('#modelName1').text("작성자 : " + name);
+    $('#modelDate1').text("작성일 : "+ update);
+    $('#modelContent1').text(content);
+    $('#modelShareCount1').text("공유 횟수 : "+shareCount);
   }
+  function modalDate2(title,content,image,name,update,shareCount){
+    $('#modelImg2').css("background-image","url("+image+")");
+    $('#modelTitle2').text(title);
+    $('#modelName2').text("작성자 : " + name);
+    $('#modelDate2').text("작성일 : "+ update);
+    $('#modelContent2').text(content);
+    $('#modelShareCount2').text("공유 횟수 : "+shareCount);
+  }
+
+  function todoShare(){
+    const todoShareTitle = $('#modelTitle1').text();
+    const todoShareName = $('#modelName1').text().split(" : ")[1];
+    const todoShareCount = $('#modelShareCount1').text().split(" : ")[1];
+    console.log(todoShareTitle, todoShareName, todoShareCount);
+    $.ajax({
+      type:"POST",
+      url:"/api/todoLists/todoShare",
+      data:{
+        shareTitle:todoShareTitle,
+        shareName:todoShareName,
+        shareCount:todoShareCount
+      },
+      success:function (res){
+        alert(res.msg)
+      }
+    })
+  }
+
+  function bucketShare(){
+    const bucketShareTitle = $('#modelTitle2').text();
+    const bucketShareName = $('#modelName2').text().split(" : ")[1];
+    const bucketShareCount = $('#modelShareCount2').text().split(" : ")[1];
+    console.log(bucketShareTitle, bucketShareName, bucketShareCount);
+    $.ajax({
+      type:"POST",
+      url:"/api/bucketLists/bucketShare",
+      data:{
+        shareTitle:bucketShareTitle,
+        shareName:bucketShareName,
+        shareCount:bucketShareCount
+      },
+      success:function (res){
+        alert(res.msg)
+      }
+    })
+  }
+
+
+  function comment1(){
+    const modalBox1 = document.getElementById('modalBox1');
+    const commentHtml = `
+    <div class="modalBox2">
+      <div class="modal-content">
+        <div class="modal-header" style="position: relative">
+          <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-footer">
+          <input type="text">
+          <button type="button" onclick="commentSave1()" class="btn btn-primary">댓글 작성하기</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>`
+    modalBox1.insertAdjacentHTML('beforeend', commentHtml);
+  }
+
   function sorry(){
     alert("죄송합니다. 아직 구현되지 않은 기능입니다.");
   }
 
-  // 페이지네이션
-  // var page = 2;
-  // var k = '';
-  // $(window).scroll(function() {
-  //   if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-  //     show_table(page);
-  //     if(k!=undefined){
-  //       alert('page가 변경됩니다.')
-  //       page++;
-  //     }
-  //   }
-  // });
-  // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
 
 </script>
 <body>
@@ -559,7 +633,44 @@
     </div>
   </section>
   <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modalBox1" id="modalBox1">
+        <div class="modal-content">
+          <div class="modal-header" style="position: relative">
+            <div style="width:100%;height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg"></div>
+            <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h1 id="modelTitle1">제목</h1>
+            <p id="modelName1">작성자 : </p>
+            <p id="modelDate1">작성일 : </p>
+            <p id="modelContent1">내용</p>
+            <p id="modelShareCount1">공유횟수</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
+            <button type="button" onclick="comment1()" class="btn btn-primary">댓글 작성하기</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="modalBox">
+        <div class="modal-content">
+          <div class="modal-header" style="position: relative">
+            <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-footer">
+            <input type="text">
+            <button type="button" onclick="commentSave1()" class="btn btn-primary">댓글 작성하기</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div> -->
+    </div>  
+  </div>
+  
+  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header" style="position: relative">
@@ -567,16 +678,20 @@
           <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <h1 id="modelTitle">제목</h1>
-          <p id="modelName">작성자 : </p>
-          <p id="modelDate">작성일 : </p>
-          <p id="modelContent">내용</p>
+          <h1 id="modelTitle2">제목</h1>
+          <p id="modelName2">작성자 : </p>
+          <p id="modelDate2">작성일 : </p>
+          <p id="modelContent2">내용</p>
+          <p id="modelShareCount2">공유횟수</p>
         </div>
         <div class="modal-footer">
+          <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
           <button type="button" onclick="sorry()" class="btn btn-primary">댓글 작성하기</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
-      </div>
+
+
+
     </div>
   </div>
   <!--풋터-->

@@ -15,7 +15,7 @@
     //현재 날짜
     var year = new Date().getFullYear();// 현재 날짜의 년
     var month =new Date().getMonth()+1;// 현재 날짜의 월
-    var day =new Date().getDate();// 현재 날짜
+    var day =new Date().getDate()
     $(document).ready(function() {
         getBucketList();
         getCards();
@@ -350,8 +350,10 @@
     //버킷추가버튼 데이터 처리 필요 X
     function bucketPlus() {
         $('#BucketPlusBox').hide();
+        const offset = 1000 * 60 * 60 * 9;
         const listBox =  $('#bucketListD-day');
-        const date = new Date().toISOString().substring(0,10);
+        let date = new Date(new Date().getTime()+offset);
+        date = date.toISOString().replace("T", " ").split('.')[0].substring(0,10);
         let bucketInput=`
                     <li class="bucketBoxLi" id="bucketInputBox" >
                         <div class="row" style="margin:0;">
@@ -426,7 +428,7 @@
     /* 헤더 네비게이션 */
     .fo{background: red; border-radius: 5px;}
     #leftNav {transition: 0.5s}
-    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 80%; padding: 10px; transition: 0.5s; border-radius: 5px;}
+    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 90%; padding: 10px; transition: 0.5s; border-radius: 5px;}
     .leftMenu:hover {background: #777}
     .btntt{width:50px; height:50px; line-height: 50px; border:0; border-radius: 5px; background: rgba(255,255,255,0.3);; font-size: 20px; transition: 1s; }
     .btntt:hover{background-color: rgba(255,255,255,0.7);}
