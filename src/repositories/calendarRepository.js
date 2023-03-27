@@ -44,7 +44,7 @@ class CalendarRepository {
     return bucketList;
   };
 
-  findAllDayTodoList = async (userId) => {
+  findAllDayTodoList = async () => {
     const alldayTodoList = await this.allDayTodoListModel.findAll({
       where: 
         { share:"OK" },
@@ -53,7 +53,7 @@ class CalendarRepository {
     return alldayTodoList;
   };
 
-  findBucketListCard = async (userId) => {
+  findBucketListCard = async () => {
     const bucketListCard = await this.bucketListCardModel.findAll({
       where: 
         { share:"OK" },

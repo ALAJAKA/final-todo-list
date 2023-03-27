@@ -6,9 +6,7 @@ const userAuthToken = (req, res, next) => {
 
   const {access_token} = req.cookies;
   if (!access_token) {
-    res.send(
-      "<script>alert('로그인 후 이용 가능합니다.');location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';</script>"
-    );
+    res.send({msg:"로그인 후 이용 가능합니다."});
   }
   let accessTokenInfo = verifyAccessToken(access_token);
   if (!accessTokenInfo) {

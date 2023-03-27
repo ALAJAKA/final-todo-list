@@ -19,7 +19,7 @@ router.use('/api/todoLists',userAuthToken, todoListRouter);
 //버킷리스트 관련 컨트롤러로
 router.use('/api/bucketLists',userAuthToken, bucketListRouter);
 //리뷰 관련
-router.use('/api/reviews',userAuthToken, reviewRouter);
+router.use('/api/reviews', reviewRouter);
 //페이지 이동에 관한 라우터로
 router.use('/', pageRouter);
 
