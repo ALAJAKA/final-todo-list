@@ -40,11 +40,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       createdAt:{
         type:DataTypes.DATEONLY,
-        defaultValue:new Date().toISOString()
+        defaultValue:new Date()
       },
       updatedAt:{
         type:DataTypes.DATEONLY,
-        defaultValue:new Date().toISOString()
+        defaultValue:new Date()
       }
     },
     {
