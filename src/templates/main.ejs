@@ -466,6 +466,10 @@
     const todoShareTitle = $('#modelTitle1').text();
     const todoShareName = $('#modelName1').text().split(" : ")[1];
     const todoShareCount = $('#modelShareCount1').text().split(" : ")[1];
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
     $.ajax({
       type:"POST",
       url:"/api/todoLists/todoShare",
@@ -484,7 +488,10 @@
     const bucketShareTitle = $('#modelTitle2').text();
     const bucketShareName = $('#modelName2').text().split(" : ")[1];
     const bucketShareCount = $('#modelShareCount2').text().split(" : ")[1];
-    console.log(bucketShareTitle, bucketShareName, bucketShareCount);
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
     $.ajax({
       type:"POST",
       url:"/api/bucketLists/bucketShare",
