@@ -175,7 +175,6 @@
       a();
       b();
       c();
-    calColor();
     // get card width dynamically
     cardWidth = $(".slide-card1").width();
     // todo-next-arrow
@@ -384,15 +383,6 @@
       });
       calendar.render();
   }
-//   function calColor(){
-//     const toolbarLeft = $('.fc-toolbar-title').parents('.fc-toolbar-chunk');
-//     toolbarLeft.prepend(`
-// <div style="text-align: left;position: absolute;top:180px;">
-//     <div><i style="color:red;" class="fa-solid fa-square">&nbsp</i>매일하는 투두 달성률</div>
-//     <div><i style="color:green;" class="fa-solid fa-square">&nbsp</i>오늘만 하는 투두 달성률</div>
-// </div>
-// `);
-//   }
   // 포스트잇 버킷리스트 미리보기
   function a(){
     fetch('/api/preview/bucket', {
@@ -418,7 +408,7 @@
           <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal1"onclick="modalDate1('${todo.title}','${todo.content}','${todo.image}','${todo.name}','${todo.updatedAt}','${todo.shareCount}')">
             <div class="text-decoration-none">
             <div style="height:300px;width:300px; background-image:url('${todo.image}'); background-position: center; background-size: contain; background-repeat: no-repeat;"></div>
-              <div class="p-3" style="height:150px;">
+              <div class="p-3" style="height:150px; padding:0 !important;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${todo.title}</p>
                 <p class="text-dark" style="text-align: center;">${todo.name}</p>
                 <p class="text-dark" style="text-align: right;">공유 횟수 : ${todo.shareCount} </p>
@@ -440,7 +430,7 @@
           <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal2" onclick="modalDate2('${bucket.title}','${bucket.content}','${bucket.image}','${bucket.name}','${bucket.updatedAt}','${bucket.shareCount}' )">
             <div class="text-decoration-none">
               <div style="height:300px;width:300px; background-image:url('${bucket.image}'); background-position: center; background-size: contain;  background-repeat: no-repeat"></div>
-                <div class="p-3"style="height:150px;">
+                <div class="p-3"style="height:150px; padding:0 !important;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${bucket.title}</p>
                 <p class="text-dark" style="text-align: center;">${bucket.name}</p>
                 <p class="text-dark" style="text-align: right;">공유 횟수 : ${bucket.shareCount} </p>
