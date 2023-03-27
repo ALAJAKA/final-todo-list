@@ -120,12 +120,17 @@
         const img1 = localStorage.getItem("img");
         const title = $('#exampleFormControlInput2').val();
         const content = $('#exampleFormControlTextarea2').val();
+        let share = "NO"
+        if (document.getElementById('flexCheckDefault2').checked){
+            share = "OK"
+        }
         const formData = new FormData();
         const imageInput = $("#inputImg")[0].files[0];
         formData.append("title1",title1);
         formData.append("content1",content1);
         formData.append("img1",img1);
         formData.append("title",title);
+        formData.append("share",share);
         formData.append("content",content);
         formData.append("image",imageInput);
 
@@ -149,9 +154,14 @@
         const title = $('#exampleFormControlInput1').val();
         const content = $('#exampleFormControlTextarea1').val();
         const image = $("#formFileSm")[0].files[0];
+        let share = "NO"
+        if (document.getElementById('flexCheckDefault1').checked){
+            share = "OK"
+        }
         formData.append("title",title);
         formData.append("content",content);
         formData.append("image",image);
+        formData.append("share",share);
         $.ajax({
             type:"POST",
             url:"/api/bucketLists/cards",
@@ -452,6 +462,9 @@
     .abs2:hover{background-color:  rgba(255,255,255,0.7); box-sizing: border-box; }
     .modal-body {text-align: left;}
     .form-label{font-size: 17pt;}
+    .shareBox{display:flex; margin: 0 auto; text-align: center; justify-content: center; align-content: center;}
+    .shareCheck{width:25px; height:25px; margin-right:5px;}
+    .shareCheckLabel{font-size:17px; }
 
     /* 리스트섹션 */
     .bucketBoxes{position: relative; margin-top: 20px;}
@@ -566,6 +579,12 @@
                         <label for="formFileSm" class="form-label">Image</label>
                         <input type="file" class="form-control form-control-sm" name="image" id="formFileSm" >
                     </div>
+                    <div class="shareBox">
+                        <input class="shareCheck" type="checkbox" value="" id="flexCheckDefault1">
+                        <label class="shareCheckLabel" for="flexCheckDefault1">
+                            공유 허용시 체크
+                        </label>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                         <button onclick="createCard()" data-bs-dismiss="modal" class="btn btn-primary">등록</button>
@@ -593,6 +612,12 @@
                     <div class="mb-3">
                         <label for="formFileSm" class="form-label">Image</label>
                         <input type="file" id="inputImg" class="form-control form-control-sm">
+                    </div>
+                    <div class="shareBox">
+                        <input class="shareCheck" type="checkbox" value="" id="flexCheckDefault2">
+                        <label class="shareCheckLabel" for="flexCheckDefault2">
+                            공유 허용시 체크
+                        </label>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>

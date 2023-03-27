@@ -41,11 +41,11 @@ class BucketListService {
         return BucketListCards;
     }
     //버킷 리스트 카드 생성
-    createBucketListCard = async (title,content,image,access_token) =>{
+    createBucketListCard = async (title,content,image,access_token,share) =>{
       const token = jwtDecode(access_token);
       const userId = token.userId;
       const name = token.name;
-      const BucketListCard = await this.bucketListRepository.createBucketListCard(title,name,content,image,userId);
+      const BucketListCard = await this.bucketListRepository.createBucketListCard(title,name,content,image,userId,share);
       return BucketListCard;
     }
     //버킷 리스트 카드 삭제
@@ -56,10 +56,10 @@ class BucketListService {
       return "삭제 완료";
     }
     //버킷 리스트 카드 수정
-    updateBucketListCard =async (title1,content1,img1,title,content,image,access_token)=>{
+    updateBucketListCard =async (title1,content1,img1,title,content,image,access_token,share)=>{
       const token = jwtDecode(access_token);
       const userId = token.userId;
-      await this.bucketListRepository.updateBucketListCard(title1,content1,img1,title,content,image,userId);
+      await this.bucketListRepository.updateBucketListCard(title1,content1,img1,title,content,image,userId,share);
       return "수정 완료";
     }
     //버킷 리스트 카드 완료
@@ -76,6 +76,24 @@ class BucketListService {
         await this.bucketListRepository.bucketListCardCancel(title,content,image,userId);
         return "버킷 완료가 취소되었습니다.";
     }
+
+    postBucketShare = async(shareTitle, shareName, shareCount, access_token) =>{
+      const getBucketShare = await this.bucketListRepository.getBucketShare(shareTitle, shareName)
+      console.log(getBucketShare);
+      await this.bucketListRepository.updateBucketShareCount(shareTitle, shareName, shareCount)
+      const title = getBucketShare.title
+      const content = getBucketShare.content
+      const image = getBucketShare.image
+      const share = "NO"
+      shareCount = 0
+      const token = jwtDecode(access_token);
+      const userId = token.userId;
+      const name = token.name;
+      const success = "READY"
+
+      const postAlldayBucketList = await this.bucketListRepository.createBucketListCard(title, name, content, image, userId, share)
+      return postAlldayBucketList;
+  }
 }
 
 module.exports = BucketListService;

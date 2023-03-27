@@ -45,8 +45,8 @@ class CalendarController {
 
   findAllDayTodoList = async (req, res) => {
     try {
-      // const {access_token} = req.cookies;
-      const alldayTodoList = await this.calendarService.findAllDayTodoList();
+      const {access_token} = req.cookies;
+      const alldayTodoList = await this.calendarService.findAllDayTodoList(access_token);
       res.status(200).json({ data: alldayTodoList });
     } catch (err) {
       console.log(err);
@@ -55,8 +55,8 @@ class CalendarController {
 
   findBucketListCard = async (req, res) => {
     try {
-      // const {access_token} = req.cookies;
-      const bucketListCard = await this.calendarService.findBucketListCard();
+      const {access_token} = req.cookies;
+      const bucketListCard = await this.calendarService.findBucketListCard(access_token);
       res.status(200).json({ data: bucketListCard });
     } catch (err) {
       console.log(err);

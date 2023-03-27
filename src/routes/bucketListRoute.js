@@ -27,6 +27,6 @@ router.put("/cards/ok",bucketListController.bucketListCardOk);
 //카드 완료 취소
 router.put("/cards/cancel",bucketListController.bucketListCardCancel);
 
-
+router.post("/bucketShare", bucketListController.postBucketShare);
 
 module.exports = router;

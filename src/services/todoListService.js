@@ -19,21 +19,21 @@ class TodoListService {
     }
 
     
-    postAlldayTodo = async(title, content, image, date, access_token) =>{
+    postAlldayTodo = async(title, content, image, date, share, access_token) =>{
         const token = jwtDecode(access_token);
         const userId = token.userId;
         const name = token.name;
         const success = "READY"
         const today = new Date().toISOString().substring(0,10);
-
+        const shareCount = 0
         if (date==today){
             const postAlldayTodoLists = await this.todoListRepository.postAlldayTodoLists(title, content, image, userId, name, success)
         }
-        const postAlldayTodoList = await this.todoListRepository.postAlldayTodoList(title, content, image, userId, name)
+        const postAlldayTodoList = await this.todoListRepository.postAlldayTodoList(title, content, image, userId, name, share, shareCount)
         return postAlldayTodoList;
     }
     
-    putAlldayTodo = async(date, beforeTitle, content, image, afterTitle, access_token) =>{
+    putAlldayTodo = async(date, beforeTitle, content, image, afterTitle, access_token, share) =>{
         const token = jwtDecode(access_token);
         const userId = token.userId;
         const today = new Date().toISOString().substring(0,10);
@@ -41,7 +41,7 @@ class TodoListService {
         if (date==today){
             const putAlldayTodoLists = await this.todoListRepository.putAlldayTodoLists(date, beforeTitle, content, image, afterTitle, userId)
         }
-        const putAlldayTodoList = await this.todoListRepository.putAlldayTodoList(beforeTitle, content, image, afterTitle, userId)
+        const putAlldayTodoList = await this.todoListRepository.putAlldayTodoList(beforeTitle, content, image, afterTitle, userId, share)
         return putAlldayTodoList;
     }
 
@@ -111,6 +111,24 @@ class TodoListService {
         const userId = token.userId;
         const cardSuccess = await this.todoListRepository.cardSuccess(date, title, success, userId)
         return cardSuccess;
+    }
+
+    postTodoShare = async(shareTitle, shareName, shareCount, access_token) =>{
+        const getTodoShare = await this.todoListRepository.getTodoShare(shareTitle, shareName)
+        const updateTodoShareCount = await this.todoListRepository.updateTodoShareCount(shareTitle, shareName, shareCount)
+        const title = getTodoShare.title
+        const content = getTodoShare.content
+        const image = getTodoShare.image
+        const share = "NO"
+        shareCount = 0
+
+        const token = jwtDecode(access_token);
+        const userId = token.userId;
+        const name = token.name;
+        const success = "READY"
+        const postAlldayTodoLists = await this.todoListRepository.postAlldayTodoLists(title, content, image, userId, name, success)
+        const postAlldayTodoList = await this.todoListRepository.postAlldayTodoList(title, content, image, userId, name, share, shareCount)
+        return postAlldayTodoList;
     }
 }
 

@@ -19,9 +19,9 @@ class TodoListRepository {
 
 
 
-  postAlldayTodoList = async (title, content, image, userId, name) =>{
+  postAlldayTodoList = async (title, content, image, userId, name, share, shareCount) =>{
     const postAlldayTodoList = await this.AllDayTodoList.create({
-      title, content, image, userId, name
+      title, content, image, userId, name, share, shareCount
     });
     return  postAlldayTodoList;
   }
@@ -32,10 +32,10 @@ class TodoListRepository {
     return  postAlldayTodoLists;
   }
   
-  putAlldayTodoList = async ( beforeTitle, content, image, afterTitle, userId) =>{
+  putAlldayTodoList = async ( beforeTitle, content, image, afterTitle, userId, share) =>{
     if (image){
       const putAlldayTodoList = await this.AllDayTodoList.update(
-        {title:afterTitle, content, image},{
+        {title:afterTitle, content, image, share},{
         where: {
           [Op.and]: [ {title:beforeTitle}, { userId }],
         }
@@ -43,7 +43,7 @@ class TodoListRepository {
       return putAlldayTodoList;
     }else{
       const putAlldayTodoList = await this.AllDayTodoList.update(
-        {title:afterTitle, content},{
+        {title:afterTitle, content, share},{
         where: {
           [Op.and]: [ {title:beforeTitle}, { userId }],
         }
@@ -150,7 +150,6 @@ class TodoListRepository {
   }
 
   todoSuccess = async (date, title, success, userId) =>{
-    console.log(date, title, success, userId);
     const todoSuccess = await this.TodoList.update(
       {success},{
       where: {
@@ -161,7 +160,6 @@ class TodoListRepository {
   }
 
   cardSuccess = async (date, title, success, userId) =>{
-    console.log(date, title, success, userId);
     const cardSuccess = await this.AllDayTodoLists.update(
       {success},{
       where: {
@@ -169,6 +167,25 @@ class TodoListRepository {
       }
     });
     return cardSuccess;
+  }
+  getTodoShare = async (shareTitle, shareName) =>{
+    const getTodoShare = await this.AllDayTodoList.findOne({
+      where: {
+        [Op.and]: [{ title:shareTitle }, { name:shareName }],
+      },
+      raw: true,
+    });
+    return getTodoShare;
+  }
+  updateTodoShareCount = async(shareTitle, shareName, shareCount)=>{
+    let newCount = Number(shareCount)+1
+    const updateTodoShareCount = await this.AllDayTodoList.update(
+      {shareCount:newCount},{
+      where: {
+        [Op.and]: [ { title:shareTitle }, { name:shareName }],
+      }
+    });
+    return updateTodoShareCount;
   }
 }
 
