@@ -40,8 +40,8 @@ class BucketListController {
         let image;
         if(req.file !== undefined) image = req.file.location;
         else image = '';
-        const {title,content} = req.body;
-        await this.bucketListService.createBucketListCard(title,content,image,access_token);
+        const {title,content,share} = req.body;
+        await this.bucketListService.createBucketListCard(title,content,image,access_token,share);
         return res.status(200).json({msg:"카드생성완료"});
     }
     //버킷리스트 카드 조회
@@ -60,11 +60,11 @@ class BucketListController {
     //버킷리스트 카드 수정
     updateBucketListCard = async (req,res)=>{
       const {access_token} = req.cookies;
-      const {title1,content1,img1,title,content} =req.body;
+      const {title1,content1,img1,title,content,share} =req.body;
       let {image} = req.body;
       if(req.file!==undefined) image = req.file.location;
       else image = img1;
-      const BucketListCard = await this.bucketListService.updateBucketListCard(title1,content1,img1,title,content,image,access_token);
+      const BucketListCard = await this.bucketListService.updateBucketListCard(title1,content1,img1,title,content,image,access_token,share);
       return res.status(200).json({msg:BucketListCard});;
     }
     //버킷리스트 카드 완료

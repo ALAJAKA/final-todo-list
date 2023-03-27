@@ -33,7 +33,7 @@ class TodoListService {
         return postAlldayTodoList;
     }
     
-    putAlldayTodo = async(date, beforeTitle, content, image, afterTitle, access_token) =>{
+    putAlldayTodo = async(date, beforeTitle, content, image, afterTitle, access_token, share) =>{
         const token = jwtDecode(access_token);
         const userId = token.userId;
         const today = new Date().toISOString().substring(0,10);
@@ -41,7 +41,7 @@ class TodoListService {
         if (date==today){
             const putAlldayTodoLists = await this.todoListRepository.putAlldayTodoLists(date, beforeTitle, content, image, afterTitle, userId)
         }
-        const putAlldayTodoList = await this.todoListRepository.putAlldayTodoList(beforeTitle, content, image, afterTitle, userId)
+        const putAlldayTodoList = await this.todoListRepository.putAlldayTodoList(beforeTitle, content, image, afterTitle, userId, share)
         return putAlldayTodoList;
     }
 

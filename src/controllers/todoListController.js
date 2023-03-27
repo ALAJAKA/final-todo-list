@@ -56,10 +56,10 @@ class TodoListController {
       let image;
       if(req.file !== undefined) image = req.file.location;
       else image = '';
-      const {date, beforeTitle, content, afterTitle} = req.body;
+      const {date, beforeTitle, content, afterTitle, share} = req.body;
       
       const {access_token} = req.cookies;
-      const putAlldayTodo = await this.todoListService.putAlldayTodo(date, beforeTitle, content, image, afterTitle, access_token)
+      const putAlldayTodo = await this.todoListService.putAlldayTodo(date, beforeTitle, content, image, afterTitle, access_token, share)
       return res.status(201).json({
         image
       });

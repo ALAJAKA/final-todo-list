@@ -32,10 +32,10 @@ class TodoListRepository {
     return  postAlldayTodoLists;
   }
   
-  putAlldayTodoList = async ( beforeTitle, content, image, afterTitle, userId) =>{
+  putAlldayTodoList = async ( beforeTitle, content, image, afterTitle, userId, share) =>{
     if (image){
       const putAlldayTodoList = await this.AllDayTodoList.update(
-        {title:afterTitle, content, image},{
+        {title:afterTitle, content, image, share},{
         where: {
           [Op.and]: [ {title:beforeTitle}, { userId }],
         }
@@ -43,7 +43,7 @@ class TodoListRepository {
       return putAlldayTodoList;
     }else{
       const putAlldayTodoList = await this.AllDayTodoList.update(
-        {title:afterTitle, content},{
+        {title:afterTitle, content, share},{
         where: {
           [Op.and]: [ {title:beforeTitle}, { userId }],
         }

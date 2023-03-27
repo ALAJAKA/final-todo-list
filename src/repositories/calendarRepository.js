@@ -43,17 +43,27 @@ class CalendarRepository {
     return bucketlist;
   };
 
-  findAllDayTodoList = async () => {
+  findAllDayTodoList = async (userId) => {
+    console.log(userId);
     const alldaytodolist = await this.allDayTodoListModel.findAll({
-      where: { share:"OK" },
+      where: {
+        [Op.and]: [
+        { share:"OK" },
+        {userId:{[Op.ne]: userId}}
+      ]},
       order: [['id', 'desc']],
     });
     return alldaytodolist;
   };
 
-  findBucketListCard = async () => {
+  findBucketListCard = async (userId) => {
+    console.log(userId);
     const bucketlistcard = await this.bucketListCardModel.findAll({
-      where: { share:"OK" },
+      where: {
+        [Op.and]: [
+        { share:"OK" },
+        {userId:{[Op.ne]: userId}}
+      ]},
       order: [['id', 'desc']],
     });
     return bucketlistcard;

@@ -79,11 +79,12 @@ class BucketListRepository {
     });
   }
   // 카드 수정
-  updateBucketListCard = async (title1,content1,img1,title,content,image,userId)=>{
+  updateBucketListCard = async (title1,content1,img1,title,content,image,userId,share)=>{
     await BucketListCard.update({
       title:title,
       content:content,
       image:image,
+      share:share
     },{where:{
         title:title1,
         content:content1,

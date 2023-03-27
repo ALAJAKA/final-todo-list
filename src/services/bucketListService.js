@@ -41,11 +41,11 @@ class BucketListService {
         return BucketListCards;
     }
     //버킷 리스트 카드 생성
-    createBucketListCard = async (title,content,image,access_token) =>{
+    createBucketListCard = async (title,content,image,access_token,share) =>{
       const token = jwtDecode(access_token);
       const userId = token.userId;
       const name = token.name;
-      const BucketListCard = await this.bucketListRepository.createBucketListCard(title,name,content,image,userId);
+      const BucketListCard = await this.bucketListRepository.createBucketListCard(title,name,content,image,userId,share);
       return BucketListCard;
     }
     //버킷 리스트 카드 삭제
@@ -56,10 +56,10 @@ class BucketListService {
       return "삭제 완료";
     }
     //버킷 리스트 카드 수정
-    updateBucketListCard =async (title1,content1,img1,title,content,image,access_token)=>{
+    updateBucketListCard =async (title1,content1,img1,title,content,image,access_token,share)=>{
       const token = jwtDecode(access_token);
       const userId = token.userId;
-      await this.bucketListRepository.updateBucketListCard(title1,content1,img1,title,content,image,userId);
+      await this.bucketListRepository.updateBucketListCard(title1,content1,img1,title,content,image,userId,share);
       return "수정 완료";
     }
     //버킷 리스트 카드 완료

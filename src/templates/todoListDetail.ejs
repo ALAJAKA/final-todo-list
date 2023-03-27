@@ -269,11 +269,16 @@
         const content = document.getElementById('inputContent').value;
         const image = document.getElementsByName('inputImage')[0].files[0];
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
+        let share = "NO"
+        if (document.getElementById('flexCheckDefault1').checked){
+            share = "OK"
+        }
         let Data = new FormData();
         Data.append('title', title)
         Data.append('content', content)
         Data.append('date', date)
         Data.append('image', image)
+        Data.append('share', share)
         if (title.trim() == ""){
             alert("내용이 없습니다.")
         }else{
@@ -340,6 +345,12 @@
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                                             <button type="button" onclick="cardEdit()" data-bs-dismiss="modal" class="btn btn-primary">수정</button>
                                         </div>
+                                        <div class="shareBox">
+                                            <input class="shareCheck" type="checkbox" value="" id="flexCheckDefault2">
+                                            <label class="shareCheckLabel" for="flexCheckDefault2">
+                                                공유 허용시 체크
+                                            </label>
+                                        </div>
                                 </div>
                                 `)
                         
@@ -352,7 +363,10 @@
         const content = document.getElementById('editContent').value;
         const image = document.getElementsByName('editImage')[0].files[0];
         const date = new Date(year, month-1, day, 9).toISOString().substring(0, 10);
-        
+        let share = "NO"
+        if (document.getElementById('flexCheckDefault2').checked){
+            share = "OK"
+        }
         let Data = new FormData();
         
         Data.append('beforeTitle', beforeTitle)
@@ -360,6 +374,7 @@
         Data.append('content', content)
         Data.append('image', image)
         Data.append('date', date)
+        Data.append('share', share)
         if (afterTitle.trim() == ""){
             alert("내용이 없습니다.")
         }else{
@@ -749,6 +764,9 @@
     .cardPlus {background: none; width:100px; height:100px;  margin: 0 auto; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; padding:0; font-size: 45pt; border-radius: 45px; transition: 1s; }
     .cardPlus:hover{background-color: rgba(255,255,255,0.7);}
     .cardPlusBox{background-color: hsl(0, 0%, 80%, 0.3);text-align: center; justify-content: center; }
+    .shareBox{display:flex; margin: 0 auto; text-align: center; justify-content: center; align-content: center;}
+    .shareCheck{width:25px; height:25px; margin-right:5px;}
+    .shareCheckLabel{font-size:17px; }
     /*카드 좌우 이동버튼*/
     .cardBtn{position: absolute;width:50px; height:50px; border-radius: 25px; top:50%; border:0; background: none; transition: 1s;}
     .cardBtn:hover {background: #eee;}
@@ -883,6 +901,12 @@
                     <label for="formFileSm" class="form-label">Image</label>
                     <input class="form-control form-control-sm" accept="image/*" name="inputImage" id="inputImage" type="file">
                 </div>
+                <div class="shareBox">
+                    <input class="shareCheck" type="checkbox" value="" id="flexCheckDefault1">
+                    <label class="shareCheckLabel" for="flexCheckDefault1">
+                        공유 허용시 체크
+                    </label>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     <button type="button" onclick="cardSave()" data-bs-dismiss="modal" class="btn btn-primary">등록</button>
@@ -910,6 +934,12 @@
                 <div class="mb-3">
                     <label for="formFileSm" class="form-label">Image</label>
                     <input class="form-control form-control-sm" accept="image/*" name="editImage" id="editImage" type="file">
+                </div>
+                <div class="shareBox">
+                    <input class="shareCheck" type="checkbox" value="" id="flexCheckDefault2">
+                    <label class="shareCheckLabel" for="flexCheckDefault2">
+                        공유 허용시 체크
+                    </label>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>

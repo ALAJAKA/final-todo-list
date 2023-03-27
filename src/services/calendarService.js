@@ -33,17 +33,17 @@ class CalendarService {
     return bucketlist;
   };
 
-  findAllDayTodoList = async () => {
-    // const token = jwtDecode();
-    // const userId = token.userId;
-    const alldaytodolist = await this.calendarRepository.findAllDayTodoList();
+  findAllDayTodoList = async (access_token) => {
+    const token = jwtDecode(access_token);
+    const userId = token.userId;
+    const alldaytodolist = await this.calendarRepository.findAllDayTodoList(userId);
     return alldaytodolist;
   };
 
-  findBucketListCard = async () => {
-    // const token = jwtDecode();
-    // const userId = token.userId;
-    const bucketlistcard = await this.calendarRepository.findBucketListCard();
+  findBucketListCard = async (access_token) => {
+    const token = jwtDecode(access_token);
+    const userId = token.userId;
+    const bucketlistcard = await this.calendarRepository.findBucketListCard(userId);
     return bucketlistcard;
   };
 }
