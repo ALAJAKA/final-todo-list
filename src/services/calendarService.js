@@ -1,9 +1,9 @@
 const CalendarRepository = require('../repositories/calendarRepository');
 const jwtDecode = require("jwt-decode");
-const { TodoList, BucketList, AllDayTodoList, BucketListCard} = require('../models');
+const { TodoList, BucketList, AllDayTodoList, BucketListCard, AllDayTodoLists} = require('../models');
 
 class CalendarService {
-  calendarRepository = new CalendarRepository(TodoList, BucketList, AllDayTodoList, BucketListCard);
+  calendarRepository = new CalendarRepository(TodoList, BucketList, AllDayTodoList, BucketListCard, AllDayTodoLists);
 
   findBucketCalendar = async (access_token) => {
     const token = jwtDecode(access_token);
@@ -22,29 +22,36 @@ class CalendarService {
   findTodoList = async (access_token) => {
     const token = jwtDecode(access_token);
     const userId = token.userId;
-    const todolist = await this.calendarRepository.findTodoList(userId);
-    return todolist;
+    const todoList = await this.calendarRepository.findTodoList(userId);
+    return todoList;
   };
 
   findBucketList = async (access_token) => {
     const token = jwtDecode(access_token);
     const userId = token.userId;
-    const bucketlist = await this.calendarRepository.findBucketList(userId);
-    return bucketlist;
+    const bucketList = await this.calendarRepository.findBucketList(userId);
+    return bucketList;
   };
 
   findAllDayTodoList = async () => {
     // const token = jwtDecode();
     // const userId = token.userId;
-    const alldaytodolist = await this.calendarRepository.findAllDayTodoList();
-    return alldaytodolist;
+    const alldayTodoList = await this.calendarRepository.findAllDayTodoList();
+    return alldayTodoList;
   };
 
   findBucketListCard = async () => {
     // const token = jwtDecode();
     // const userId = token.userId;
-    const bucketlistcard = await this.calendarRepository.findBucketListCard();
-    return bucketlistcard;
+    const bucketListCard = await this.calendarRepository.findBucketListCard();
+    return bucketListCard;
+  };
+
+  findAllDayTodoLists = async (access_token) => {
+    const token = jwtDecode(access_token);
+    const userId = token.userId;
+    const alldayTodoLists = await this.calendarRepository.findAllDayTodoLists(userId);
+    return alldayTodoLists;
   };
 }
 

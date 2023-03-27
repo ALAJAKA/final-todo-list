@@ -129,6 +129,7 @@
 #bucket-previous-arrow{
   transition: 1s;
 }
+
 </style>
 <script>
   $(document).ready(function(){
@@ -238,6 +239,7 @@
                               .then(response => response.json())
                               .then(data => {
                                 const todo = data.data.filter(todoo => todoo.today.startsWith(currentStr))
+                                        .slice(0,6)
                                         .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
                                         .join('');
                                 todoPreview.innerHTML = todo;
@@ -265,37 +267,39 @@
                       todoEvents.push({
                         title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
                         start: date, // 이벤트 시작 날짜
-                        color: 'green', // todo 달성률 이벤트는 초록색으로 표시
+                        color: 'green', 
                       });
                     }
 
                     // Calendar alldayTodoList 데이터 가져오기
-                    fetch('/api/card/alldaytodo', {
+                    fetch('/api/calendar/alldayTodo', {
                       credentials: "include"})
                             .then((response) => response.json())
                             .then((data) => {
                               const alldaytodo = data.data;
 
                               // 달성률 계산
-                              const alldayAchievements = {}; // 빈 객체 생성
+                              const alldayAchievements = {};
                               for (let i = 0; i < alldaytodo.length; i++) {
-                                const date = alldaytodo[i].today;
-                                const achieved = alldaytodo[i].success === 'SUCCESS' ? 1 : 0; // 'SUCCESS'일 경우 1을, 아닐 경우('READY') 0
+                                const date = alldaytodo[i].updatedAt;
+                                const achieved = alldaytodo[i].success === 'SUCCESS' ? 1 : 0;
                                 if (!alldayAchievements[date]) {
-                                  alldayAchievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
+                                  alldayAchievements[date] = { achieved: 0, total: 0 }; 
                                 }
-                                alldayAchievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
-                                alldayAchievements[date].total++; // 해당 날짜의 total 에 +1 함
+                                alldayAchievements[date].achieved += achieved;
+                                alldayAchievements[date].total++; 
                               }
                               // 이벤트 생성
                               const alldayEvents = [];
-                              for (const date in alldayAchievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
+                              for (const date in alldayAchievements) { 
                                 const achievementRate = alldayAchievements[date].total > 0
                                         ? Math.round((alldayAchievements[date].achieved / alldayAchievements[date].total) * 100)
-                                        : 0; // 삼항 연산자를 사용하여 값이 0보다 크면 달성률 계산, 0보다 작거나 같으면(해당 날짜에 할 일 없는 경우) 0
+                                        : 0; 
+                                        console.log(alldayEvents)
                                 alldayEvents.push({
-                                  title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
-                                  color: 'red', // todo 달성률 이벤트는 초록색으로 표시
+                                  title: `${Math.round(achievementRate)}%`, 
+                                  start: date, 
+                                  color: 'red',
                                 });
                               
                               }
@@ -321,6 +325,7 @@
           }
           selectedDateCell.classList.add('fc-day-today');
           calendar.gotoDate(selectedDate); // 클릭한 날짜로 이동
+
           // 해당 일자에 맞는 TodoList 미리보기
           const selectedDateStr = selectedDate.toISOString().substr(0, 10);
           fetch(`/api/preview/todo?date=${selectedDateStr}`, {
@@ -358,7 +363,7 @@
   }
   function b(){
     // 추천 투두리스트 카드
-    fetch('/api/card/alldaytodo')
+    fetch('/api/card/alldayTodo')
             .then((response) => response.json())
             .then((data) => {
               const todoHtml = data.data.map(
