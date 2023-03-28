@@ -30,13 +30,21 @@ module.exports = (sequelize, DataTypes) => {
       image: {
         type:DataTypes.STRING,
       },
+      share:{
+        type:DataTypes.ENUM('OK','NO'),
+        defaultValue: 'NO'
+      },
+      shareCount : {
+        type:DataTypes.INTEGER,
+        defaultValue: 0
+      },
       createdAt:{
         type:DataTypes.DATEONLY,
-        defaultValue:new Date().toISOString()
+        defaultValue:new Date()
       },
       updatedAt:{
         type:DataTypes.DATEONLY,
-        defaultValue:new Date().toISOString()
+        defaultValue:new Date()
       }
     },
     {

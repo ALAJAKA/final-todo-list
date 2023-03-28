@@ -3,11 +3,12 @@ const { BucketList } = require('../models');
 const { Op } = require('sequelize');
 
 class CalendarRepository {
-  constructor(TodoListModel, BucketListModel, AllDayTodoListtModel, BucketListCardModel) {
+  constructor(TodoListModel, BucketListModel, AllDayTodoListModel, BucketListCardModel, AllDayTodoListsModel) {
     this.todoListModel = TodoListModel;
     this.bucketListModel = BucketListModel;
-    this.allDayTodoListModel = AllDayTodoListtModel;
+    this.allDayTodoListModel = AllDayTodoListModel;
     this.bucketListCardModel = BucketListCardModel;
+    this.allDayTodoListsModel = AllDayTodoListsModel;
   }
 
   findBucketCalendar = async (userId) => {
@@ -21,41 +22,54 @@ class CalendarRepository {
   findTodoCalendar = async (userId) => {
     const todoCalendar = await this.todoListModel.findAll({
       where: { userId },
-      order: [['id', 'desc']],
+      order: [['id', 'asc']],
     });
     return todoCalendar;
   };
 
   findTodoList = async (userId) => {
-    const todolist = await this.todoListModel.findAll({
+    const todoList = await this.todoListModel.findAll({
       where: { userId },
       order: [['today', 'asc']],
     });
-    return todolist;
+    return todoList;
   };
 
   findBucketList = async (userId) => {
-    const bucketlist = await this.bucketListModel.findAll({
+    const bucketList = await this.bucketListModel.findAll({
       where: { userId },
       order: [['d_day', 'asc']],
-      limit: 10
+      limit: 6
     });
-    return bucketlist;
+    return bucketList;
   };
 
   findAllDayTodoList = async () => {
-    const alldaytodolist = await this.allDayTodoListModel.findAll({
+    const alldayTodoList = await this.allDayTodoListModel.findAll({
+      where: 
+        { share:"OK" },
       order: [['id', 'desc']],
     });
-    return alldaytodolist;
+    return alldayTodoList;
   };
 
   findBucketListCard = async () => {
-    const bucketlistcard = await this.bucketListCardModel.findAll({
+    const bucketListCard = await this.bucketListCardModel.findAll({
+      where: 
+        { share:"OK" },
       order: [['id', 'desc']],
     });
-    return bucketlistcard;
+    return bucketListCard;
   };
+
+  findAllDayTodoLists = async (userId) => {
+    const alldayTodoLists = await this.allDayTodoListsModel.findAll({
+      where: { userId },
+      order: [['id', 'desc']],
+    });
+    return alldayTodoLists;
+  };
+  
 }
 
 module.exports = CalendarRepository;

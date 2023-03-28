@@ -24,12 +24,19 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <style>
+  /*전체 옵션*/
+  *{margin:0;padding:0;}
+  input:focus {outline: none;}
+  ::-webkit-scrollbar {
+    width: 0;
+  }
+  ul,li,ol{list-style: none; margin:0; padding:0;}
   #leftNav {transition: 0.5s}
   .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 90%; padding: 10px; transition: 0.5s; border-radius: 5px;}
   .leftMenu:hover {background: #777}
 
   #calendarBox{
-    width: 100%;
+    width: 50%;
   }
 
   #calendarBox > div {
@@ -37,12 +44,12 @@
   }
 
   .fc-toolbar-title {
-    margin-left: 550px !important;
+    margin-left: 220px !important;
     font-weight: bold;
   }
 
   .fc-col-header-cell {
-	background-color: #ffe0ef;
+	background-color: #FFFFCC;
   }
 
   .fc-day a {
@@ -59,6 +66,7 @@
     color: blue;
     text-decoration: none;
   }
+
   .fc-header-toolbar{
     margin-bottom: 0 !important;
     height: 120px;
@@ -71,15 +79,21 @@
     top: -12px;
   }
   
-  .fc-daygrid-day-events> .fc-daygrid-event-harness:nth-of-type(1){
+  /* .fc-daygrid-day-events > .fc-daygrid-event-harness:nth-of-type(1){
   position: absolute;
   height: 30px;
   top:-30px;
-  }
+  } */
 
   .fc-event {
   text-align: center;
   }
+
+  /* 달력 +more 창*/
+  /* .fc-more-popover {
+    left: auto !important;
+    right: 0 !important;
+  } */
 
   /* slider */
 .slider1 {
@@ -121,6 +135,38 @@
 }
 #bucket-previous-arrow{
   transition: 1s;
+}
+
+.fc-toolbar {
+  position: relative;
+}
+.fc-toolbar-title::before {
+  position: absolute;
+  font-size: 15px;
+  content: "🟩: To-Do List달성률";
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.fc-toolbar-title::after {
+  position: absolute;
+  font-size: 15px;
+  content: "🟥: Allday To-Do List달성률";
+  left: 0;
+  top: 70%;
+  transform: translateY(-50%);
+}
+
+.fc-day-today {
+  background-color: #FFFFCC !important;
+}
+
+.fc-daygrid-day-number {
+  font-weight: bold;
+}
+.modal-hide{
+  display: none;
 }
 </style>
 <script>
@@ -191,21 +237,31 @@
       }
     })
   }
-  // main Calnedar 데이터 표시
+  // 메인 캘린터 데이터 표시
   function c(){
       var calendarEl = document.getElementById('calendar');
       var calendar = new FullCalendar.Calendar(calendarEl, {
-        height: 750,
+        height: 780,
         contentHeight: 180,
-        timeZone: 'UTC',
+        timeZone: 'UTC+9',
         initialView: 'dayGridMonth',
         eventOrder : 'displayOrder',
-        // locale: 'ko',
+        locale: 'ko',
+        dayCellContent: function(e) {
+          var dayNumberText = e.dayNumberText.replace('일', ''); // '일'을 제거
+          return dayNumberText;
+        },
         titleFormat: function (date) {
           year = date.date.year;
           month = date.date.month + 1;
           return year + "년 " + month + "월";
         },
+        // dayMaxEventRows: true, // +n more
+        // views: {
+        //   timeGrid: {
+        //     dayMaxEventRows: 4
+        //   }
+        // },
         events: function (info, success, failure) {
           // Calendar TodoList 데이터 가져오기
           fetch('/api/calendar/todo' , {
@@ -213,75 +269,81 @@
                   .then((response) => response.json())
                   .then((data) => {
                     const todo = data.data;
-
                     // 캘린더의 날짜가 변경될 때마다 호출되는 함수
                     function updateTodoPreview() {
                       const currentDate = calendar.getDate(); // 현재 캘린더에 표시되는 날짜
                       const currentStr = currentDate.toISOString().substr(0, 10); // YYYY-MM-DD 형식의 문자열로 변환
-                      fetch(`/api/preview/todo?date=${currentStr}`)
+                      fetch(`/api/calendar/todo?date=${currentStr}`)
                               .then(response => response.json())
                               .then(data => {
                                 const todo = data.data.filter(todoo => todoo.today.startsWith(currentStr))
+                                        .slice(0,6)
                                         .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
                                         .join('');
                                 todoPreview.innerHTML = todo;
                               });
                     }
-
                     // 페이지가 로드될 때 한 번 호출하여 현재 날짜 미리보기를 표시함
                     updateTodoPreview();
-
                     // 달성률 계산
-                    const achievements = {}; // 빈 객체 생성
+                    const todoAchievements = {}; // 빈 객체 생성
                     for (let i = 0; i < todo.length; i++) {
                       const date = todo[i].today;
                       const achieved = todo[i].success === 'SUCCESS' ? 1 : 0; // 'SUCCESS'일 경우 1을, 아닐 경우('READY') 0
-                      if (!achievements[date]) {
-                        achievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
+                      if (!todoAchievements[date]) {
+                        todoAchievements[date] = { achieved: 0, total: 0 }; // 객체에 현재 날짜의 항목이 없을 경우, 새 객체를 생성하고 추가
                       }
-                      achievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
-                      achievements[date].total++; // 해당 날짜의 total 에 +1 함
+                      todoAchievements[date].achieved += achieved; // 해당 날짜의 achieved 에 현재 항목 수 +
+                      todoAchievements[date].total++; // 해당 날짜의 total 에 +1 함
                     }
-
                     // 이벤트 생성
-                    const events = [];
-                    for (const date in achievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
-                      const achievementRate = achievements[date].total > 0
-                              ? Math.round((achievements[date].achieved / achievements[date].total) * 100)
+                    const todoEvents = [];
+                    for (const date in todoAchievements) { //for in 반복문: 객체의 속성들을 반복할때 주로 사용
+                      const achievementRate = todoAchievements[date].total > 0
+                              ? Math.round((todoAchievements[date].achieved / todoAchievements[date].total) * 100)
                               : 0; // 삼항 연산자를 사용하여 값이 0보다 크면 달성률 계산, 0보다 작거나 같으면(해당 날짜에 할 일 없는 경우) 0
-                      events.push({
+                      todoEvents.push({
                         title: `${Math.round(achievementRate)}%`, // Math.round함수 정수 반올림
                         start: date, // 이벤트 시작 날짜
-                        color: 'green', // todo 달성률 이벤트는 초록색으로 표시
+                        color: 'green', 
                       });
                     }
 
-                    // Calendar BucketList 데이터 가져오기
-                    fetch('/api/calendar/bucket', {
+                    // Calendar alldayTodoList 데이터 가져오기
+                    fetch('/api/calendar/alldayTodo', {
                       credentials: "include"})
                             .then((response) => response.json())
                             .then((data) => {
-                              const bucket = data.data;
-                              let eventCounts = {}; // 각 날짜별 이벤트 수 계산을 위한 객체
-                              for (let i = 0; i < bucket.length; i++) {
-                                let title = bucket[i].title;
-                                let start = bucket[i].d_day;
-                                let event = {
-                                  title: title,
-                                  start: start,
-                                  color: '#FF7F50' // 주황색
-                                };
-                                // 각 날짜별 이벤트 수 계산
-                                eventCounts[start] = eventCounts[start] ? eventCounts[start] + 1 : 1;
-                                if (eventCounts[start]== 3) {
-                                  event['url'] = '/page/bucketList';
-                                  event['title'] ='➕'; // +more 버튼 추가된 이벤트 타이틀
+                              const alldaytodo = data.data;
+
+                              // 달성률 계산
+                              const alldayAchievements = {};
+                              for (let i = 0; i < alldaytodo.length; i++) {
+                                const date = alldaytodo[i].createdAt;
+                                const achieved = alldaytodo[i].success === 'SUCCESS' ? 1 : 0;
+                                if (!alldayAchievements[date]) {
+                                  alldayAchievements[date] = { achieved: 0, total: 0 }; 
                                 }
-                                if (eventCounts[start] < 4) { events.push(event); }
+                                alldayAchievements[date].achieved += achieved;
+                                alldayAchievements[date].total++; 
                               }
+                              // 이벤트 생성
+                              const alldayEvents = [];
+                              for (const date in alldayAchievements) { 
+                                const achievementRate = alldayAchievements[date].total > 0
+                                        ? Math.round((alldayAchievements[date].achieved / alldayAchievements[date].total) * 100)
+                                        : 0; 
+                                        console.log(alldayEvents)
+                                alldayEvents.push({
+                                  title: `${Math.round(achievementRate)}%`, 
+                                  start: date, 
+                                  color: 'red',
+                                });
+                              
+                              }
+                              const events = [...todoEvents, ...alldayEvents];
                               success(events);
                             })
-
                             .catch((error) => {
                               failure(error);
                             });
@@ -303,21 +365,25 @@
           calendar.gotoDate(selectedDate); // 클릭한 날짜로 이동
 
           // 해당 일자에 맞는 TodoList 미리보기
-          const selectedDateStr = selectedDate.toISOString().substr(0, 10); // toISOString 메소드로 객체를 문자열 반환, YYYY-MM-DDTHH:mm:ss.sssZ 로 반환된 것을 subsrt 메소드로 첫 10자 추출
+          const selectedDateStr = selectedDate.toISOString().substr(0, 10);
           fetch(`/api/preview/todo?date=${selectedDateStr}`, {
-            credentials: "include"})
-                  .then(response => response.json())
-                  .then(data => {
-                    const todo = data.data.filter(todoo => todoo.today.startsWith(selectedDateStr)) // todo 배열에서 선택한 날짜에 해당 항목만 필터링
-                            .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`) // 각 항목을 html 문자열로 변환
-                            .join(''); // html 문자열을 결합
-                    todoPreview.innerHTML = todo;
-                  });
+            credentials: "include"
+          })
+            .then(response => response.json())
+            .then(data => {
+              const todo = data.data
+                .filter(todoo => todoo.today.startsWith(selectedDateStr))
+                .slice(0,6)
+                .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
+                .join('');
+              todoPreview.innerHTML = todo;
+          });
+
         },
       });
       calendar.render();
   }
-  // BucketList 미리보기
+  // 포스트잇 버킷리스트 미리보기
   function a(){
     fetch('/api/preview/bucket', {
       credentials: "include"})
@@ -333,20 +399,19 @@
             });
   }
   function b(){
-    // 추천 TodoList
-    fetch('/api/card/alldaytodo')
+    // 추천 투두리스트 카드
+    fetch('/api/card/alldayTodo')
             .then((response) => response.json())
             .then((data) => {
               const todoHtml = data.data.map(
                       (todo) => `
-          <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal"onclick="modalDate('${todo.title}','${todo.content}','${todo.image}','${todo.name}','${todo.updatedAt}' )">
+          <div class="slide-card1 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal1"onclick="modalDate1('${todo.title}','${todo.content}','${todo.image}','${todo.name}','${todo.updatedAt}','${todo.shareCount}')">
             <div class="text-decoration-none">
-<div style="height:300px;width:300px; background-image:url('${todo.image}'); background-position: center; background-size: contain; background-repeat: no-repeat;">
-
-</div>
-              <div class="p-3" style="height:150px;">
+            <div style="height:300px;width:300px; background-image:url('${todo.image}'); background-position: center; background-size: contain; background-repeat: no-repeat;"></div>
+              <div class="p-3" style="height:150px; padding:0 !important;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${todo.title}</p>
                 <p class="text-dark" style="text-align: center;">${todo.name}</p>
+                <p class="text-dark" style="text-align: right;">공유 횟수 : ${todo.shareCount} </p>
                 <p class="text-dark" style="text-align: right;">${todo.updatedAt}</p>
               </div>
             </div>
@@ -356,18 +421,19 @@
               document.getElementById('todofeed').innerHTML = todoHtml.join('');
             });
 
-    // 추천 BucketList
+    // 추천 버킷리스트 카드
     fetch('/api/card/bucket')
             .then((response) => response.json())
             .then((data) => {
               const bucketHtml = data.data.map(
                       (bucket) => `
-          <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="modalDate('${bucket.title}','${bucket.content}','${bucket.image}','${bucket.name}','${bucket.updatedAt}' )">
+          <div class="slide-card2 position-relative bg-white overflow-hidden shadow-sm mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal2" onclick="modalDate2('${bucket.title}','${bucket.content}','${bucket.image}','${bucket.name}','${bucket.updatedAt}','${bucket.shareCount}' )">
             <div class="text-decoration-none">
               <div style="height:300px;width:300px; background-image:url('${bucket.image}'); background-position: center; background-size: contain;  background-repeat: no-repeat"></div>
-                <div class="p-3"style="height:150px;">
+                <div class="p-3"style="height:150px; padding:0 !important;">
                 <p class="text-dark my-2 fs-5 fw-semibold" style="text-align: center;">${bucket.title}</p>
                 <p class="text-dark" style="text-align: center;">${bucket.name}</p>
+                <p class="text-dark" style="text-align: right;">공유 횟수 : ${bucket.shareCount} </p>
                 <p class="text-dark" style="text-align: right;">${bucket.updatedAt}</p>
               </div>
             </div>
@@ -377,35 +443,187 @@
               document.getElementById('bucketfeed').innerHTML = bucketHtml.join('');
             });
   }
-
-
-
-
-  function modalDate(title,content,image,name,update){
-    $('#modelImg').css("background-image","url("+image+")");
-    $('#modelTitle').text(title);
-    $('#modelName').text("작성자 : " + name);
-    $('#modelDate').text("작성일 : "+ update);
-    $('#modelContent').text(content);
+  //모달 투두 데이터 가쟈오기
+  function modalDate1(title,content,image,name,update,shareCount){
+    $('#modelImg1').css("background-image","url("+image+")");
+    $('#modelTitle1').text(title);
+    $('#modelName1').text("작성자 : " + name);
+    $('#modelDate1').text("작성일 : "+ update);
+    $('#modelContent1').text(content);
+    $('#modelShareCount1').text("공유 횟수 : "+shareCount);
   }
-  function sorry(){
-    alert("죄송합니다. 아직 구현되지 않은 기능입니다.");
+  //모달 버킷 데이터 가져오기
+  function modalDate2(title,content,image,name,update,shareCount){
+    $('#modelImg2').css("background-image","url("+image+")");
+    $('#modelTitle2').text(title);
+    $('#modelName2').text("작성자 : " + name);
+    $('#modelDate2').text("작성일 : "+ update);
+    $('#modelContent2').text("상세내용 : " + content);
+    $('#modelShareCount2').text("공유 횟수 : "+shareCount);
   }
+// 투두 공유 횟수
+  function todoShare(){
+    const todoShareTitle = $('#modelTitle1').text();
+    const todoShareName = $('#modelName1').text().split(" : ")[1];
+    const todoShareCount = $('#modelShareCount1').text().split(" : ")[1];
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    $.ajax({
+      type:"POST",
+      url:"/api/todoLists/todoShare",
+      data:{
+        shareTitle:todoShareTitle,
+        shareName:todoShareName,
+        shareCount:todoShareCount
+      },
+      success:function (res){
+        alert(res.msg)
+      }
+    })
+  }
+// 버킷 공유 횟수
+  function bucketShare(){
+    const bucketShareTitle = $('#modelTitle2').text();
+    const bucketShareName = $('#modelName2').text().split(" : ")[1];
+    const bucketShareCount = $('#modelShareCount2').text().split(" : ")[1];
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    $.ajax({
+      type:"POST",
+      url:"/api/bucketLists/bucketShare",
+      data:{
+        shareTitle:bucketShareTitle,
+        shareName:bucketShareName,
+        shareCount:bucketShareCount
+      },
+      success:function (res){
+        alert(res.msg)
+      }
+    })
+  }
+  //모달 버튼 작동
+  function commentOpen(){
+    $('.modal-content').animate({left:-248})
+    $('#comment').animate({left:498});
+    $('.modal-footer').animate({width:1000});
+    $('#sorry').addClass('modal-hide');
+    $('#commentAdd').removeClass('modal-hide');
+    $('#btn-X').addClass('modal-hide');
+    getComments();
+  }
+  // 모달 창 닫기
+  function modalX(){
+    $('.modal-content').animate({left:0});
+    $('#comment').animate({left:0});
+    $('.modal-footer').animate({width:500});
+    $('#commentAdd').addClass('modal-hide');
+    $('#sorry').removeClass('modal-hide');
+  }
+  // 모달
+  function modalCX(){
+    $('.modal-content').animate({left:0});
+    $('#comment').animate({left:0});
+    $('.modal-footer').animate({width:500});
+    $('#sorry').removeClass('modal-hide');
+    $('#commentAdd').addClass('modal-hide');
+    $('#btn-X').removeClass('modal-hide');
+  }
+  //댓글 작성완료
+  function createComments(){
+    const title = $('#modelTitle2').text();
+    const name = $('#modelName2').text().split(":")[1].trim();
+    const date = $('#modelDate2').text().split(":")[1].trim();
+    const myComment = $('#myComment').val();
+    if(myComment===""){
+      alert("댓글을 입력해주세요");
+      return;
+    }
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    $.ajax({
+      type:"POST",
+      url:'/api/reviews/bucket',
+      data:{title:title,
+      name:name,
+      date:date,
+      myComment:myComment},
+      success:function(res){
+        alert(res.msg);
+        getComments();
+        $('#myComment').val('');
+      }
+    });
 
-  // 페이지네이션
-  // var page = 2;
-  // var k = '';
-  // $(window).scroll(function() {
-  //   if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-  //     show_table(page);
-  //     if(k!=undefined){
-  //       alert('page가 변경됩니다.')
-  //       page++;
-  //     }
-  //   }
-  // });
-  // 목록 받아오기 받아오면 뿌려줄때 갯수에 따라 페이지 네이션 되게함
+  }
+  //댓글 가져오기
+  function getComments(){
+    const title = $('#modelTitle2').text();
+    const name = $('#modelName2').text().split(":")[1].trim();
+    const date = $('#modelDate2').text().split(":")[1].trim();
+    $.ajax({
+      type:"GET",
+      url:'/api/reviews/bucket',
+      data:{title:title,
+        name:name,
+        date:date},
+      success:function(res){
+        const reviews = res;
+        $('#bucketComment *').remove();
+        for(let i=0; i<reviews.length; i++){
+          const name = reviews[i].name;
+          const content = reviews[i].content;
+          if(name === localStorage.getItem('name')){
+            $('#bucketComment').append(`
+            <p style="position:relative; padding:0; margin: 0;">
+                <span>작성자 : ${name}</span>
+                <button style="right:10px; position: absolute; border: 0; background: none;" onclick="delComment()"><i class="fa-solid fa-xmark"></i></button>
+<br/>
+<span class='contents'>${content}</span>
+            </p>
 
+          `)
+          }else{
+            $('#bucketComment').append(`
+            <p style="position:relative; padding:0; margin: 0;">
+                <span>작성자 : ${name}</span>
+<br/>
+<span class='contents'>${content}</span>
+            </p>
+
+          `)
+          }
+
+        }
+      }
+    });
+  }
+  //댓글 삭제
+  function delComment(){
+    const title = $('#modelTitle2').text();
+    const name = $('#modelName2').text().split(":")[1].trim();
+    const date = $('#modelDate2').text().split(":")[1].trim();
+    const content = $(event.target).parents('p').find('.contents').text();
+    $.ajax({
+      type:"delete",
+      url:'/api/reviews/bucket',
+      data:{
+        title:title,
+        name:name,
+        date:date,
+        content:content
+      },
+      success:function(res){
+        alert(res.msg);
+        getComments();
+      }
+    })
+  }
 
 </script>
 <body>
@@ -413,74 +631,71 @@
   <%-include('./topNav')%>
   <!--바디-->
   <div class="container-fluid" style="background-size: 100% 100%; margin-top: 130px;">
-    <div class = "container" style="background-image: url('img/main1.png');background-size: 100% 100%; padding-top: 50px; padding-right: 20px; padding-bottom: 10px;">
-      <!--   달력 들어가야 하는부분-->
-      <section style="height: 800px; border-radius: 5px;">
-        <div class="container-fluid" style="height:800px; text-align: center; padding-top: 20px; margin:0;" id="calendarBox" >
-          <div id="calendar" style="width: 100%;"></div>
-        </div>
-      </section>
-    </div>
-  </div>
-  <div class="container-fluid">
-    <div class = "container">
+    <div class="container" style="background-image: url('img/cork.jpg');background-size: 100% 100%;/* padding-top: 50px; */padding-left: 50px;padding-bottom: 60px;">
       <section>
         <div class="container-fluid">
-          <div class = "row" style="margin-top:20px;">
-            <div class = "col-md-6" style="min-height: 720px; background-image: url('img/abc.png'); background-size: 100% 100%; width: 48%; padding-top: 60px;">
-              <div class="row" style="margin-top: 60px; margin-bottom: 30px;">
-                <div class="col-md-3"></div>
-                <div class="col-md-6" style="padding: 0">
-                  <h3 style="text-align: center;"><img src="/img/to-do-list.png" style="width:50px; height:50px;">TODO 리스트</h3>
-                </div>
-                <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
-                  <p style="text-align: left; padding-right:70px; margin:0;"><a href="/page/todoListDetail" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
-                </div>
+          <div class="row" style="margin-top:20px;">
+            <div class="col-md-6" style="min-height: 360px; background-size: 100% 100%; width: 48%; padding-top: 60px;">
+              <div class="row">
+                <div class="col-md-3" style="padding-left:20px; line-height: 58px; "></div>
               </div>
-              <div style="text-align: center; border-radius: 10px;" id="todoPreview">
+              <div style="text-align: center; border-radius: 10px;" id="calendar"></div>
             </div>
-            </div>
-            <div class = "col-md-6" style=" min-height: 720px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 50px; width: 48%; padding-top: 60px;">
-              <div class="row" style="margin-top: 60px; margin-bottom: 30px;">
+            <div class="col-md-6">
+              <div class="row" style="margin-top: 92px;">
                 <div class="col-md-3"></div>
-                <div class="col-md-6" style="padding: 0">
-                  <h3 style="text-align: center;"><img src="/img/bucket-list.png" style="width:50px; height:50px;">버킷 리스트</h3>
-                </div>
-                <div class="col-md-3" style="padding-left:20px; line-height: 58px; ">
-                  <p style="text-align: right; padding-right: 70px;"><a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+More</a></p>
-                </div>
+                <div class="col-md-6" style="min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 60px; width: 80%;">
+                  <h3 style="text-align: center;">TODO리스트</h3>
+                  <p style="text-align: right; padding-right: 48px; margin-top: 38px;">
+                    <a href="/page/todoListDetail" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
+                  </p>
+                  <div style="text-align: center;" id="todoPreview"></div>
+                </div>                
               </div>  
-              <div style="text-align: center;" id="bucketPreview"></div>
+              <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6" style="min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 60px; width: 80%;">
+                  <h3 style="text-align: center;">BUCKET리스트</h3>
+                  <p style="text-align: right; padding-right: 48px; margin-top: 38px;">
+                    <a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
+                  </p>
+                  <div style="text-align: center;" id="bucketPreview"></div>
+                </div>
+                <div class="col-md-3" style="padding-left:20px;"></div>
+              </div>
             </div>
           </div>
         </div>
       </section>
     </div>
   </div>
+  
   <!-- Slider -->
   <section>
-    <h4 style="text-align: center;">추천 TODOLIST</h4>
-    <div class="container" style="position: relative;">
-      <!-- Cards Wrap -->
-      <div class="slider1 d-flex align-items-center justify-content-start overflow-hidden position-relative">
-        <div class="slider-wrap d-flex align-items-center position-absolute" id="todofeed">
-          <div class="slide-card1">  
+    <div style="margin-top: 50px;">
+      <h4 style="text-align: center;">추천 TODOLIST</h4>
+      <div class="container" style="position: relative;">
+        <!-- Cards Wrap -->
+        <div class="slider1 d-flex align-items-center justify-content-start overflow-hidden position-relative">
+          <div class="slider-wrap d-flex align-items-center position-absolute" id="todofeed">
+            <div class="slide-card1">  
+            </div>
           </div>
         </div>
+        <!-- Slider Arrows -->
+        <!-- Left Arrow -->
+        <a class="text-dark" id="todo-previous-arrow">
+          <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 start-0" style="cursor: pointer">
+            <i class="fa fa-angle-left" aria-hidden="true"></i>
+          </div>
+        </a>
+        <!-- Right Arrow -->
+        <a class="text-dark" id="todo-next-arrow">
+          <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 end-0"style="cursor: pointer">
+            <i class="fa fa-angle-right" aria-hidden="true"></i>
+          </div>
+        </a>
       </div>
-      <!-- Slider Arrows -->
-      <!-- Left Arrow -->
-      <a class="text-dark" id="todo-previous-arrow">
-        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 start-0" style="cursor: pointer">
-          <i class="fa fa-angle-left" aria-hidden="true"></i>
-        </div>
-      </a>
-      <!-- Right Arrow -->
-      <a class="text-dark" id="todo-next-arrow">
-        <div class="arrow bg-white d-flex align-items-center justify-content-center shadow-lg border rounded-circle position-absolute bottom-50 end-0"style="cursor: pointer">
-          <i class="fa fa-angle-right" aria-hidden="true"></i>
-        </div>
-      </a>
     </div>
   </section>
   <section style="margin-top: 30px;">
@@ -509,24 +724,70 @@
     </div>
   </section>
   <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header" style="position: relative">
-          <div style="width:100%;height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg"></div>
-          <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <h1 id="modelTitle">제목</h1>
-          <p id="modelName">작성자 : </p>
-          <p id="modelDate">작성일 : </p>
-          <p id="modelContent">내용</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" onclick="sorry()" class="btn btn-primary">댓글 작성하기</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      <div class="modalBox1" id="modalBox1">
+        <div class="modal-content">
+          <div class="modal-header" style="position: relative">
+            <div style="width:100%; height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg1"></div>
+            <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h1 id="modelTitle1">제목</h1>
+            <p id="modelName1">작성자 : </p>
+            <p id="modelDate1">작성일 : </p>
+            <p id="modelContent1">내용</p>
+            <p id="modelShareCount1">공유횟수</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
+            <button type="button" class="btn btn-primary">댓글 작성하기</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
         </div>
       </div>
+    </div>  
+  </div>
+  
+  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="position: relative">
+          <div class="row">
+            <div class="col-md-12" id="comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
+              <h3 style="margin-top: 10px;">댓글</h3>
+              <button type="button" style="position: absolute; top:20px; right:20px;" onclick="modalCX()" class="btn-close"aria-label="Close"></button>
+              <div style="height: 550px; padding-top:10px; padding-bottom: 10px; overflow-y: scroll" id="bucketComment">
+              </div>
+              <div style="border-top:1px solid #eee; margin-top: 30px;">
+                <textarea name="comment" id="myComment" style="width: 100%;"></textarea>
+              </div>
+            </div>
+            <div class="col-md-12" style="height:788px;">
+              <div class="modal-header" style="position: relative">
+            <div style="width:100%;height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg2"></div>
+            <button type="button" onclick="modalX()" style="position: absolute; top:20px; right:20px;" class="btn-close" id="btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+              <div class="modal-body">
+            <h1 id="modelTitle2"></h1>
+            <p id="modelName2"></p>
+            <p id="modelDate2"></p>
+            <p id="modelContent2"></p>
+            <p id="modelShareCount2"></p>
+            <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
+          </div>
+              <div class="modal-footer" style="border:0" >
+                <button type="button" onclick="commentOpen()" id="sorry" class="btn btn-primary">댓글 보기</button>
+                <button type="button" onclick="createComments()" id="commentAdd"  class="btn btn-primary modal-hide">댓글 작성</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
+              </div>
+          </div>
+
+          </div>
+
+        </div>
+
+
+
     </div>
   </div>
   <!--풋터-->

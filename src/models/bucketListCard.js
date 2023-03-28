@@ -35,13 +35,21 @@ module.exports = (sequelize, DataTypes) => {
             type:DataTypes.ENUM('SUCCESS','READY'),
             defaultValue: 'READY'
         },
+        share:{
+            type:DataTypes.ENUM('OK','NO'),
+            defaultValue: 'NO'
+        },
+        shareCount : {
+            type:DataTypes.INTEGER,
+            defaultValue: 0
+        },
         createdAt:{
             type:DataTypes.DATEONLY,
-            defaultValue:new Date().toISOString()
+            defaultValue:new Date()
         },
         updatedAt:{
             type:DataTypes.DATEONLY,
-            defaultValue:new Date().toISOString()
+            defaultValue:new Date()
         }
     },
     {

@@ -15,7 +15,7 @@
     //현재 날짜
     var year = new Date().getFullYear();// 현재 날짜의 년
     var month =new Date().getMonth()+1;// 현재 날짜의 월
-    var day =new Date().getDate();// 현재 날짜
+    var day =new Date().getDate()
     $(document).ready(function() {
         getBucketList();
         getCards();
@@ -65,9 +65,9 @@
                     if(res[i].success === "READY"){
                         $('#cards').append(`
                     <div class="card" id="card${i}">
-                    <div style="height: 170px;">
+                    <div class="card-top-img">
                     <!--여기 src 다음에 이미지 경로 넣어줄-->
-                        <img src="${res[i].image}" class="card-img-top" alt="...">
+                        <img src="${res[i].image}" class="card-img-top" alt="">
                         <button class="bucketEdit abs" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="fa-solid fa-pen" onclick="cardFix('${res[i].image}')"></i></button>
                         <button class="bucketDelete abs" onclick="delCard()"><i class="fa-solid fa-xmark"></i></button>
                     </div>
@@ -81,9 +81,9 @@
                     }else{
                         $('#cards').append(`
                     <div class="card" id="card${i}">
-                    <div>
+                    <div class='card-top-img'>
                     <!--여기 src 다음에 이미지 경로 넣어줄-->
-                        <img src="${res[i].image}" class="card-img-top" alt="...">
+                        <img src="${res[i].image}" class="card-img-top" alt="">
                         <button class="bucketEdit abs" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="fa-solid fa-pen" onclick="cardFix('${res[i].image}')"></i></button>
                         <button class="bucketDelete abs" onclick="delCard()"><i class="fa-solid fa-xmark"></i></button>
                     </div>
@@ -120,12 +120,17 @@
         const img1 = localStorage.getItem("img");
         const title = $('#exampleFormControlInput2').val();
         const content = $('#exampleFormControlTextarea2').val();
+        let share = "NO"
+        if (document.getElementById('flexCheckDefault2').checked){
+            share = "OK"
+        }
         const formData = new FormData();
         const imageInput = $("#inputImg")[0].files[0];
         formData.append("title1",title1);
         formData.append("content1",content1);
         formData.append("img1",img1);
         formData.append("title",title);
+        formData.append("share",share);
         formData.append("content",content);
         formData.append("image",imageInput);
 
@@ -149,9 +154,14 @@
         const title = $('#exampleFormControlInput1').val();
         const content = $('#exampleFormControlTextarea1').val();
         const image = $("#formFileSm")[0].files[0];
+        let share = "NO"
+        if (document.getElementById('flexCheckDefault1').checked){
+            share = "OK"
+        }
         formData.append("title",title);
         formData.append("content",content);
         formData.append("image",image);
+        formData.append("share",share);
         $.ajax({
             type:"POST",
             url:"/api/bucketLists/cards",
@@ -265,7 +275,7 @@
             <li class="bucketBoxLi" id="bucketInputBox" >
                         <div class="row" style="margin:0;">
                             <div class="col-md-3 bucketDay">
-                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" value="${dayValue}" maxlength="10">
+                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" min="2023-01-01" max="3000-12-31"value="${dayValue}" maxlength="10">
                             </div>
                             <div class="col-md-9 bucketDay">
                                     <input class="bucketInput" id="bucketRe" type="text" placeholder="Bucket-List를 입력해주세요" maxlength="24" style="text-align: left"value="${title}">
@@ -340,13 +350,15 @@
     //버킷추가버튼 데이터 처리 필요 X
     function bucketPlus() {
         $('#BucketPlusBox').hide();
+        const offset = 1000 * 60 * 60 * 9;
         const listBox =  $('#bucketListD-day');
-        const date = new Date().toISOString().substring(0,10);
+        let date = new Date(new Date().getTime()+offset);
+        date = date.toISOString().replace("T", " ").split('.')[0].substring(0,10);
         let bucketInput=`
                     <li class="bucketBoxLi" id="bucketInputBox" >
                         <div class="row" style="margin:0;">
                             <div class="col-md-3 bucketDay">
-                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" value="${date}" maxlength="10">
+                                <input class="calInput" type="date" required pattern="\d{4}-\d{2}-\d{2}" min="2023-01-01" max="3000-12-31"value="${date}" maxlength="10">
                             </div>
                             <div class="col-md-9 bucketDay">
                                     <input class="bucketInput" id="bucketCr" type="text" placeholder="Bucket-List를 입력해주세요" maxlength="24" style="text-align: left">
@@ -416,7 +428,7 @@
     /* 헤더 네비게이션 */
     .fo{background: red; border-radius: 5px;}
     #leftNav {transition: 0.5s}
-    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 80%; padding: 10px; transition: 0.5s; border-radius: 5px;}
+    .leftMenu {background: none; border: 0; border-bottom: 1px solid black; width: 90%; padding: 10px; transition: 0.5s; border-radius: 5px;}
     .leftMenu:hover {background: #777}
     .btntt{width:50px; height:50px; line-height: 50px; border:0; border-radius: 5px; background: rgba(255,255,255,0.3);; font-size: 20px; transition: 1s; }
     .btntt:hover{background-color: rgba(255,255,255,0.7);}
@@ -432,7 +444,7 @@
     .card-body {background-color: hsl(0, 0%, 80%, 0.3)}
     .cardPlus {background: none; width:100px; height:100px;  margin: 0 auto; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; border: 0; padding:0; font-size: 45pt; border-radius: 45px; transition: 1s; }
     .cardPlus:hover{background-color: rgba(255,255,255,0.7);}
-    .cardPlusBox{background-image: url(/img/winter.jpg);text-align: center; justify-content: center; }
+    .cardPlusBox{background-color: hsl(0, 0%, 80%, 0.3);text-align: center; justify-content: center; }
     /*카드 좌우 이동버튼*/
     .cardBtn{position: absolute;width:50px; height:50px; border-radius: 25px; top:50%; border:0; background: none; transition: 1s;}
     .cardBtn:hover {background: #eee;}
@@ -447,11 +459,14 @@
     .bucketDelete:hover{background-color: rgba(255,255,255,0.7);}
     .bucketCheck {background: none; border: 0;}
     .fa-solid{color: rgb(61, 59, 59);}
-
+    .card-top-img{height:170px;}
     .abs2 {position: absolute; height: 70px; box-sizing: border-box; padding: 10px; border-radius: 35px; bottom:15px; transform: translate(-50%); transition: 0.2s;}
     .abs2:hover{background-color:  rgba(255,255,255,0.7); box-sizing: border-box; }
     .modal-body {text-align: left;}
     .form-label{font-size: 17pt;}
+    .shareBox{display:flex; margin: 0 auto; text-align: center; justify-content: center; align-content: center;}
+    .shareCheck{width:25px; height:25px; margin-right:5px;}
+    .shareCheckLabel{font-size:17px; }
 
     /* 리스트섹션 */
     .bucketBoxes{position: relative; margin-top: 20px;}
@@ -566,6 +581,12 @@
                         <label for="formFileSm" class="form-label">Image</label>
                         <input type="file" class="form-control form-control-sm" name="image" id="formFileSm" >
                     </div>
+                    <div class="shareBox">
+                        <input class="shareCheck" type="checkbox" value="" id="flexCheckDefault1">
+                        <label class="shareCheckLabel" for="flexCheckDefault1">
+                            공유 허용시 체크
+                        </label>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                         <button onclick="createCard()" data-bs-dismiss="modal" class="btn btn-primary">등록</button>
@@ -593,6 +614,12 @@
                     <div class="mb-3">
                         <label for="formFileSm" class="form-label">Image</label>
                         <input type="file" id="inputImg" class="form-control form-control-sm">
+                    </div>
+                    <div class="shareBox">
+                        <input class="shareCheck" type="checkbox" value="" id="flexCheckDefault2">
+                        <label class="shareCheckLabel" for="flexCheckDefault2">
+                            공유 허용시 체크
+                        </label>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>

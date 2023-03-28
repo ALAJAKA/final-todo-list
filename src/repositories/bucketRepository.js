@@ -48,13 +48,14 @@ class BucketListRepository {
     });
   }
   // 버킷리스트 카드 생성
-  createBucketListCard = async (title,name,content,image,userId) =>{
+  createBucketListCard = async (title,name,content,image,userId,share) =>{
     const bucketListCard = await BucketListCard.create({
       title,
       name,
       content,
       image:image,
-      userId
+      userId,
+      share,
     });
     return bucketListCard;
   }
@@ -78,11 +79,12 @@ class BucketListRepository {
     });
   }
   // 카드 수정
-  updateBucketListCard = async (title1,content1,img1,title,content,image,userId)=>{
+  updateBucketListCard = async (title1,content1,img1,title,content,image,userId,share)=>{
     await BucketListCard.update({
       title:title,
       content:content,
       image:image,
+      share:share
     },{where:{
         title:title1,
         content:content1,
@@ -114,7 +116,24 @@ class BucketListRepository {
       }
     });
   }
-
+  getBucketShare = async (shareTitle, shareName) =>{
+    const getBucketShare = await BucketListCard.findOne({
+      where: {
+        [Op.and]: [{ title:shareTitle }, { name:shareName }],
+      },
+      raw: true,
+    });
+    return getBucketShare;
+  }
+  updateBucketShareCount = async(shareTitle, shareName, shareCount)=>{
+    let newCount = Number(shareCount)+1
+    await BucketListCard.update(
+      {shareCount:newCount},{
+      where: {
+        [Op.and]: [ { title:shareTitle }, { name:shareName }],
+      }
+    });
+  }
 }
 
 module.exports = BucketListRepository;
