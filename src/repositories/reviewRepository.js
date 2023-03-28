@@ -32,11 +32,50 @@ class ReviewRepository {
         return BucketReviews;
     }
     delBucketReviews = async (userId,bucketListCardId,content)=>{
-        console.log('content',content);
         await BucketReview.destroy({
             where:{
                 userId:userId,
                 BucketListCardId:bucketListCardId,
+                content:content
+            }
+        });
+    }
+
+    findTodoCardId = async (name,title,date) =>{
+        const cardId = await AllDayTodoList.findOne({
+            attributes:['id']
+            ,where:{
+            name:name,
+            title:title,
+            updatedAt:date,
+            },
+        });
+        return cardId.dataValues.id;
+    }
+    todoReviews = async (userId,todoListCardId,myComment)=>{
+        await TodoReview.create({
+            userId:userId,
+            allDayTodoListId:todoListCardId,
+            content:myComment
+        });
+    }
+    getTodoReviews = async (todoListCardId) =>{
+        console.log(todoListCardId)
+        const TodoReviews = await TodoReview.findAll({
+            where:{allDayTodoListId:todoListCardId},
+            include:[{
+                model:User,
+                attributes :['name'],
+            },
+            ],
+        });
+        return TodoReviews;
+    }
+    delTodoReviews = async (userId,todoListCardId,content)=>{
+        await TodoReview.destroy({
+            where:{
+                userId:userId,
+                allDayTodoListId:todoListCardId,
                 content:content
             }
         });

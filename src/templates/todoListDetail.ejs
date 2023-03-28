@@ -248,9 +248,7 @@
                         }
                     })
             }    
-        
-</script>
-<script>
+
     //상위 온클릭 방지
     function cp(){
         if(event.stopPropagation){
@@ -293,34 +291,7 @@
             })
                 .then((response) => {
                     alert(response.data.msg)
-                    let imgLink = response.data.image
-                    if(!imgLink){
-                        imgLink = "/img/Eiffel.jpg"
-                        }
-                    $('#staticBackdrop').modal('hide');    
-                    let slideWidth = $('#cards').width();
-                    let uuid = self.crypto.randomUUID();
-                    $('#cards').append(`
-                                <div class="card cards" id="card${uuid}">
-                                    <div>
-                                        <img src="${imgLink}" class="card-img-top" alt="...">
-                                        <button class="todoEdit abs" id="cardEdit${uuid}" onclick="cardEditBefore('${uuid}')"data-bs-toggle="modal" data-bs-target="#staticBackdrop2" ><i class="fa-solid fa-pen"></i></button>
-                                        <button class="todoDelete abs" id="cardDelete${uuid}" onclick="cardDelete('${uuid}')"><i class="fa-solid fa-xmark"></i></button>
-                                    </div>
-                                    <div class="card-body" id="cardBody${uuid}">
-                                        <h5 class="card-title" id="cardTitle${uuid}">${title}</h5>
-                                        <p class="card-text" id="cardText${uuid}">${content}</p>
-                                        <button class="todoCheck abs2" id="cardSuccess${uuid}" onclick="cardSuccess('${uuid}')"><img src="/img/check2.png" height="50px;"></button>
-                                    </div>
-                                </div>`)
-                    slideWidth += 322;
-                    $('#cards').css({width:`${slideWidth}`});
-                    if(slideWidth>1298) {$('#cards').animate({left:-322})}
-                    else{$('#cards').animate({left:0})}
-                        if(date>today){
-                        $('.todoCheck').hide();
-                    }
-                    // alert(response.data.msg)
+                    location.reload();
                 })
         }
     }
@@ -418,7 +389,6 @@
                     if(date>today){
                         $('.todoCheck').hide();
                     }
-
                 })
         }
     }
@@ -501,7 +471,6 @@
                     $(`#card${happy}`).remove();
                 })
         }
-
 
     //투두 완료
     function todoSuccess(happy){

@@ -79,21 +79,10 @@
     top: -12px;
   }
   
-  /* .fc-daygrid-day-events > .fc-daygrid-event-harness:nth-of-type(1){
-  position: absolute;
-  height: 30px;
-  top:-30px;
-  } */
 
   .fc-event {
   text-align: center;
   }
-
-  /* 달력 +more 창*/
-  /* .fc-more-popover {
-    left: auto !important;
-    right: 0 !important;
-  } */
 
   /* slider */
 .slider1 {
@@ -143,7 +132,7 @@
 .fc-toolbar-title::before {
   position: absolute;
   font-size: 15px;
-  content: "🟩: To-Do List달성률";
+  content: "🟩 To-Do List달성률";
   left: 0;
   top: 50%;
   transform: translateY(-50%);
@@ -152,7 +141,7 @@
 .fc-toolbar-title::after {
   position: absolute;
   font-size: 15px;
-  content: "🟥: Allday To-Do List달성률";
+  content: "🟥 Allday To-Do List달성률";
   left: 0;
   top: 70%;
   transform: translateY(-50%);
@@ -646,14 +635,14 @@
     }
     $.ajax({
       type:"POST",
-      url:'/api/reviews/bucket',
+      url:'/api/reviews/todo',
       data:{title:title,
         name:name,
         date:date,
         myComment:myComment},
       success:function(res){
         alert(res.msg);
-        getComments();
+        getTodoComments();
         $('#myComment').val('');
       }
     });
@@ -666,13 +655,13 @@
     const date = $('#modelDate1').text().split(":")[1].trim();
     $.ajax({
       type:"GET",
-      url:'/api/reviews/bucket',
+      url:'/api/reviews/todo',
       data:{title:title,
         name:name,
         date:date},
       success:function(res){
         const reviews = res;
-        $('#bucketComment *').remove();
+        $('#todoComment *').remove();
         for(let i=0; i<reviews.length; i++){
           const name = reviews[i].name;
           const content = reviews[i].content;
@@ -709,7 +698,7 @@
     const content = $(event.target).parents('p').find('.contents').text();
     $.ajax({
       type:"delete",
-      url:'/api/reviews/bucket',
+      url:'/api/reviews/todo',
       data:{
         title:title,
         name:name,
@@ -718,7 +707,7 @@
       },
       success:function(res){
         alert(res.msg);
-        getComments();
+        getTodoComments();
       }
     })
   }
@@ -838,40 +827,38 @@
   <!-- Modal -->
   <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-<!--      <div class="modalBox1" id="modalBox1">-->
-        <div class="modal-content" style="position: relative">
-          <div class="row">
-            <div class="col-md-12 comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
-              <h3 style="margin-top: 10px;">댓글</h3>
-              <button type="button" style="position: absolute; top:20px; right:20px;" onclick="modalCX()" class="btn-close"aria-label="Close"></button>
-              <div style="height: 550px; padding-top:10px; padding-bottom: 10px; overflow-y: scroll" id="todoComment">
-              </div>
-              <div style="border-top:1px solid #eee; margin-top: 30px;">
-                <textarea name="comment" id="myComment" style="width: 100%;"></textarea>
-              </div>
+      <div class="modal-content" style="position: relative">
+        <div class="row">
+          <div class="col-md-12 comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
+            <h3 style="margin-top: 10px;">댓글</h3>
+            <button type="button" style="position: absolute; top:20px; right:20px;" onclick="modalCX()" class="btn-close"aria-label="Close"></button>
+            <div style="height: 550px; padding-top:10px; padding-bottom: 10px; overflow-y: scroll" id="todoComment">
             </div>
-            <div class="col-md-12" style="height:788px;">
-              <div class="modal-header" style="position: relative">
-                <div style="width:100%; height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg1"></div>
-                <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <h1 id="modelTitle1">제목</h1>
-                <p id="modelName1">작성자 : </p>
-                <p id="modelDate1">작성일 : </p>
-                <p id="modelContent1">내용</p>
-                <p id="modelShareCount1">공유횟수</p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" onclick="commentOpen(1)" class="sorry btn btn-primary">댓글 보기</button>
-                <button type="button" onclick="createComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
-              </div>
+            <div style="border-top:1px solid #eee; margin-top: 30px;">
+              <textarea name="comment" id="myComment" style="width: 100%;"></textarea>
             </div>
           </div>
-
+          <div class="col-md-12" style="height:788px;">
+            <div class="modal-header" style="position: relative">
+          <div style="width:100%;height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg2"></div>
+          <button type="button" onclick="modalX()" style="position: absolute; top:20px; right:20px;" class="btn-close btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+            <div class="modal-body">
+          <h1 id="modelTitle1"></h1>
+          <p id="modelName1"></p>
+          <p id="modelDate1"></p>
+          <p id="modelContent1"></p>
+          <p id="modelShareCount1"></p>
+          <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
+        </div>
+          <div class="modal-footer" style="border:0" >
+            <button type="button" onclick="commentOpen(1)" class="sorry btn btn-primary">댓글 보기</button>
+            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
+          </div>
         </div>
       </div>
+    </div>
 <!--    </div>  -->
   </div>
   
@@ -901,22 +888,17 @@
             <p id="modelShareCount2"></p>
             <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
           </div>
-              <div class="modal-footer" style="border:0" >
-                <button type="button" onclick="commentOpen(2)" class="sorry btn btn-primary">댓글 보기</button>
-                <button type="button" onclick="createComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
-              </div>
+            <div class="modal-footer" style="border:0" >
+              <button type="button" onclick="commentOpen(2)" class="sorry btn btn-primary">댓글 보기</button>
+              <button type="button" onclick="createComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
+            </div>
           </div>
-
-          </div>
-
         </div>
-
-
-
-    </div>
+      </div>
   </div>
-  <!--풋터-->
-  <%-include('./footer')%>
+</div>
+<!--풋터-->
+<%-include('./footer')%>
 </body>
 </html>
