@@ -449,7 +449,7 @@
     $('#modelTitle1').text(title);
     $('#modelName1').text("작성자 : " + name);
     $('#modelDate1').text("작성일 : "+ update);
-    $('#modelContent1').text(content);
+    $('#modelContent1').text("상세내용 : " + content);
     $('#modelShareCount1').text("공유 횟수 : "+shareCount);
   }
   //모달 버킷 데이터 가져오기
@@ -506,45 +506,51 @@
     })
   }
   //모달 버튼 작동
-  function commentOpen(){
+  function commentOpen(a){
     $('.modal-content').animate({left:-248})
-    $('#comment').animate({left:498});
+    $('.comment').animate({left:498});
     $('.modal-footer').animate({width:1000});
-    $('#sorry').addClass('modal-hide');
-    $('#commentAdd').removeClass('modal-hide');
-    $('#btn-X').addClass('modal-hide');
-    getComments();
+    $('.sorry').addClass('modal-hide');
+    $('.commentAdd').removeClass('modal-hide');
+    $('.btn-X').addClass('modal-hide');
+    if(a== 1){
+      getTodoComments();
+    }else{
+      getComments();
+    }
   }
+
   // 모달 창 닫기
   function modalX(){
     $('.modal-content').animate({left:0});
-    $('#comment').animate({left:0});
+    $('.comment').animate({left:0});
     $('.modal-footer').animate({width:500});
-    $('#commentAdd').addClass('modal-hide');
-    $('#sorry').removeClass('modal-hide');
+    $('.commentAdd').addClass('modal-hide');
+    $('.sorry').removeClass('modal-hide');
+    $('.btn-X').removeClass('modal-hide');
   }
   // 모달
   function modalCX(){
     $('.modal-content').animate({left:0});
-    $('#comment').animate({left:0});
+    $('.comment').animate({left:0});
     $('.modal-footer').animate({width:500});
-    $('#sorry').removeClass('modal-hide');
-    $('#commentAdd').addClass('modal-hide');
-    $('#btn-X').removeClass('modal-hide');
+    $('.sorry').removeClass('modal-hide');
+    $('.commentAdd').addClass('modal-hide');
+    $('.btn-X').removeClass('modal-hide');
   }
-  //댓글 작성완료
+  //버킷 댓글 작성완료
   function createComments(){
     const title = $('#modelTitle2').text();
     const name = $('#modelName2').text().split(":")[1].trim();
     const date = $('#modelDate2').text().split(":")[1].trim();
     const myComment = $('#myComment').val();
-    if(myComment===""){
-      alert("댓글을 입력해주세요");
-      return;
-    }
     if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
       alert('로그인 후 이용 가능합니다.');
       return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    if(myComment===""){
+      alert("댓글을 입력해주세요");
+      return;
     }
     $.ajax({
       type:"POST",
@@ -561,7 +567,7 @@
     });
 
   }
-  //댓글 가져오기
+  //버킷 댓글 가져오기
   function getComments(){
     const title = $('#modelTitle2').text();
     const name = $('#modelName2').text().split(":")[1].trim();
@@ -603,7 +609,7 @@
       }
     });
   }
-  //댓글 삭제
+  //버킷 댓글 삭제
   function delComment(){
     const title = $('#modelTitle2').text();
     const name = $('#modelName2').text().split(":")[1].trim();
@@ -624,7 +630,113 @@
       }
     })
   }
+  //투두 댓글 작성완료
+  function createTodoComments(){
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    const title = $('#modelTitle1').text();
+    const name = $('#modelName1').text().split(":")[1].trim();
+    const date = $('#modelDate1').text().split(":")[1].trim();
+    const myComment = $('#myComment').val();
+    if(myComment===""){
+      alert("댓글을 입력해주세요");
+      return;
+    }
+    $.ajax({
+      type:"POST",
+      url:'/api/reviews/bucket',
+      data:{title:title,
+        name:name,
+        date:date,
+        myComment:myComment},
+      success:function(res){
+        alert(res.msg);
+        getComments();
+        $('#myComment').val('');
+      }
+    });
 
+  }
+  //투두 댓글 가져오기
+  function getTodoComments(){
+    const title = $('#modelTitle1').text();
+    const name = $('#modelName1').text().split(":")[1].trim();
+    const date = $('#modelDate1').text().split(":")[1].trim();
+    $.ajax({
+      type:"GET",
+      url:'/api/reviews/bucket',
+      data:{title:title,
+        name:name,
+        date:date},
+      success:function(res){
+        const reviews = res;
+        $('#bucketComment *').remove();
+        for(let i=0; i<reviews.length; i++){
+          const name = reviews[i].name;
+          const content = reviews[i].content;
+          if(name === localStorage.getItem('name')){
+            $('#todoComment').append(`
+            <p style="position:relative; padding:0; margin: 0;">
+                <span>작성자 : ${name}</span>
+                <button style="right:10px; position: absolute; border: 0; background: none;" onclick="delTodoComment()"><i class="fa-solid fa-xmark"></i></button>
+<br/>
+<span class='contents'>${content}</span>
+            </p>
+
+          `)
+          }else{
+            $('#todoComment').append(`
+            <p style="position:relative; padding:0; margin: 0;">
+                <span>작성자 : ${name}</span>
+<br/>
+<span class='contents'>${content}</span>
+            </p>
+
+          `)
+          }
+
+        }
+      }
+    });
+  }
+  //투두 댓글 삭제
+  function delTodoComment(){
+    const title = $('#modelTitle1').text();
+    const name = $('#modelName1').text().split(":")[1].trim();
+    const date = $('#modelDate1').text().split(":")[1].trim();
+    const content = $(event.target).parents('p').find('.contents').text();
+    $.ajax({
+      type:"delete",
+      url:'/api/reviews/bucket',
+      data:{
+        title:title,
+        name:name,
+        date:date,
+        content:content
+      },
+      success:function(res){
+        alert(res.msg);
+        getComments();
+      }
+    })
+  }
+
+  function goBucketList(){
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    location.href='/page/bucketList';
+  }
+  function goTodoList(){
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    location.href='/page/todoListDetail';
+  }
 </script>
 <body>
   <!--네비게이션-->
@@ -647,7 +759,7 @@
                 <div class="col-md-6" style="min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 60px; width: 80%;">
                   <h3 style="text-align: center;">TODO리스트</h3>
                   <p style="text-align: right; padding-right: 48px; margin-top: 38px;">
-                    <a href="/page/todoListDetail" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
+                    <a onclick="goTodoList()" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
                   </p>
                   <div style="text-align: center;" id="todoPreview"></div>
                 </div>                
@@ -657,7 +769,7 @@
                 <div class="col-md-6" style="min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 60px; width: 80%;">
                   <h3 style="text-align: center;">BUCKET리스트</h3>
                   <p style="text-align: right; padding-right: 48px; margin-top: 38px;">
-                    <a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
+                    <a onclick="goBucketList()" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
                   </p>
                   <div style="text-align: center;" id="bucketPreview"></div>
                 </div>
@@ -726,34 +838,48 @@
   <!-- Modal -->
   <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modalBox1" id="modalBox1">
-        <div class="modal-content">
-          <div class="modal-header" style="position: relative">
-            <div style="width:100%; height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg1"></div>
-            <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!--      <div class="modalBox1" id="modalBox1">-->
+        <div class="modal-content" style="position: relative">
+          <div class="row">
+            <div class="col-md-12 comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
+              <h3 style="margin-top: 10px;">댓글</h3>
+              <button type="button" style="position: absolute; top:20px; right:20px;" onclick="modalCX()" class="btn-close"aria-label="Close"></button>
+              <div style="height: 550px; padding-top:10px; padding-bottom: 10px; overflow-y: scroll" id="todoComment">
+              </div>
+              <div style="border-top:1px solid #eee; margin-top: 30px;">
+                <textarea name="comment" id="myComment" style="width: 100%;"></textarea>
+              </div>
+            </div>
+            <div class="col-md-12" style="height:788px;">
+              <div class="modal-header" style="position: relative">
+                <div style="width:100%; height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg1"></div>
+                <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <h1 id="modelTitle1">제목</h1>
+                <p id="modelName1">작성자 : </p>
+                <p id="modelDate1">작성일 : </p>
+                <p id="modelContent1">내용</p>
+                <p id="modelShareCount1">공유횟수</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" onclick="commentOpen(1)" class="sorry btn btn-primary">댓글 보기</button>
+                <button type="button" onclick="createComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
+              </div>
+            </div>
           </div>
-          <div class="modal-body">
-            <h1 id="modelTitle1">제목</h1>
-            <p id="modelName1">작성자 : </p>
-            <p id="modelDate1">작성일 : </p>
-            <p id="modelContent1">내용</p>
-            <p id="modelShareCount1">공유횟수</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
-            <button type="button" class="btn btn-primary">댓글 작성하기</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
+
         </div>
       </div>
-    </div>  
+<!--    </div>  -->
   </div>
   
   <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" style="position: relative">
           <div class="row">
-            <div class="col-md-12" id="comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
+            <div class="col-md-12 comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
               <h3 style="margin-top: 10px;">댓글</h3>
               <button type="button" style="position: absolute; top:20px; right:20px;" onclick="modalCX()" class="btn-close"aria-label="Close"></button>
               <div style="height: 550px; padding-top:10px; padding-bottom: 10px; overflow-y: scroll" id="bucketComment">
@@ -765,7 +891,7 @@
             <div class="col-md-12" style="height:788px;">
               <div class="modal-header" style="position: relative">
             <div style="width:100%;height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg2"></div>
-            <button type="button" onclick="modalX()" style="position: absolute; top:20px; right:20px;" class="btn-close" id="btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" onclick="modalX()" style="position: absolute; top:20px; right:20px;" class="btn-close btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
               <div class="modal-body">
             <h1 id="modelTitle2"></h1>
@@ -776,8 +902,8 @@
             <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
           </div>
               <div class="modal-footer" style="border:0" >
-                <button type="button" onclick="commentOpen()" id="sorry" class="btn btn-primary">댓글 보기</button>
-                <button type="button" onclick="createComments()" id="commentAdd"  class="btn btn-primary modal-hide">댓글 작성</button>
+                <button type="button" onclick="commentOpen(2)" class="sorry btn btn-primary">댓글 보기</button>
+                <button type="button" onclick="createComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
               </div>
           </div>

@@ -29,6 +29,27 @@
         location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/logout?client_id=7r03hfgoepij4uajvqj1vq94d2&logout_uri=https://flutterStudy.com/logout';
         localStorage.clear();
     }
+    function monthTo(){
+        if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+            alert('로그인 후 이용 가능합니다.');
+            return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+        }
+        location.href='/page/todoListMonth'
+    }
+    function dayTo(){
+        if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+            alert('로그인 후 이용 가능합니다.');
+            return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+        }
+        location.href='/page/todoListDetail'
+    }
+    function bucketTo(){
+        if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+            alert('로그인 후 이용 가능합니다.');
+            return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+        }
+        location.href='/page/bucketList'
+    }
 </script>
 
 <div>
@@ -40,9 +61,9 @@
 
         </div>
         <hr/>
-        <button class="leftMenu" onclick="location.href='/page/todoListMonth'">월간 TO-DO 리스트</button>
-        <button class="leftMenu" onclick="location.href='/page/todoListDetail'" style="margin-top: 20px;">일간 TO-DO 리스트</button>
-        <button class="leftMenu" onclick="location.href='/page/bucketList'"style="margin-top: 20px;">BUCKET 리스트</button>
+        <button class="leftMenu" onclick="monthTo()">월간 TO-DO 리스트</button>
+        <button class="leftMenu" onclick="dayTo()" style="margin-top: 20px;">일간 TO-DO 리스트</button>
+        <button class="leftMenu" onclick="bucketTo()" style="margin-top: 20px;">BUCKET 리스트</button>
 
     </div>
 
