@@ -21,7 +21,6 @@
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.min.css">
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <style>
   /*전체 옵션*/
@@ -245,12 +244,6 @@
           month = date.date.month + 1;
           return year + "년 " + month + "월";
         },
-        // dayMaxEventRows: true, // +n more
-        // views: {
-        //   timeGrid: {
-        //     dayMaxEventRows: 4
-        //   }
-        // },
         events: function (info, success, failure) {
           // Calendar TodoList 데이터 가져오기
           fetch('/api/calendar/todo' , {
@@ -440,6 +433,9 @@
     $('#modelDate1').text("작성일 : "+ update);
     $('#modelContent1').text("상세내용 : " + content);
     $('#modelShareCount1').text("공유 횟수 : "+shareCount);
+    modalCX();
+    getTodoComments();
+
   }
   //모달 버킷 데이터 가져오기
   function modalDate2(title,content,image,name,update,shareCount){
@@ -449,6 +445,8 @@
     $('#modelDate2').text("작성일 : "+ update);
     $('#modelContent2').text("상세내용 : " + content);
     $('#modelShareCount2').text("공유 횟수 : "+shareCount);
+    modalCX();
+    getComments();
   }
 // 투두 공유 횟수
   function todoShare(){
@@ -495,18 +493,14 @@
     })
   }
   //모달 버튼 작동
-  function commentOpen(a){
+  function commentOpen(){
     $('.modal-content').animate({left:-248})
     $('.comment').animate({left:498});
     $('.modal-footer').animate({width:1000});
     $('.sorry').addClass('modal-hide');
     $('.commentAdd').removeClass('modal-hide');
     $('.btn-X').addClass('modal-hide');
-    if(a== 1){
-      getTodoComments();
-    }else{
-      getComments();
-    }
+
   }
 
   // 모달 창 닫기
@@ -537,7 +531,7 @@
       alert('로그인 후 이용 가능합니다.');
       return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
     }
-    if(myComment===""){
+    if(myComment===''){
       alert("댓글을 입력해주세요");
       return;
     }
@@ -628,7 +622,7 @@
     const title = $('#modelTitle1').text();
     const name = $('#modelName1').text().split(":")[1].trim();
     const date = $('#modelDate1').text().split(":")[1].trim();
-    const myComment = $('#myComment').val();
+    const myComment = $('#myComment2').val();
     if(myComment===""){
       alert("댓글을 입력해주세요");
       return;
@@ -643,7 +637,7 @@
       success:function(res){
         alert(res.msg);
         getTodoComments();
-        $('#myComment').val('');
+        $('#myComment2').val('');
       }
     });
 
@@ -835,12 +829,12 @@
             <div style="height: 550px; padding-top:10px; padding-bottom: 10px; overflow-y: scroll" id="todoComment">
             </div>
             <div style="border-top:1px solid #eee; margin-top: 30px;">
-              <textarea name="comment" id="myComment" style="width: 100%;"></textarea>
+              <textarea name="comment" id="myComment2" style="width: 100%;"></textarea>
             </div>
           </div>
           <div class="col-md-12" style="height:788px;">
             <div class="modal-header" style="position: relative">
-          <div style="width:100%;height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg2"></div>
+          <div style="width:100%;height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg1"></div>
           <button type="button" onclick="modalX()" style="position: absolute; top:20px; right:20px;" class="btn-close btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
             <div class="modal-body">
@@ -852,14 +846,14 @@
           <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
         </div>
           <div class="modal-footer" style="border:0" >
-            <button type="button" onclick="commentOpen(1)" class="sorry btn btn-primary">댓글 보기</button>
+            <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">댓글 보기</button>
             <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
           </div>
         </div>
       </div>
     </div>
-<!--    </div>  -->
+    </div>
   </div>
   
   <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -889,7 +883,7 @@
             <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
           </div>
             <div class="modal-footer" style="border:0" >
-              <button type="button" onclick="commentOpen(2)" class="sorry btn btn-primary">댓글 보기</button>
+              <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">댓글 보기</button>
               <button type="button" onclick="createComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
             </div>
