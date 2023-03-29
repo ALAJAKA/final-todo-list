@@ -131,7 +131,8 @@
 .fc-toolbar-title::before {
   position: absolute;
   font-size: 15px;
-  content: "🟩 To-Do List달성률";
+  content: "🟥 Allday To-Do List달성률";
+
   left: 0;
   top: 50%;
   transform: translateY(-50%);
@@ -140,7 +141,7 @@
 .fc-toolbar-title::after {
   position: absolute;
   font-size: 15px;
-  content: "🟥 Allday To-Do List달성률";
+  content: "🟩 To-Do List달성률";
   left: 0;
   top: 70%;
   transform: translateY(-50%);
@@ -563,6 +564,17 @@
         date:date},
       success:function(res){
         const reviews = res;
+        if(res.length ===0){
+          $('#bucket-re *').remove();
+          $('#bucket-re').append(` <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">댓글 작성하러 가기</button>
+            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>`);
+        }else{
+          $('#bucket-re *').remove();
+          $('#bucket-re').append(` <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">${res.length}개의 댓글 보기</button>
+            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>`);
+        }
         $('#bucketComment *').remove();
         for(let i=0; i<reviews.length; i++){
           const name = reviews[i].name;
@@ -655,6 +667,18 @@
         date:date},
       success:function(res){
         const reviews = res;
+        if(res.length ===0){
+          $('#todo-re *').remove();
+          $('#todo-re').append(` <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">댓글 작성하러 가기</button>
+            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>`);
+        }else{
+          $('#todo-re *').remove();
+          $('#todo-re').append(` <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">${res.length}개의 댓글 보기</button>
+            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>`);
+        }
+
         $('#todoComment *').remove();
         for(let i=0; i<reviews.length; i++){
           const name = reviews[i].name;
@@ -679,10 +703,10 @@
 
           `)
           }
-
         }
       }
     });
+
   }
   //투두 댓글 삭제
   function delTodoComment(){
@@ -845,10 +869,8 @@
           <p id="modelShareCount1"></p>
           <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
         </div>
-          <div class="modal-footer" style="border:0" >
-            <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">댓글 보기</button>
-            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
+          <div class="modal-footer" id="todo-re" style="border:0" >
+
           </div>
         </div>
       </div>
@@ -882,10 +904,8 @@
             <p id="modelShareCount2"></p>
             <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
           </div>
-            <div class="modal-footer" style="border:0" >
-              <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">댓글 보기</button>
-              <button type="button" onclick="createComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
+            <div class="modal-footer" style="border:0" id="bucket-re" >
+
             </div>
           </div>
         </div>
