@@ -221,6 +221,7 @@
                             todoBoxes.insertAdjacentHTML('beforeend', todoSuccessInput);    
                             $(`#happy${uuid}`).css({"text-decoration":"line-through", "color":"#777"})
                             $(`#todoEdit${uuid}`).hide();
+                            $(`#todoDelete${uuid}`).hide();
                         }else{
                             if(date>today){
                                 let todoReadyInput=`
@@ -497,6 +498,7 @@
                     $(`#todoSuccessText${happy}`).show();
                     $(`#happy${happy}`).css({"text-decoration":"line-through", "color":"#777"})
                     $(`#todoEdit${happy}`).hide();
+                    $(`#todoDelete${happy}`).hide();
                     // $(`#todoDelete${happy}`).hide();
                 })
         }
