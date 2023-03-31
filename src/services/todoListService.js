@@ -24,7 +24,7 @@ class TodoListService {
         const userId = token.userId;
         const name = token.name;
         const success = "READY"
-        const today = new Date(new Date().getTime()+(1000*60*60*9));
+        const today = new Date(new Date().getTime()+(1000*60*60*9)).toISOString().substring(0,10);
         const shareCount = 0
         if (date==today){
             const postAlldayTodoLists = await this.todoListRepository.postAlldayTodoLists(title, content, image, userId, name, success)
@@ -36,7 +36,7 @@ class TodoListService {
     putAlldayTodo = async(date, beforeTitle, content, image, afterTitle, access_token, share) =>{
         const token = jwtDecode(access_token);
         const userId = token.userId;
-        const today = new Date(new Date().getTime()+(1000*60*60*9));
+        const today = new Date(new Date().getTime()+(1000*60*60*9)).toISOString().substring(0,10);
 
         if (date==today){
             const putAlldayTodoLists = await this.todoListRepository.putAlldayTodoLists(date, beforeTitle, content, image, afterTitle, userId)
@@ -48,7 +48,7 @@ class TodoListService {
     getAlldayTodo = async(date, access_token) =>{
         const token = jwtDecode(access_token);
         const userId = token.userId;
-        const today = new Date(new Date().getTime()+(1000*60*60*9));
+        const today = new Date(new Date().getTime()+(1000*60*60*9)).toISOString().substring(0,10);
         if (date > today){
             const getAlldayTodoList = await this.todoListRepository.getAlldayTodoList(date, userId)
             return getAlldayTodoList;
@@ -61,7 +61,7 @@ class TodoListService {
     deleteAlldayTodo = async(date, title, access_token) =>{
         const token = jwtDecode(access_token);
         const userId = token.userId;
-        const today = new Date(new Date().getTime()+(1000*60*60*9));
+        const today = new Date(new Date().getTime()+(1000*60*60*9)).toISOString().substring(0,10);
 
         if (date==today){
             const deleteAlldayTodoLists = await this.todoListRepository.deleteAlldayTodoLists(date, title, userId)

@@ -5,6 +5,7 @@ const AllDayTodoReset = async () =>{
       attributes: ['title','name','content','image','userId'],
       raw: true,
     });
+    console.log(getAllDayTodoList)
     const postAllDayTodoList = await AllDayTodoLists.bulkCreate(getAllDayTodoList);
   }
 
