@@ -21,7 +21,6 @@
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.min.css">
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <style>
   /*전체 옵션*/
@@ -77,23 +76,13 @@
     transform: rotate(15deg);
     position: relative;
     top: -12px;
+    cursor: pointer;
   }
   
-  /* .fc-daygrid-day-events > .fc-daygrid-event-harness:nth-of-type(1){
-  position: absolute;
-  height: 30px;
-  top:-30px;
-  } */
 
   .fc-event {
   text-align: center;
   }
-
-  /* 달력 +more 창*/
-  /* .fc-more-popover {
-    left: auto !important;
-    right: 0 !important;
-  } */
 
   /* slider */
 .slider1 {
@@ -143,7 +132,8 @@
 .fc-toolbar-title::before {
   position: absolute;
   font-size: 15px;
-  content: "🟩: To-Do List달성률";
+  content: "🟥 Allday To-Do List달성률";
+
   left: 0;
   top: 50%;
   transform: translateY(-50%);
@@ -152,7 +142,7 @@
 .fc-toolbar-title::after {
   position: absolute;
   font-size: 15px;
-  content: "🟥: Allday To-Do List달성률";
+  content: "🟩 To-Do List달성률";
   left: 0;
   top: 70%;
   transform: translateY(-50%);
@@ -172,7 +162,6 @@
 <script>
   $(document).ready(function(){
       loginCheck();
-      a();
       b();
       c();
     // get card width dynamically
@@ -256,12 +245,6 @@
           month = date.date.month + 1;
           return year + "년 " + month + "월";
         },
-        // dayMaxEventRows: true, // +n more
-        // views: {
-        //   timeGrid: {
-        //     dayMaxEventRows: 4
-        //   }
-        // },
         events: function (info, success, failure) {
           // Calendar TodoList 데이터 가져오기
           fetch('/api/calendar/todo' , {
@@ -281,6 +264,21 @@
                                         .map(todoo => `<p style="line-height:5px">${todoo.title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`)
                                         .join('');
                                 todoPreview.innerHTML = todo;
+                              });
+                      fetch('/api/preview/bucket', {
+                        credentials: "include"})
+                              .then((response) => response.json())
+                              .then((data) => {
+                                $('#bucketPreview *').remove();
+                                const bucket = data.data;
+                                for (let i = 0; i < bucket.length; i++){
+                                  if(bucket[i].d_day ===currentStr){
+                                    const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
+                                    const p = document.createElement('p');
+                                    p.innerHTML = buckett;
+                                    document.getElementById('bucketPreview').appendChild(p);
+                                  }
+                                }
                               });
                     }
                     // 페이지가 로드될 때 한 번 호출하여 현재 날짜 미리보기를 표시함
@@ -378,26 +376,27 @@
                 .join('');
               todoPreview.innerHTML = todo;
           });
-
+          // 포스트잇 버킷리스트 미리보기
+          fetch('/api/preview/bucket', {
+            credentials: "include"})
+                  .then((response) => response.json())
+                  .then((data) => {
+                    $('#bucketPreview *').remove();
+                    const bucket = data.data;
+                    for (let i = 0; i < bucket.length; i++){
+                      if(bucket[i].d_day ===selectedDateStr){
+                        const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
+                        const p = document.createElement('p');
+                        p.innerHTML = buckett;
+                        document.getElementById('bucketPreview').appendChild(p);
+                      }
+                    }
+                  });
         },
       });
       calendar.render();
   }
-  // 포스트잇 버킷리스트 미리보기
-  function a(){
-    fetch('/api/preview/bucket', {
-      credentials: "include"})
-            .then((response) => response.json())
-            .then((data) => {
-              const bucket = data.data;
-              for (let i = 0; i < bucket.length; i++){
-                const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
-                const p = document.createElement('p');
-                p.innerHTML = buckett;
-                document.getElementById('bucketPreview').appendChild(p);
-              }
-            });
-  }
+
   function b(){
     // 추천 투두리스트 카드
     fetch('/api/card/alldayTodo')
@@ -449,8 +448,11 @@
     $('#modelTitle1').text(title);
     $('#modelName1').text("작성자 : " + name);
     $('#modelDate1').text("작성일 : "+ update);
-    $('#modelContent1').text(content);
+    $('#modelContent1').text("상세내용 : " + content);
     $('#modelShareCount1').text("공유 횟수 : "+shareCount);
+    modalCX();
+    getTodoComments();
+
   }
   //모달 버킷 데이터 가져오기
   function modalDate2(title,content,image,name,update,shareCount){
@@ -460,6 +462,8 @@
     $('#modelDate2').text("작성일 : "+ update);
     $('#modelContent2').text("상세내용 : " + content);
     $('#modelShareCount2').text("공유 횟수 : "+shareCount);
+    modalCX();
+    getComments();
   }
 // 투두 공유 횟수
   function todoShare(){
@@ -508,43 +512,44 @@
   //모달 버튼 작동
   function commentOpen(){
     $('.modal-content').animate({left:-248})
-    $('#comment').animate({left:498});
+    $('.comment').animate({left:498});
     $('.modal-footer').animate({width:1000});
-    $('#sorry').addClass('modal-hide');
-    $('#commentAdd').removeClass('modal-hide');
-    $('#btn-X').addClass('modal-hide');
-    getComments();
+    $('.sorry').addClass('modal-hide');
+    $('.commentAdd').removeClass('modal-hide');
+    $('.btn-X').addClass('modal-hide');
+
   }
   // 모달 창 닫기
   function modalX(){
     $('.modal-content').animate({left:0});
-    $('#comment').animate({left:0});
+    $('.comment').animate({left:0});
     $('.modal-footer').animate({width:500});
-    $('#commentAdd').addClass('modal-hide');
-    $('#sorry').removeClass('modal-hide');
+    $('.commentAdd').addClass('modal-hide');
+    $('.sorry').removeClass('modal-hide');
+    $('.btn-X').removeClass('modal-hide');
   }
   // 모달
   function modalCX(){
     $('.modal-content').animate({left:0});
-    $('#comment').animate({left:0});
+    $('.comment').animate({left:0});
     $('.modal-footer').animate({width:500});
-    $('#sorry').removeClass('modal-hide');
-    $('#commentAdd').addClass('modal-hide');
-    $('#btn-X').removeClass('modal-hide');
+    $('.sorry').removeClass('modal-hide');
+    $('.commentAdd').addClass('modal-hide');
+    $('.btn-X').removeClass('modal-hide');
   }
-  //댓글 작성완료
+  //버킷 댓글 작성완료
   function createComments(){
     const title = $('#modelTitle2').text();
     const name = $('#modelName2').text().split(":")[1].trim();
     const date = $('#modelDate2').text().split(":")[1].trim();
     const myComment = $('#myComment').val();
-    if(myComment===""){
-      alert("댓글을 입력해주세요");
-      return;
-    }
     if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
       alert('로그인 후 이용 가능합니다.');
       return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    if(myComment===''){
+      alert("댓글을 입력해주세요");
+      return;
     }
     $.ajax({
       type:"POST",
@@ -561,7 +566,7 @@
     });
 
   }
-  //댓글 가져오기
+  //버킷 댓글 가져오기
   function getComments(){
     const title = $('#modelTitle2').text();
     const name = $('#modelName2').text().split(":")[1].trim();
@@ -574,6 +579,17 @@
         date:date},
       success:function(res){
         const reviews = res;
+        if(res.length ===0){
+          $('#bucket-re *').remove();
+          $('#bucket-re').append(` <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">댓글 작성하러 가기</button>
+            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>`);
+        }else{
+          $('#bucket-re *').remove();
+          $('#bucket-re').append(` <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">${res.length}개의 댓글 보기</button>
+            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>`);
+        }
         $('#bucketComment *').remove();
         for(let i=0; i<reviews.length; i++){
           const name = reviews[i].name;
@@ -603,7 +619,7 @@
       }
     });
   }
-  //댓글 삭제
+  //버킷 댓글 삭제
   function delComment(){
     const title = $('#modelTitle2').text();
     const name = $('#modelName2').text().split(":")[1].trim();
@@ -624,7 +640,124 @@
       }
     })
   }
+  //투두 댓글 작성완료
+  function createTodoComments(){
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    const title = $('#modelTitle1').text();
+    const name = $('#modelName1').text().split(":")[1].trim();
+    const date = $('#modelDate1').text().split(":")[1].trim();
+    const myComment = $('#myComment2').val();
+    if(myComment===""){
+      alert("댓글을 입력해주세요");
+      return;
+    }
+    $.ajax({
+      type:"POST",
+      url:'/api/reviews/todo',
+      data:{title:title,
+        name:name,
+        date:date,
+        myComment:myComment},
+      success:function(res){
+        alert(res.msg);
+        getTodoComments();
+        $('#myComment2').val('');
+      }
+    });
 
+  }
+  //투두 댓글 가져오기
+  function getTodoComments(){
+    const title = $('#modelTitle1').text();
+    const name = $('#modelName1').text().split(":")[1].trim();
+    const date = $('#modelDate1').text().split(":")[1].trim();
+    $.ajax({
+      type:"GET",
+      url:'/api/reviews/todo',
+      data:{title:title,
+        name:name,
+        date:date},
+      success:function(res){
+        const reviews = res;
+        if(res.length ===0){
+          $('#todo-re *').remove();
+          $('#todo-re').append(` <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">댓글 작성하러 가기</button>
+            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>`);
+        }else{
+          $('#todo-re *').remove();
+          $('#todo-re').append(` <button type="button" onclick="commentOpen()" class="sorry btn btn-primary">${res.length}개의 댓글 보기</button>
+            <button type="button" onclick="createTodoComments()" class="commentAdd btn btn-primary modal-hide">댓글 작성</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>`);
+        }
+
+        $('#todoComment *').remove();
+        for(let i=0; i<reviews.length; i++){
+          const name = reviews[i].name;
+          const content = reviews[i].content;
+          if(name === localStorage.getItem('name')){
+            $('#todoComment').append(`
+            <p style="position:relative; padding:0; margin: 0;">
+                <span>작성자 : ${name}</span>
+                <button style="right:10px; position: absolute; border: 0; background: none;" onclick="delTodoComment()"><i class="fa-solid fa-xmark"></i></button>
+<br/>
+<span class='contents'>${content}</span>
+            </p>
+
+          `)
+          }else{
+            $('#todoComment').append(`
+            <p style="position:relative; padding:0; margin: 0;">
+                <span>작성자 : ${name}</span>
+<br/>
+<span class='contents'>${content}</span>
+            </p>
+
+          `)
+          }
+        }
+      }
+    });
+
+  }
+  //투두 댓글 삭제
+  function delTodoComment(){
+    const title = $('#modelTitle1').text();
+    const name = $('#modelName1').text().split(":")[1].trim();
+    const date = $('#modelDate1').text().split(":")[1].trim();
+    const content = $(event.target).parents('p').find('.contents').text();
+    $.ajax({
+      type:"delete",
+      url:'/api/reviews/todo',
+      data:{
+        title:title,
+        name:name,
+        date:date,
+        content:content
+      },
+      success:function(res){
+        alert(res.msg);
+        getTodoComments();
+      }
+    })
+  }
+  function goBucketList(){
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    location.href='/page/bucketList';
+  }
+  function goTodoList(){
+    if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
+      alert('로그인 후 이용 가능합니다.');
+      return location.href='https://todo-list.auth.ap-northeast-2.amazoncognito.com/login?client_id=7r03hfgoepij4uajvqj1vq94d2&response_type=token&scope=email+openid+profile&redirect_uri=https://flutterStudy.com';
+    }
+    location.href='/page/todoListDetail';
+  }
 </script>
 <body>
   <!--네비게이션-->
@@ -647,7 +780,7 @@
                 <div class="col-md-6" style="min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 60px; width: 80%;">
                   <h3 style="text-align: center;">TODO리스트</h3>
                   <p style="text-align: right; padding-right: 48px; margin-top: 38px;">
-                    <a href="/page/todoListDetail" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
+                    <a onclick="goTodoList()" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
                   </p>
                   <div style="text-align: center;" id="todoPreview"></div>
                 </div>                
@@ -657,7 +790,7 @@
                 <div class="col-md-6" style="min-height: 400px; background-image: url('img/abc.png'); background-size: 100% 100%; margin-left: 60px; width: 80%;">
                   <h3 style="text-align: center;">BUCKET리스트</h3>
                   <p style="text-align: right; padding-right: 48px; margin-top: 38px;">
-                    <a href="/page/bucketList" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
+                    <a onclick="goBucketList()" style="color: blue; font-weight: bold; text-decoration-line: none;" class="more">+more</a>
                   </p>
                   <div style="text-align: center;" id="bucketPreview"></div>
                 </div>
@@ -726,34 +859,44 @@
   <!-- Modal -->
   <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modalBox1" id="modalBox1">
-        <div class="modal-content">
-          <div class="modal-header" style="position: relative">
-            <div style="width:100%; height:500px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg1"></div>
-            <button type="button" style="position: absolute; top:20px; right:20px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-content" style="position: relative">
+        <div class="row">
+          <div class="col-md-12 comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
+            <h3 style="margin-top: 10px;">댓글</h3>
+            <button type="button" style="position: absolute; top:20px; right:20px;" onclick="modalCX()" class="btn-close"aria-label="Close"></button>
+            <div style="height: 550px; padding-top:10px; padding-bottom: 10px; overflow-y: scroll" id="todoComment">
+            </div>
+            <div style="border-top:1px solid #eee; margin-top: 30px;">
+              <textarea name="comment" id="myComment2" style="width: 100%;"></textarea>
+            </div>
           </div>
-          <div class="modal-body">
-            <h1 id="modelTitle1">제목</h1>
-            <p id="modelName1">작성자 : </p>
-            <p id="modelDate1">작성일 : </p>
-            <p id="modelContent1">내용</p>
-            <p id="modelShareCount1">공유횟수</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
-            <button type="button" class="btn btn-primary">댓글 작성하기</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <div class="col-md-12" style="height:788px;">
+            <div class="modal-header" style="position: relative">
+          <div style="width:100%;height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg1"></div>
+          <button type="button" onclick="modalX()" style="position: absolute; top:20px; right:20px;" class="btn-close btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+            <div class="modal-body">
+          <h1 id="modelTitle1"></h1>
+          <p id="modelName1"></p>
+          <p id="modelDate1"></p>
+          <p id="modelContent1"></p>
+          <p id="modelShareCount1"></p>
+          <button type="button" onclick="todoShare()" class="btn btn-primary">나의 투두로 가져오기</button>
+        </div>
+          <div class="modal-footer" id="todo-re" style="border:0" >
+
           </div>
         </div>
       </div>
-    </div>  
+    </div>
+    </div>
   </div>
   
   <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" style="position: relative">
           <div class="row">
-            <div class="col-md-12" id="comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
+            <div class="col-md-12 comment" style="position: absolute; top:0; left:0; background: #fff;height:788px; z-index: -1; border-radius: 5px;">
               <h3 style="margin-top: 10px;">댓글</h3>
               <button type="button" style="position: absolute; top:20px; right:20px;" onclick="modalCX()" class="btn-close"aria-label="Close"></button>
               <div style="height: 550px; padding-top:10px; padding-bottom: 10px; overflow-y: scroll" id="bucketComment">
@@ -765,7 +908,7 @@
             <div class="col-md-12" style="height:788px;">
               <div class="modal-header" style="position: relative">
             <div style="width:100%;height:400px; background-position: center; background-size: contain;background-repeat: no-repeat" id="modelImg2"></div>
-            <button type="button" onclick="modalX()" style="position: absolute; top:20px; right:20px;" class="btn-close" id="btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" onclick="modalX()" style="position: absolute; top:20px; right:20px;" class="btn-close btn-X" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
               <div class="modal-body">
             <h1 id="modelTitle2"></h1>
@@ -775,22 +918,15 @@
             <p id="modelShareCount2"></p>
             <button type="button" onclick="bucketShare()" class="btn btn-primary">나의 버킷으로 가져오기</button>
           </div>
-              <div class="modal-footer" style="border:0" >
-                <button type="button" onclick="commentOpen()" id="sorry" class="btn btn-primary">댓글 보기</button>
-                <button type="button" onclick="createComments()" id="commentAdd"  class="btn btn-primary modal-hide">댓글 작성</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalX()">Close</button>
-              </div>
-          </div>
+            <div class="modal-footer" style="border:0" id="bucket-re" >
 
+            </div>
           </div>
-
         </div>
-
-
-
-    </div>
+      </div>
   </div>
-  <!--풋터-->
-  <%-include('./footer')%>
+</div>
+<!--풋터-->
+<%-include('./footer')%>
 </body>
 </html>

@@ -44,7 +44,8 @@ class BucketListRepository {
         title:title,
         d_day:dayValue,
         userId:userId,
-      }
+      },
+      limit:1
     });
   }
   // 버킷리스트 카드 생성

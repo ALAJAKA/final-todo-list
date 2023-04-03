@@ -144,7 +144,8 @@ class TodoListRepository {
     const deleteTodayTodo = await this.TodoList.destroy({
       where: {
         [Op.and]: [{ today:date }, {title}, { userId }],
-      }
+      },
+      limit:1
   });
     return deleteTodayTodo;
   }
