@@ -162,7 +162,6 @@
 <script>
   $(document).ready(function(){
       loginCheck();
-      a();
       b();
       c();
     // get card width dynamically
@@ -266,6 +265,21 @@
                                         .join('');
                                 todoPreview.innerHTML = todo;
                               });
+                      fetch('/api/preview/bucket', {
+                        credentials: "include"})
+                              .then((response) => response.json())
+                              .then((data) => {
+                                $('#bucketPreview *').remove();
+                                const bucket = data.data;
+                                for (let i = 0; i < bucket.length; i++){
+                                  if(bucket[i].d_day ===currentStr){
+                                    const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
+                                    const p = document.createElement('p');
+                                    p.innerHTML = buckett;
+                                    document.getElementById('bucketPreview').appendChild(p);
+                                  }
+                                }
+                              });
                     }
                     // 페이지가 로드될 때 한 번 호출하여 현재 날짜 미리보기를 표시함
                     updateTodoPreview();
@@ -362,26 +376,27 @@
                 .join('');
               todoPreview.innerHTML = todo;
           });
-
+          // 포스트잇 버킷리스트 미리보기
+          fetch('/api/preview/bucket', {
+            credentials: "include"})
+                  .then((response) => response.json())
+                  .then((data) => {
+                    $('#bucketPreview *').remove();
+                    const bucket = data.data;
+                    for (let i = 0; i < bucket.length; i++){
+                      if(bucket[i].d_day ===selectedDateStr){
+                        const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
+                        const p = document.createElement('p');
+                        p.innerHTML = buckett;
+                        document.getElementById('bucketPreview').appendChild(p);
+                      }
+                    }
+                  });
         },
       });
       calendar.render();
   }
-  // 포스트잇 버킷리스트 미리보기
-  function a(){
-    fetch('/api/preview/bucket', {
-      credentials: "include"})
-            .then((response) => response.json())
-            .then((data) => {
-              const bucket = data.data;
-              for (let i = 0; i < bucket.length; i++){
-                const buckett = `<p style="line-height:5px">${bucket[i].title}<hr style="width: 60%; margin-left: auto; margin-right: auto;"/></p>`;
-                const p = document.createElement('p');
-                p.innerHTML = buckett;
-                document.getElementById('bucketPreview').appendChild(p);
-              }
-            });
-  }
+
   function b(){
     // 추천 투두리스트 카드
     fetch('/api/card/alldayTodo')
@@ -504,7 +519,6 @@
     $('.btn-X').addClass('modal-hide');
 
   }
-
   // 모달 창 닫기
   function modalX(){
     $('.modal-content').animate({left:0});
@@ -730,7 +744,6 @@
       }
     })
   }
-
   function goBucketList(){
     if(localStorage.getItem('name')===null ||localStorage.getItem('name')===undefined ){
       alert('로그인 후 이용 가능합니다.');
